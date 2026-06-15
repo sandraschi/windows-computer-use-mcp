@@ -172,6 +172,11 @@ mcpb-pack:
 clean:
     if (Test-Path "dist") { Remove-Item -Recurse -Force dist }
     if (Test-Path "build") { Remove-Item -Recurse -Force build }
+    New-Item -ItemType Directory -Force -Path dist | Out-Null
+
+# Purge old pywinauto-mcp named artifacts from dist/ (post-rename cleanup)
+clean-dist-old-names:
+    Get-ChildItem dist -Filter "pywinauto*" | Remove-Item -Force -ErrorAction SilentlyContinue
     if (Test-Path "htmlcov") { Remove-Item -Recurse -Force htmlcov }
     if (Test-Path ".coverage") { Remove-Item .coverage }
     if (Test-Path ".pytest_cache") { Remove-Item -Recurse -Force .pytest_cache }
