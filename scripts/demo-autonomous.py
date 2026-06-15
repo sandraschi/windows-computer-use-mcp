@@ -142,9 +142,10 @@ async def main():
     print(f"  Screenshot taken")
     time.sleep(1)
 
-    # ── Phase 7: OCR the screenshot, write result into Notepad ────────
+    # ── Phase 7: OCR the Notepad edit area (crop out window chrome) ──
     demo_phase("Phase 7: OCR readback")
-    r = await _call("visual", operation="extract_text", window_handle=hwnd)
+    r = await _call("visual", operation="extract_text", window_handle=hwnd,
+        region_left=10, region_top=120, region_right=1900, region_bottom=1050)
     text = (r.data or {}).get("text", "") if r.data else ""
     ocr_preview = ""
     if text:
