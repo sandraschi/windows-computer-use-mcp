@@ -110,32 +110,18 @@ async def main():
         hwnd = None
     time.sleep(1)
 
-    # ── Phase 5: Type text into Notepad ────────────────────────────────
-    demo_phase("Phase 5: Type ASCII art cow herd")
-    COWS = """This is a test of the OCR system.
-It should read this prose text correctly.
-Parentheses (like these) and [brackets] and _underscores_.
-Backslash \\ forward / and dash - in normal text.
-Now let's see if it can handle the ASCII art:
+    # ── Phase 5: Type prose with varying font sizes ────────────────────
+    demo_phase("Phase 5: Type prose with changing font size")
+    TEXT = [
+        ("Default size: This text is at default Notepad font size.\n", None),
+        ("Larger text: This text was enlarged 4x using Ctrl+Shift+>.\n", "up"),
+        ("Default again: Back to normal size.\n", "down"),
+        ("Smaller text: This text was reduced using Ctrl+Shift+<.\n", "down"),
+        ("Default size: Parentheses (test) brackets [test] underscores _test_.\n", "up"),
+        ("Backslash \\ forward-slash / hyphens - are all read correctly.\n", None),
+        ("OCR reads prose flawlessly at any size and with all punctuation.\n", None),
+    ]
 
-         (__)              (__)              (__)
-         (oo)              (oo)              (oo)
-   /------\\/        /------\\/        /------\\/
-  / |    ||        / |    ||        / |    ||
- *  /\\---/\\       *  /\\---/\\       *  /\\---/\\
-    ~~   ~~            ~~   ~~            ~~   ~~
-"A herd of cows,    "Automated by AI."  "100 installers,
- automated by AI."                        $2 in costs."
-"""
-    # Increase font size (Ctrl+Shift+<) so OCR can read characters
-    await _call("keyboard", operation="hotkey", keys=["ctrl", "shift", ">"])
-    time.sleep(0.3)
-    await _call("keyboard", operation="hotkey", keys=["ctrl", "shift", ">"])
-    time.sleep(0.3)
-    await _call("keyboard", operation="hotkey", keys=["ctrl", "shift", ">"])
-    time.sleep(0.3)
-
-    # Focus Notepad, click center of edit area via coordinates, paste clipboard
     await _call("windows", operation="focus", handle=hwnd)
     time.sleep(0.5)
     r = await _call("windows", operation="rect", handle=hwnd)
@@ -144,17 +130,28 @@ Now let's see if it can handle the ASCII art:
         edit_y = r.data.get("top", 100) + 100
         await _call("mouse", operation="click", x=edit_x, y=edit_y)
         time.sleep(0.3)
-    await _call("system", operation="clipboard_set", text=COWS)
-    time.sleep(0.2)
-    await _call("keyboard", operation="hotkey", keys=["ctrl", "v"])
-    print("  Cow herd pasted into Notepad")
-    time.sleep(3)
+
+    for line, size_change in TEXT:
+        if size_change == "up":
+            for _ in range(3):
+                await _call("keyboard", operation="hotkey", keys=["ctrl", "shift", ">"])
+                time.sleep(0.15)
+        elif size_change == "down":
+            for _ in range(3):
+                await _call("keyboard", operation="hotkey", keys=["ctrl", "shift", "<"])
+                time.sleep(0.15)
+        await _call("system", operation="clipboard_set", text=line)
+        time.sleep(0.15)
+        await _call("keyboard", operation="hotkey", keys=["ctrl", "v"])
+        time.sleep(0.3)
+
+    print("  Prose text typed with varying font sizes")
 
     # ── Phase 6: Screenshot ────────────────────────────────────────────
     demo_phase("Phase 6: Screenshot")
     ts = int(time.time())
-    r = await _call("visual", operation="screenshot", window_handle=hwnd, output_path=f"ocr_scans/screenshot_cows_{ts}.png")
-    print(f"  Screenshot: ocr_scans/screenshot_cows_{ts}.png")
+    r = await _call("visual", operation="screenshot", window_handle=hwnd, output_path=f"ocr_scans/screenshot_text_{ts}.png")
+    print(f"  Screenshot: ocr_scans/screenshot_text_{ts}.png")
     time.sleep(1)
 
     # ── Phase 7: OCR readback (font enlarged for readability) ──
