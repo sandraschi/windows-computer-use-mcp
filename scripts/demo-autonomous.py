@@ -153,8 +153,10 @@ async def main():
         lines = [l.strip() for l in text.strip().split("\n") if l.strip()]
         ocr_preview = "\n".join(lines[:5])
         print(f"  OCR read {len(lines)} lines")
-    # Paste OCR result into Notepad so the viewer sees it
-    ocr_output = f"\n--- OCR readback ---\n{ocr_preview if ocr_preview else '(no text detected)'}"
+    # Paste both the original text and OCR result for comparison
+    original_lines = COWS.strip().split("\n")
+    original_short = "\n".join(original_lines[:6])
+    ocr_output = f"\n--- Original text ---\n{original_short}\n\n--- OCR detected ---\n{ocr_preview if ocr_preview else '(no text detected)'}"
     await _call("system", operation="clipboard_set", text=ocr_output)
     time.sleep(0.2)
     await _call("keyboard", operation="hotkey", keys=["ctrl", "v"])
