@@ -105,23 +105,28 @@ async def main():
     print(f"  Canvas center at ({cx}, {cy})")
     time.sleep(0.3)
 
-    S = 3  # scale factor — everything 3x bigger
+    S = 2  # scale factor
 
-    # ── Select thicker brush: click Size button in ribbon, then size 3 ──
-    # In Paint, brush size can be changed via Home tab > Size > 5px
-    # Click the Size dropdown area (roughly at ribbon position)
-    await call("mouse", operation="click", x=canvas_ox - 300, y=canvas_oy - 200)
-    time.sleep(0.3)
-    await call("mouse", operation="click", x=canvas_ox - 300, y=canvas_oy - 180)
-    time.sleep(0.3)
+    # ── Colors: click palette swatches at bottom of Paint window ──
+    # Palette is at the bottom of the window, roughly y = top + window_height - 60
+    palette_y = top + 1000
+    palette_step = 30
+
+    def pick_color(index: int):
+        """Click a color swatch in the palette (0=black, 1=white, 2=red, 3=green, ...)"""
+        x = canvas_ox - 400 + index * palette_step
+        asyncio.run(call("mouse", operation="click", x=x, y=palette_y))
+        time.sleep(0.2)
+
+    # We'll draw with default black first, then add color
 
     # ── Draw bicycle frame (triangle) ──
     phase("Draw bike frame")
-    bw_x, bw_y = cx - 80 * S, cy + 40 * S  # back wheel hub
-    fw_x, fw_y = cx + 80 * S, cy + 40 * S  # front wheel hub
-    seat_x, seat_y = cx - 60 * S, cy - 20 * S  # seat
-    bar_x, bar_y = cx + 50 * S, cy - 30 * S  # handlebars
-    pedal_x, pedal_y = cx, cy + 40 * S  # bottom bracket
+    bw_x, bw_y = cx - 60 * S, cy + 30 * S  # back wheel hub
+    fw_x, fw_y = cx + 60 * S, cy + 30 * S  # front wheel hub
+    seat_x, seat_y = cx - 40 * S, cy - 15 * S  # seat
+    bar_x, bar_y = cx + 35 * S, cy - 25 * S  # handlebars
+    pedal_x, pedal_y = cx, cy + 30 * S  # bottom bracket
 
     await call("mouse", operation="drag", x=seat_x, y=seat_y, x2=pedal_x, y2=pedal_y)
     time.sleep(0.2)
@@ -134,12 +139,12 @@ async def main():
     await call("mouse", operation="drag", x=pedal_x, y=pedal_y, x2=fw_x, y2=fw_y)
     time.sleep(0.2)
 
-    # ── Draw wheels (many short strokes in a circle) ──
+    # ── Draw wheels (circle approximations) ──
     phase("Draw wheels")
     import math
     for label, hx, hy in [("Back", bw_x, bw_y), ("Front", fw_x, fw_y)]:
-        r = 40 * S  # wheel radius
-        pts = 24  # points for a smooth circle
+        r = 30 * S
+        pts = 20
         for i in range(pts):
             a1 = 2 * math.pi * i / pts
             a2 = 2 * math.pi * (i + 1) / pts
@@ -149,9 +154,8 @@ async def main():
             y2 = int(hy + r * math.sin(a2))
             await call("mouse", operation="drag", x=x1, y=y1, x2=x2, y2=y2)
             time.sleep(0.02)
-        # Spokes
-        for i in range(8):
-            a = 2 * math.pi * i / 8
+        for i in range(6):
+            a = 2 * math.pi * i / 6
             sx = int(hx + r * 0.1 * math.cos(a))
             sy = int(hy + r * 0.1 * math.sin(a))
             ex = int(hx + r * math.cos(a))
@@ -159,11 +163,11 @@ async def main():
             await call("mouse", operation="drag", x=sx, y=sy, x2=ex, y2=ey)
             time.sleep(0.02)
 
-    # ── Draw pelican body (big oval) ──
+    # ── Draw pelican body (oval, white) ──
     phase("Draw pelican body")
-    bx, by = cx - 30 * S, cy - 60 * S  # body center (behind handlebars, above frame)
-    pts = 20
-    rw, rh = 45 * S, 30 * S  # body ellipse radii
+    bx, by = cx - 20 * S, cy - 45 * S
+    pts = 16
+    rw, rh = 30 * S, 20 * S
     for i in range(pts):
         a1 = 2 * math.pi * i / pts
         a2 = 2 * math.pi * (i + 1) / pts
@@ -174,13 +178,13 @@ async def main():
         await call("mouse", operation="drag", x=x1, y=y1, x2=x2, y2=y2)
         time.sleep(0.02)
 
-    # ── Draw pelican head ──
+    # ── Draw head (white) ──
     phase("Draw head")
-    hx, hy = bx + 40 * S, by - 25 * S  # head center (forward of body)
-    hr = 15 * S
-    for i in range(16):
-        a1 = 2 * math.pi * i / 16
-        a2 = 2 * math.pi * (i + 1) / 16
+    hx, hy = bx + 25 * S, by - 20 * S
+    hr = 10 * S
+    for i in range(14):
+        a1 = 2 * math.pi * i / 14
+        a2 = 2 * math.pi * (i + 1) / 14
         x1 = int(hx + hr * math.cos(a1))
         y1 = int(hy + hr * math.sin(a1))
         x2 = int(hx + hr * math.cos(a2))
@@ -188,35 +192,33 @@ async def main():
         await call("mouse", operation="drag", x=x1, y=y1, x2=x2, y2=y2)
         time.sleep(0.02)
 
-    # ── Draw pelican beak (long and distinctive!) ──
+    # ── Draw beak (orange) ──
     phase("Draw beak")
-    # Upper beak from head extending forward
-    await call("mouse", operation="drag", x=hx + hr, y=hy, x2=hx + 70 * S, y2=hy - 5 * S)
-    time.sleep(0.15)
-    await call("mouse", operation="drag", x=hx + 70 * S, y=hy - 5 * S, x2=hx + 70 * S, y2=hy + 10 * S)
-    time.sleep(0.15)
-    # Lower beak (pouch)
-    await call("mouse", operation="drag", x=hx + 70 * S, y=hy + 10 * S, x2=hx + 20 * S, y2=hy + 15 * S)
-    time.sleep(0.15)
-    await call("mouse", operation="drag", x=hx + 20 * S, y=hy + 15 * S, x2=hx + hr, y2=hy + 5 * S)
-    time.sleep(0.15)
+    await call("mouse", operation="drag", x=hx + hr, y=hy, x2=hx + 45 * S, y2=hy - 3 * S)
+    time.sleep(0.1)
+    await call("mouse", operation="drag", x=hx + 45 * S, y=hy - 3 * S, x2=hx + 45 * S, y2=hy + 8 * S)
+    time.sleep(0.1)
+    await call("mouse", operation="drag", x=hx + 45 * S, y=hy + 8 * S, x2=hx + 15 * S, y2=hy + 10 * S)
+    time.sleep(0.1)
+    await call("mouse", operation="drag", x=hx + 15 * S, y=hy + 10 * S, x2=hx + hr, y2=hy + 3 * S)
+    time.sleep(0.1)
 
     # ── Draw eye ──
     phase("Draw eye")
-    await call("mouse", operation="click", x=hx + 5 * S, y=hy - 5 * S)
+    await call("mouse", operation="click", x=hx + 3 * S, y=hy - 3 * S)
     time.sleep(0.1)
 
-    # ── Draw legs to pedals ──
+    # ── Draw legs ──
     phase("Draw legs")
-    await call("mouse", operation="drag", x=bx - 10 * S, y=by + rh, x2=pedal_x - 10 * S, y2=pedal_y)
-    time.sleep(0.15)
-    await call("mouse", operation="drag", x=bx + 10 * S, y=by + rh, x2=pedal_x + 10 * S, y2=pedal_y)
-    time.sleep(0.15)
+    await call("mouse", operation="drag", x=bx - 8 * S, y=by + rh, x2=pedal_x - 8 * S, y2=pedal_y)
+    time.sleep(0.1)
+    await call("mouse", operation="drag", x=bx + 8 * S, y=by + rh, x2=pedal_x + 8 * S, y2=pedal_y)
+    time.sleep(0.1)
 
     # ── Draw handlebars ──
     phase("Draw handlebars")
-    await call("mouse", operation="drag", x=bar_x - 15 * S, y=bar_y, x2=bar_x + 15 * S, y2=bar_y)
-    time.sleep(0.15)
+    await call("mouse", operation="drag", x=bar_x - 10 * S, y=bar_y, x2=bar_x + 10 * S, y2=bar_y)
+    time.sleep(0.1)
 
     # ── Draw wheel spokes ──
     phase("Draw spokes")
