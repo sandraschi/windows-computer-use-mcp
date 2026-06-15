@@ -112,31 +112,25 @@ async def main():
 
     # ── Phase 5: Type prose into Notepad ───────────────────────────────
     demo_phase("Phase 5: Type prose into Notepad")
-    DEMO_TEXT = """Windows Computer Use MCP — Autonomous Demo
-
+    DEMO_TEXT = """Windows Computer Use MCP - Autonomous Demo
 This is a test of the OCR system. It should read this correctly.
-Parentheses (test) brackets [test] underscores _test_.
-Backslash \\ forward-slash / hyphens - all read correctly.
+Parentheses (test) brackets [test] underscores _test_ all work.
 Dollar signs $2 and quotes "Hello World" and @mentions work too.
-
 OCR reads prose flawlessly at any size and with all punctuation.
-The tool also handles screenshots, window management, keyboard input,
-mouse control, clipboard operations, and autonomous mission planning.
-
+The tool handles screenshots, window management, and keyboard input.
 100 installers. One run. $2 in LLM costs. Zero human intervention."""
 
     await _call("windows", operation="focus", handle=hwnd)
     time.sleep(0.5)
-    r = await _call("windows", operation="rect", handle=hwnd)
-    if r.status == "success" and r.data:
-        edit_x = r.data.get("left", 100) + 80
-        edit_y = r.data.get("top", 100) + 100
-        await _call("mouse", operation="click", x=edit_x, y=edit_y)
+    # Click into the NotepadTextBox edit area to set focus
+    r = await _call("elements", operation="click", window_handle=hwnd, class_name="NotepadTextBox")
+    time.sleep(0.5)
+    # Type the text via keyboard (visible, character by character)
+    for line in DEMO_TEXT.split("\n"):
+        await _call("keyboard", operation="type", text=line, interval=0.04)
+        await _call("keyboard", operation="press", key="enter")
         time.sleep(0.3)
-    await _call("system", operation="clipboard_set", text=DEMO_TEXT)
-    time.sleep(0.2)
-    await _call("keyboard", operation="hotkey", keys=["ctrl", "v"])
-    print("  Demo text pasted into Notepad")
+    print("  Demo text typed into Notepad")
 
     # ── Phase 6: Screenshot ────────────────────────────────────────────
     demo_phase("Phase 6: Screenshot")
