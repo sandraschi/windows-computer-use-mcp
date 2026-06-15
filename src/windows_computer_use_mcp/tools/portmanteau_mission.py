@@ -184,6 +184,18 @@ async def _run_mission(goal: str, ctx: Context | None, mission_id: str) -> ToolR
             await ctx.info(f"Step {i + 1}/{total}: {label}")
             await ctx.report_progress(int(5 + (i / total) * 85), 100)
 
+        # Telemetry-driven strategy selection
+        step_op = params.get("operation", "")
+        best_strategy = None
+        try:
+            from windows_computer_use_mcp.telemetry import get_best_strategy
+            best_strategy = get_best_strategy(tool_name, step_op)
+            if best_strategy and tool_name in ("elements",):
+                if best_strategy in ("by_title", "by_auto_id", "by_control_id", "by_class_and_type"):
+                    params["_prefer_strategy"] = best_strategy
+        except Exception:
+            pass
+
         def _try_call():
             return _call_tool(tool_name, params)
 
@@ -203,6 +215,21 @@ async def _run_mission(goal: str, ctx: Context | None, mission_id: str) -> ToolR
             "attempts": retry_result.attempts,
             "message": retry_result.message,
         }
+
+        # Log step outcome to telemetry
+        try:
+            from windows_computer_use_mcp.telemetry import log_action
+            log_action(
+                tool=f"mission.{tool_name}",
+                operation=step_op,
+                target=label,
+                strategy_used=best_strategy,
+                success=retry_result.success,
+                error=retry_result.message if not retry_result.success else None,
+                session_id=mission_id,
+            )
+        except Exception:
+            pass
 
         # Self-heal: track consecutive failures
         if retry_result.success:

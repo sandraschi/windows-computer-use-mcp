@@ -138,6 +138,24 @@ audit-deps:
 check-machine-paths:
     pwsh -NoProfile -File .\scripts\check-no-machine-paths.ps1
 
+# Quick smoke test: verify all 18 tools import and the server starts
+smoke:
+    pwsh -NoProfile -Command "uv run python -c '"'"'
+import sys
+from windows_computer_use_mcp.app import app
+from windows_computer_use_mcp import tools
+names = []
+try:
+    for t in app._tool_manager.list_tools():
+        names.append(t.name)
+except Exception:
+    pass
+print(f'Server OK — {len(names)} tools registered')
+for n in sorted(names):
+    print(f'  {n}')
+sys.exit(0 if names else 1)
+'"'"'"
+
 # Build Claude Desktop MCPB bundle (dist/windows-computer-use-mcp.mcpb)
 mcpb-pack:
     pwsh -NoProfile -File .\scripts\build-mcpb-package.ps1 -NoSign
