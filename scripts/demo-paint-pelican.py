@@ -88,22 +88,19 @@ async def main():
     await call("windows", operation="focus", handle=hwnd)
     time.sleep(0.5)
 
-    # Use known-safe canvas coordinates (maximized Paint, default 800x600 canvas)
-    # Canvas is centered in the window below the ribbon
-    canvas_left = max(left, 0) + (width - 800) // 2 if width > 800 else left + 50
-    canvas_top = max(top, 0) + 140  # below ribbon
-    cx = canvas_left + 400  # center of 800px canvas
-    cy = canvas_top + 300   # center of 600px canvas
+    # Use safe absolute coordinates for the white canvas area
+    # Default Paint canvas is ~800x600 centered in the maximized window
+    cx = 960    # screen center X  
+    cy = 500    # below ribbon, within white canvas
     canvas_ox = cx
     canvas_oy = cy
     phase("Click canvas center")
     await call("mouse", operation="click", x=cx, y=cy)
-    print(f"  Canvas center at ({cx}, {cy})  (canvas: {canvas_left},{canvas_top})")
+    print(f"  Drawing center at ({cx}, {cy})")
     time.sleep(0.3)
 
     import math
-    dy = 0
-    S = 2
+    S = 1
 
     # ── BICYCLE ──
     phase("Bicycle frame + wheels")
