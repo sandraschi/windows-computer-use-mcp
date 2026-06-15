@@ -139,17 +139,28 @@ async def main():
     # ── Phase 6: Screenshot ────────────────────────────────────────────
     demo_phase("Phase 6: Screenshot")
     r = await _call("visual", operation="screenshot", window_handle=hwnd)
-    print(f"  Screenshot: {(r.data or {}).get('path', '?')}")
+    print(f"  Screenshot taken")
     time.sleep(1)
 
-    # ── Phase 7: OCR the screenshot ────────────────────────────────────
-    demo_phase("Phase 7: OCR - read what we typed")
+    # ── Phase 7: OCR the screenshot, write result into Notepad ────────
+    demo_phase("Phase 7: OCR readback")
     r = await _call("visual", operation="extract_text", window_handle=hwnd)
     text = (r.data or {}).get("text", "") if r.data else ""
+    ocr_preview = ""
     if text:
-        lines = [l for l in text.strip().split("\n") if l.strip()]
-        print(f"  OCR read {len(lines)} lines. First line: '{lines[0]}'")
+        lines = [l.strip() for l in text.strip().split("\n") if l.strip()]
+        ocr_preview = "\n".join(lines[:5])
+        print(f"  OCR read {len(lines)} lines")
+    # Paste OCR result into Notepad so the viewer sees it
+    ocr_output = f"\n--- OCR readback ---\n{ocr_preview if ocr_preview else '(no text detected)'}"
+    await _call("system", operation="clipboard_set", text=ocr_output)
+    time.sleep(0.2)
+    await _call("keyboard", operation="hotkey", keys=["ctrl", "v"])
     time.sleep(1)
+    # Final screenshot with OCR result visible
+    await _call("visual", operation="screenshot", window_handle=hwnd)
+    print("  Final screenshot with OCR result")
+    time.sleep(2)
 
     # ── Phase 8: Close Notepad (don't save) ───────────────────────────
     demo_phase("Phase 8: Close Notepad")
