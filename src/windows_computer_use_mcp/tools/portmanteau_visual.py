@@ -192,18 +192,18 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
                 # Convert to grayscale for better OCR
                 image = image.convert("L")
 
-                # Extract text
+                # OCR provider (currently only Tesseract supported)
                 text = pytesseract.image_to_string(image, lang=language, config=ocr_config)
 
-                # Get confidence if possible
-                try:
-                    data = pytesseract.image_to_data(
-                        image, lang=language, config=ocr_config, output_type=pytesseract.Output.DICT
-                    )
-                    confidences = [float(c) for c in data["conf"] if float(c) > 0]
-                    avg_confidence = sum(confidences) / len(confidences) if confidences else 0
-                except:
-                    avg_confidence = -1
+                    # Get confidence if possible
+                    try:
+                        data = pytesseract.image_to_data(
+                            image, lang=language, config=ocr_config, output_type=pytesseract.Output.DICT
+                        )
+                        confidences = [float(c) for c in data["conf"] if float(c) > 0]
+                        avg_confidence = sum(confidences) / len(confidences) if confidences else 0
+                    except:
+                        avg_confidence = -1
 
                 return ToolResult(
                     status="success",
