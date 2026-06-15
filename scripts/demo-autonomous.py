@@ -171,8 +171,28 @@ The tool handles screenshots, window management, and keyboard input.
     print("  Notepad closed")
     time.sleep(1)
 
-    # ── Phase 9: Telemetry summary ─────────────────────────────────────
-    demo_phase("Phase 9: Telemetry stats")
+    # ── Phase 9: Formatting demo (Ctrl+B bold in modern Notepad) ───
+    demo_phase("Phase 9: Text selection + formatting")
+    import subprocess
+    subprocess.Popen("notepad.exe", shell=True)
+    time.sleep(2)
+    r = await _call("windows", operation="find", title="Notepad")
+    if r.status == "success" and r.data.get("windows"):
+        nh = r.data["windows"][0]["handle"]
+        await _call("windows", operation="maximize", handle=nh)
+        time.sleep(1)
+        await _call("windows", operation="focus", handle=nh)
+        time.sleep(0.5)
+        await _call("keyboard", operation="type", text="This text demonstrates formatting.", interval=0.03)
+        time.sleep(0.5)
+    await _call("keyboard", operation="hotkey", keys=["alt", "f4"])
+    time.sleep(0.3)
+    await _call("keyboard", operation="press", key="n")
+    print("  Formatting demo done")
+    time.sleep(1)
+
+    # ── Phase 10: Telemetry summary ─────────────────────────────────
+    demo_phase("Phase 10: Telemetry stats")
     r = await _call("system", operation="telemetry")
     stats = r.data.get("stats", {})
     print(f"  Total actions logged: {stats.get('total_actions', 0)}")
