@@ -65,12 +65,10 @@ async def main():
     await call("windows", operation="focus", handle=hwnd)
     time.sleep(0.5)
 
-    # Ctrl+E to open canvas resize dialog, set to default
+    # Ctrl+E opens canvas resize dialog — Enter accepts default size
     await call("keyboard", operation="hotkey", keys=["ctrl", "e"])
     time.sleep(1)
-    await call("keyboard", operation="hotkey", keys=["alt", "d"])  # Default button
-    time.sleep(0.5)
-    await call("keyboard", operation="press", key="enter")  # OK
+    await call("keyboard", operation="press", key="enter")
     time.sleep(0.5)
 
     cx, cy = 960, 520  # canvas center
