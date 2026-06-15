@@ -47,12 +47,16 @@ async def main():
     phase("Open Paint")
     r = await call("system", operation="start_app", app_path="mspaint.exe")
     print(f"  Paint started")
-    time.sleep(2)
+    time.sleep(3)
 
     # Find and maximize
     phase("Find and maximize Paint")
     r = await call("windows", operation="find", title="Paint")
-    if r.status != "success":
+    if r.status != "success" or not r.data.get("windows"):
+        r = await call("windows", operation="find", title="paint")
+    if r.status != "success" or not r.data.get("windows"):
+        r = await call("windows", operation="find", title="untitled")
+    if r.status != "success" or not r.data.get("windows"):
         print("  Paint window not found!")
         return
     hwnd = r.data["windows"][0]["handle"]
