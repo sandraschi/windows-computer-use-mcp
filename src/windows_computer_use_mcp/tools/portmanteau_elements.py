@@ -23,7 +23,7 @@ except ImportError:
 from windows_computer_use_mcp.app import app
 from windows_computer_use_mcp.dispatch import BACKGROUND_UNAVAILABLE, click_element, resolve_dispatch
 from windows_computer_use_mcp.snapshot_store import get_snapshot_store
-from windows_computer_use_mcp.telemetry import get_best_strategy, log_action
+from windows_computer_use_mcp.telemetry import log_action
 from windows_computer_use_mcp.tools.models import ElementOperationRequest, ToolResult
 from windows_computer_use_mcp.trajectory import log_trajectory
 from windows_computer_use_mcp.win32_mouse import (
@@ -124,11 +124,9 @@ def _verify_action_result(
 
                 try:
                     from windows_computer_use_mcp.win32_window import get_window_bbox
-
-                    bbox = get_window_bbox(window_handle)
-                    region = (bbox.left, bbox.top, bbox.right, bbox.bottom)
+                    get_window_bbox(window_handle)
                 except Exception:
-                    region = None
+                    pass
 
                 ok, actual_text = assert_text_in_image(
                     image_path=None,

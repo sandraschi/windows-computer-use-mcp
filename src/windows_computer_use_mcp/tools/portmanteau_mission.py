@@ -22,7 +22,7 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-from windows_computer_use_mcp.retry_policy import RetryPolicy, RetryResult
+from windows_computer_use_mcp.retry_policy import RetryPolicy
 from windows_computer_use_mcp.tools.models import MissionOperationRequest, ToolResult
 
 _MISSIONS: dict[str, dict[str, Any]] = {}
@@ -168,7 +168,7 @@ async def _run_mission(goal: str, ctx: Context | None, mission_id: str) -> ToolR
             else:
                 logger.warning("Could not re-launch %s — skipping step", app_path)
                 consecutive_failures += 1
-                results.append({"step": i + 1, "label": label, "tool": tool_name, "success": False, "message": f"Window dead, relaunch failed"})
+                results.append({"step": i + 1, "label": label, "tool": tool_name, "success": False, "message": "Window dead, relaunch failed"})
                 if consecutive_failures >= _MAX_CONSECUTIVE_FAILURES:
                     break
                 continue
@@ -196,13 +196,16 @@ async def _run_mission(goal: str, ctx: Context | None, mission_id: str) -> ToolR
         except Exception:
             pass
 
-        def _try_call():
-            return _call_tool(tool_name, params)
+        def _try_call(_tn=tool_name, _tp=params):
+            return _call_tool(_tn, _tp)
+
+        def _verify(r, _step=step):
+            return _verify_step_outcome(_step, r) if isinstance(r, ToolResult) else False
 
         policy = RetryPolicy(max_attempts=2, base_delay=1.0)
         retry_result = policy.execute(
             _try_call,
-            verify_fn=lambda r: _verify_step_outcome(step, r) if isinstance(r, ToolResult) else False,
+            verify_fn=_verify,
             label=label,
         )
 
@@ -490,7 +493,7 @@ A ToolResult object with mission progress, step results, and next steps.
                 )
 
             if operation in ("record", "replay"):
-                from windows_computer_use_mcp.mission_store import record_step, get_steps, clear_mission
+                from windows_computer_use_mcp.mission_store import clear_mission, get_steps, record_step
                 if operation == "record":
                     if not request.steps:
                         return ToolResult(status="error", message="record requires steps list.")

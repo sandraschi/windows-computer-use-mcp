@@ -8,7 +8,8 @@ Hub for **windows-computer-use-mcp**. Root overview: [README.md](../README.md). 
 |----------|-------------|
 | [PRD.md](PRD.md) | Product requirements |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | System diagram and component map |
-| [TOOLS.md](TOOLS.md) | Portmanteau MCP tools reference |
+| [TOOLS.md](TOOLS.md) | Full 22-tool reference with phase annotations and examples |
+| [py-stack.md](py-stack.md) | Python dependency deep dive |
 | [SAFETY.md](SAFETY.md) | HITL, kill switch, isolation, opt-in invasive tools |
 | [TESTING.md](TESTING.md) | CI vs local pytest, hardware markers |
 | [DEVELOPMENT.md](DEVELOPMENT.md) | Layout, justfile, CI parity |

@@ -6,6 +6,33 @@ All notable changes to Windows Computer Use will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Phase 1: Autonomous mission engine** — `automation_mission(run=...)` decomposes natural-language goals via LLM sampling, executes each step with retry + outcome verification, returns per-step pass/fail with evidence.
+- **Phase 1: Outcome verification** — `automation_elements(click, verify=True)` and `(set_text, verify=True)` check post-conditions (text appeared, element state changed) inline. Verification failure returns `status=blocked` with detail.
+- **Phase 1: Unified retry policy** — `RetryPolicy` with strategy chain: refocus → wait_stable → fallback_selector → escalate. Each strategy gets exponential backoff. Replaces ad-hoc retry logic.
+- **Phase 2: Adaptive element location** — when element not found by title, cascades through auto_id → control_id → class+type → OCR region scan.
+- **Phase 2: Telemetry store** — SQLite-backed action log at `~/.windows-computer-use-mcp/telemetry.db`. Every element interaction logged with tool, strategy, success, duration. Query with `automation_system(telemetry=True)`.
+- **Phase 3: Macro recording** — `automation_macro(record)` → run tools → `stop()` → `replay()` / `replay_with_verify()`. Saved as JSONL in `~/.cua-mcp/macros/`.
+- **Phase 3: Multi-app workflow** — `automation_mission(workflow=True, app="notepad.exe", actions=[...])`. Chains steps across apps with timeout.
+- **Phase 4: Smart discovery** — `automation_smart(discover)` scans all visible windows, identifies apps by class/process signatures. `automation_smart(click="the Save button")` finds elements by intent across all windows with LLM disambiguation.
+- **Phase 5: Self-healing missions** — mission engine checks window alive before each step, re-launches app if dead, aborts after 5 consecutive failures.
+- **Phase 5: Cross-app data flow** — steps with `store_as` save results to shared context; `$ref:key` in params reads from context.
+- **Phase 5: Event-driven watchers** — `automation_watch(start, condition="window_appears")` with background thread polling. Four conditions: window_appears, window_closes, text_appears, element_appears.
+- **Phase 6: Telemetry-driven strategy** — mission engine queries `get_best_strategy()` from telemetry before each step, prefers historically successful approach.
+- **Phase 6: Agent instructions** — CLAUDE.md, AGENTS.md, SKILL.md all updated with full 18-tool surface and usage patterns.
+- **Tesseract auto-install** — `scripts/install-tesseract.ps1` downloads UB-Mannheim Tesseract 5.x silently. Bundled in NSIS installer as optional checkbox. `just install-tesseract` for dev.
+- **`just smoke`** — quick smoke test verifying all tools import and register.
+
+### Changed
+
+- README slimmed to fleet standard: hero + TOC + 4-method quick-start table + sub-readme nav.
+- `docs/TOOLS.md` rewritten with all 22 tools, phase annotations, and examples.
+- `docs/README.md` hub linked to py-stack.md.
+- `docs/py-stack.md` updated with Tesseract auto-install instructions.
+
 ## [0.6.0] — 2026-06-15
 
 ### Added

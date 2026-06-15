@@ -5,17 +5,16 @@ from __future__ import annotations
 import logging
 import time
 from collections.abc import Callable
-from dataclasses import dataclass, field
-from enum import Enum
+from dataclasses import dataclass
+from enum import StrEnum
 from typing import Any
 
-from windows_computer_use_mcp.cua_env import cua_getenv
 from windows_computer_use_mcp.retry import retry_attempts, retry_delay
 
 logger = logging.getLogger(__name__)
 
 
-class RetryStrategy(str, Enum):
+class RetryStrategy(StrEnum):
     refocus = "refocus"
     wait_stable = "wait_stable"
     fallback_selector = "fallback_selector"

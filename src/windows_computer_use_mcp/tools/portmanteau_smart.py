@@ -192,7 +192,6 @@ OPERATIONS:
                 try:
                     if not win.is_visible():
                         continue
-                    win_title = win.window_text().lower()
                     win_handle = win.handle
                     for child in win.children(visible_only=True):
                         try:
