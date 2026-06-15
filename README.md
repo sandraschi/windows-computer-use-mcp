@@ -66,6 +66,7 @@ See **[INSTALL.md](INSTALL.md)** for detailed setup. Run `just demo` for example
 | [docs/composing-with-playwright.md](docs/composing-with-playwright.md) | Browser automation with Playwright MCP |
 | [docs/ocr.md](docs/ocr.md) | OCR system — Tesseract setup, limitations, competition |
 | [docs/cua-nsis-certification.md](docs/cua-nsis-certification.md) | Dogfooding: using the tool to test its own NSIS installer |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Improvement roadmap short/medium/long term |
 | [docs/SAFETY.md](docs/SAFETY.md) | HITL, kill switch, opt-in features |
 | [docs/TOOLS.md](docs/TOOLS.md) | Portmanteau tool reference |
 | [tests/README.md](tests/README.md) | Test suite guide and e2e setup |
