@@ -105,6 +105,17 @@ class ElementOperationRequest(BaseModel):
         description="Input dispatch mode; default from windows_computer_use_mcp_DISPATCH (foreground).",
     )
 
+    # Outcome verification
+    verify: bool = Field(
+        False,
+        description="If True, verify the action succeeded (e.g. text appeared, state changed)."
+        " On failure, retries with the configured retry policy.",
+    )
+    verify_text: str | None = Field(
+        None,
+        description="For click/set_text with verify=True: expected text to appear after the action.",
+    )
+
     # Discovery parameters
     max_depth: int = Field(2, description="Max depth for 'list' recursion.")
     timeout: float = Field(10.0, description="Max wait time in seconds.")
@@ -365,8 +376,8 @@ class AssertOperationRequest(BaseModel):
 class MissionOperationRequest(BaseModel):
     """Request model for high-level agentic missions."""
 
-    operation: Literal["plan", "status", "cancel", "record", "replay"] = Field(
-        "plan", description="The mission operation to perform."
+    operation: Literal["run", "plan", "status", "cancel", "record", "replay"] = Field(
+        "run", description="The mission operation to perform. 'run' executes the full autonomous loop."
     )
     goal: str = Field("", description="The high-level objective to achieve (required for plan).")
     strategy: Literal["element", "visual"] = Field(

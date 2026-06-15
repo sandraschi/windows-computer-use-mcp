@@ -37,6 +37,73 @@ from windows_computer_use_mcp.win32_mouse import (
 logger = logging.getLogger(__name__)
 
 
+def _verify_action_result(
+    operation: str,
+    request: ElementOperationRequest,
+    window_handle: int,
+    desktop: Any,
+) -> dict | None:
+    """After a mutating action, verify the outcome. Returns None if OK, or a dict with error info."""
+    if not request.verify:
+        return None
+
+    try:
+        window = desktop.window(handle=window_handle)
+        selector = {}
+        if request.control_id:
+            selector["control_id"] = request.control_id
+        if request.auto_id:
+            selector["auto_id"] = request.auto_id
+        if request.title:
+            selector["title"] = request.title
+        if request.control_type:
+            selector["control_type"] = request.control_type
+
+        if operation == "set_text" and request.verify_text:
+            if not selector:
+                return {"verify": "no_selector", "detail": "Cannot verify set_text without a selector."}
+            elem = window.child_window(**selector)
+            if not elem.exists(timeout=3.0):
+                return {"verify": "element_gone", "detail": "Element disappeared after set_text."}
+            actual = elem.window_text()
+            if request.verify_text not in actual:
+                return {"verify": "text_mismatch", "expected": request.verify_text, "actual": actual}
+
+        elif operation in ("click", "double_click", "right_click"):
+            if request.verify_text:
+                from windows_computer_use_mcp.assert_engine import assert_text_in_image
+
+                try:
+                    from windows_computer_use_mcp.win32_window import get_window_bbox
+
+                    bbox = get_window_bbox(window_handle)
+                    region = (bbox.left, bbox.top, bbox.right, bbox.bottom)
+                except Exception:
+                    region = None
+
+                ok, actual_text = assert_text_in_image(
+                    image_path=None,
+                    expected_text=request.verify_text,
+                    exact_match=False,
+                    window_handle=window_handle,
+                )
+                if not ok:
+                    return {"verify": "text_not_found", "expected": request.verify_text, "actual": actual_text}
+
+            else:
+                time.sleep(0.5)
+                if selector:
+                    elem = window.child_window(**selector)
+                    if not elem.exists(timeout=2.0):
+                        return {"verify": "element_gone", "detail": "Clicked element no longer exists."}
+
+    except Exception as e:
+        logger.warning("verify_action_result failed: %s", e)
+        return {"verify": "error", "detail": str(e)}
+
+    return None
+
+
 def _get_desktop():
     """Get a Desktop instance with proper error handling."""
     try:
@@ -139,14 +206,18 @@ def _operate_snapshot_element(
             except Exception:
                 element = None
 
-        if operation in ("click", "double_click", "right_click") and element is not None:
-            meta = click_element(
-                element,
-                dispatch=dispatch,
-                button=request.button,
-                double=(operation == "double_click"),
-                window_handle=window_handle,
-            )
+            if operation in ("click", "double_click", "right_click") and element is not None:
+                meta = click_element(
+                    element,
+                    dispatch=dispatch,
+                    button=request.button,
+                    double=(operation == "double_click"),
+                    window_handle=window_handle,
+                )
+                if request.verify:
+                    verify_info = _verify_action_result(operation, request, window_handle, desktop)
+                    if verify_info:
+                        meta["verify"] = verify_info
             log_trajectory(
                 "element_click",
                 snapshot_id=request.snapshot_id,
@@ -189,6 +260,13 @@ def _operate_snapshot_element(
         elif operation == "set_text" and element is not None and request.text is not None:
             element.set_focus()
             element.set_text(request.text)
+            verify_info = _verify_action_result(operation, request, window_handle, desktop)
+            if verify_info:
+                return ToolResult(
+                    status="blocked",
+                    message=f"set_text on snapshot element but verification failed: {verify_info.get('detail', '')}",
+                    data={"verify": verify_info},
+                )
             return ToolResult(status="success", message="Text set on snapshot element.")
         else:
             return ToolResult(
@@ -362,6 +440,13 @@ A ToolResult object containing standardized outcome, message, and element data.
                             recovery_tip="Use a selector (control_id, title) to identify the specific element.",
                         )
 
+                    verify_info = _verify_action_result(operation, request, window_handle, desktop)
+                    if verify_info:
+                        return ToolResult(
+                            status="blocked",
+                            message=f"{operation} at ({x},{y}) but verification failed: {verify_info.get('detail', '')}",
+                            data={"verify": verify_info},
+                        )
                     return ToolResult(
                         status="success",
                         message=f"Performed {operation} at ({x}, {y})",
@@ -405,6 +490,13 @@ A ToolResult object containing standardized outcome, message, and element data.
                         element.double_click(button=request.button)
                     elif operation == "right_click":
                         element.click(button="right")
+                    verify_info = _verify_action_result(operation, request, window_handle, desktop)
+                    if verify_info:
+                        return ToolResult(
+                            status="blocked",
+                            message=f"{operation} executed but verification failed: {verify_info.get('detail', '')}",
+                            data={"verify": verify_info},
+                        )
                     return ToolResult(status="success", message=f"Executed {operation} on control.")
 
                 elif operation == "hover":
@@ -432,6 +524,13 @@ A ToolResult object containing standardized outcome, message, and element data.
                         element.type_keys("^a{DELETE}")
                         element.type_keys(request.text, with_spaces=True)
                         method = "type_keys"
+                    verify_info = _verify_action_result(operation, request, window_handle, desktop)
+                    if verify_info:
+                        return ToolResult(
+                            status="blocked",
+                            message=f"set_text executed but verification failed: {verify_info.get('detail', '')}",
+                            data={"verify": verify_info},
+                        )
                     return ToolResult(status="success", message=f"Text set via {method}.", data={"method": method})
 
                 elif operation == "rect":
