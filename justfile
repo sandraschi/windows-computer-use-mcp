@@ -75,6 +75,13 @@ build-native: build-sidecar
     foreach ($line in $envOutput) { $parts = $line.Split('=', 2); Set-Item -Path "env:$($parts[0])" -Value $parts[1] -ErrorAction SilentlyContinue }
     Set-Location '{{justfile_directory()}}\web_sota\src-tauri'
     npx @tauri-apps/cli build --bundles nsis
+    # Copy the NSIS installer to dist/ as a release artifact
+    $nsisDir = '{{justfile_directory()}}\web_sota\src-tauri\target\release\bundle\nsis'
+    $distDir = '{{justfile_directory()}}\dist'
+    if (Test-Path $nsisDir) {
+        Get-ChildItem $nsisDir -Filter "*.exe" | Copy-Item -Destination $distDir -Force
+        Write-Host "NSIS installer copied to dist/" -ForegroundColor Green
+    }
 
 # Run the CUA smoke test against the installed NSIS app
 cua-nsis-test:
@@ -168,10 +175,10 @@ e2e:
 mcpb-pack:
     pwsh -NoProfile -File .\scripts\build-mcpb-package.ps1 -NoSign
 
-# Remove build artifacts and temporary files
+# Remove build artifacts (keeps .mcpb and .exe in dist/)
 clean:
     if (Test-Path "build") { Remove-Item -Recurse -Force build }
-    Get-ChildItem dist -Exclude "*.mcpb" | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+    Get-ChildItem dist -Exclude "*.mcpb", "*.exe" | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
     if (Test-Path "htmlcov") { Remove-Item -Recurse -Force htmlcov }
     if (Test-Path ".coverage") { Remove-Item .coverage }
     if (Test-Path ".pytest_cache") { Remove-Item -Recurse -Force .pytest_cache }
