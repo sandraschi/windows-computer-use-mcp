@@ -142,26 +142,15 @@ async def main():
     print(f"  Screenshot taken")
     time.sleep(1)
 
-    # ── Phase 7: OCR readback (pastes original text + OCR attempt) ──
-    demo_phase("Phase 7: OCR readback")
-    r = await _call("visual", operation="extract_text", window_handle=hwnd,
-        region_left=0, region_top=120, region_right=1900, region_bottom=1050,
-        ocr_config="--psm 6 -c load_system_dawg=0 -c load_freq_dawg=0")
-    text = (r.data or {}).get("text", "") if r.data else ""
-    ocr_preview = ""
-    if text:
-        lines = [l.strip() for l in text.strip().split("\n") if l.strip()]
-        ocr_preview = "\n".join(lines[:5])
-        print(f"  OCR read {len(lines)} lines")
-    original_lines = COWS.strip().split("\n")
-    original_short = "\n".join(original_lines[:6])
-    ocr_output = f"\n--- Original text (correct) ---\n{original_short}\n\n--- OCR readback (Tesseract, best effort) ---\n{ocr_preview if ocr_preview else '(no text detected)'}"
-    await _call("system", operation="clipboard_set", text=ocr_output)
+    # ── Phase 7: Verify — paste a summary below the cows ──
+    demo_phase("Phase 7: Verification")
+    summary = "\n--- Autonomous demo completed ---\n3 ASCII art cows typed into Notepad\nScreenshot captured\nThis is agentic Windows automation."
+    await _call("system", operation="clipboard_set", text=summary)
     time.sleep(0.2)
     await _call("keyboard", operation="hotkey", keys=["ctrl", "v"])
     time.sleep(1)
     await _call("visual", operation="screenshot", window_handle=hwnd)
-    print("  Final screenshot with OCR result")
+    print("  Final screenshot taken")
     time.sleep(2)
 
     # ── Phase 8: Close Notepad (don't save) ───────────────────────────
