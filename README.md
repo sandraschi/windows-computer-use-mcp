@@ -70,21 +70,17 @@ just serve
 
 ---
 
-## Python stack (py- modules)
+## Python Stack
 
-| Package | Role in this project |
-|---------|----------------------|
-| **[pywinauto](https://github.com/pywinauto/pywinauto)** | **Core** — attach to HWNDs, walk UIA/Win32 control trees, click/type/read elements (`automation_windows`, `automation_elements`). |
-| **pywin32** | Low-level Win32 COM/API (session, processes, DPI helpers) used alongside pywinauto. |
-| **pygetwindow** | Window titles/rectangles for discovery and layout. |
-| **pyautogui** | Fallback screen-level pointer/screenshot helpers where UIA is not enough. |
-| **pynput** | Injects and **optionally** listens to keyboard/mouse at the session level; powers normal `automation_keyboard` simulation and the **opt-in** `global_keylogger` hook. |
-| **pyperclip** | Clipboard read/write for `automation_system`. |
-| **opencv-python-headless** | Screenshots, camera index probe, template match paths in `automation_visual` / biometrics preview. |
-| **pytesseract** | OCR in `automation_visual` (needs Tesseract installed on the host). |
-| **face_recognition** + **dlib** | **Optional extra only** (`uv sync --extra face`) for `automation_face` — not installed in the default desktop bundle. |
+| Layer | Packages |
+|-------|----------|
+| **UI Automation** | pywinauto, pywin32, pygetwindow |
+| **Input** | pyautogui, pynput, pyperclip |
+| **Vision / OCR** | opencv-python-headless, pytesseract |
+| **Face (opt-in)** | face_recognition, dlib |
+| **Framework** | FastMCP, FastAPI, uvicorn, Pillow, numpy, httpx, psutil |
 
-Other important non-`py` deps: **FastMCP** (MCP server), **FastAPI** + **uvicorn** (REST + `/mcp` HTTP), **Pillow**, **numpy**, **httpx**.
+See **[docs/py-stack.md](docs/py-stack.md)** for what each package does and how it plugs into the tool surface.
 
 ---
 
@@ -109,6 +105,7 @@ Other important non-`py` deps: **FastMCP** (MCP server), **FastAPI** + **uvicorn
 |-----|---------|
 | [INSTALL.md](INSTALL.md) | Desktop app, `uv`, MCP client config |
 | [docs/README.md](docs/README.md) | Full documentation hub |
+| [docs/py-stack.md](docs/py-stack.md) | Python dependency deep dive |
 | [docs/SAFETY.md](docs/SAFETY.md) | HITL, kill switch, opt-in features |
 | [docs/TOOLS.md](docs/TOOLS.md) | Portmanteau tool reference |
 | [tests/README.md](tests/README.md) | Test suite guide and e2e setup |
