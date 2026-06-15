@@ -552,7 +552,7 @@ A ToolResult object containing standardized outcome, message, and element data.
                             strategy_used = strategy
                             break
                     else:
-                        candidates_found = self._ocr_find_element(desktop, window, window_handle, selector)
+                        candidates_found = _ocr_find_element(desktop, window, window_handle, selector)
                         if candidates_found:
                             element = candidates_found
                             strategy_used = "ocr"

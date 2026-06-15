@@ -75,6 +75,7 @@ PORTMANTEAU_MODULES = [
     "portmanteau_system",  # System utilities
     "portmanteau_mission",  # Agentic Missions (Sampling)
     "portmanteau_macro",  # Session recording / macros
+    "portmanteau_smart",  # Smart discovery and intent-based click
     "portmanteau_analyze",  # WinApp analysis: crawl, discover, portfolio
     "desktop_state",  # Desktop state capture (standalone)
     "window_state",  # Per-window capture (Cua parity)
