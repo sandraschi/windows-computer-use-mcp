@@ -105,128 +105,178 @@ async def main():
     print(f"  Canvas center at ({cx}, {cy})")
     time.sleep(0.3)
 
-    S = 2  # scale factor
+    import math
+    dy = 60  # shift everything down
+    S = 2
 
-    # ── Palette color selection ──
-    # Palette is at the bottom of the Paint window. Swatches are ~28x28px.
+    # Palette color selection
     pal_y = top + 1010
-    pal_x = left + 12  # first swatch (black)
+    pal_x = left + 12
     async def pick(n):
-        """Click the nth color swatch. 0=black, 1=white, 2=red, 3=green,
-           4=blue, 5=yellow, 6=orange, 7=purple, 8=brown, 9=grey"""
         await call("mouse", operation="click", x=pal_x + n * 30, y=pal_y)
         time.sleep(0.15)
 
-    # ── Draw bicycle frame (triangle, black) ──
-    phase("Draw bike frame")
-    bw_x, bw_y = cx - 60 * S, cy + 30 * S  # back wheel hub
-    fw_x, fw_y = cx + 60 * S, cy + 30 * S  # front wheel hub
-    seat_x, seat_y = cx - 40 * S, cy - 15 * S  # seat
-    bar_x, bar_y = cx + 35 * S, cy - 25 * S  # handlebars
-    pedal_x, pedal_y = cx, cy + 30 * S  # bottom bracket
+    # ── BICYCLE ──
+    phase("Bicycle frame + wheels")
+    bw_x, bw_y = cx - 60 * S, cy + 30 * S + dy
+    fw_x, fw_y = cx + 60 * S, cy + 30 * S + dy
+    seat_x, seat_y = cx - 40 * S, cy - 15 * S + dy
+    bar_x, bar_y = cx + 35 * S, cy - 25 * S + dy
+    pedal_x, pedal_y = cx, cy + 30 * S + dy
 
+    # Frame
     await call("mouse", operation="drag", x=seat_x, y=seat_y, x2=pedal_x, y2=pedal_y)
-    time.sleep(0.2)
+    time.sleep(0.15)
     await call("mouse", operation="drag", x=pedal_x, y=pedal_y, x2=bar_x, y2=bar_y)
-    time.sleep(0.2)
+    time.sleep(0.15)
     await call("mouse", operation="drag", x=bar_x, y=bar_y, x2=seat_x, y2=seat_y)
-    time.sleep(0.2)
+    time.sleep(0.15)
     await call("mouse", operation="drag", x=pedal_x, y=pedal_y, x2=bw_x, y2=bw_y)
-    time.sleep(0.2)
+    time.sleep(0.15)
     await call("mouse", operation="drag", x=pedal_x, y=pedal_y, x2=fw_x, y2=fw_y)
-    time.sleep(0.2)
+    time.sleep(0.15)
+    # Seat post
+    await call("mouse", operation="drag", x=seat_x, y=seat_y, x2=seat_x, y2=seat_y + 10 * S)
+    time.sleep(0.1)
 
-    # ── Draw wheels (circle approximations) ──
-    phase("Draw wheels")
-    import math
-    for label, hx, hy in [("Back", bw_x, bw_y), ("Front", fw_x, fw_y)]:
-        r = 30 * S
-        pts = 20
-        for i in range(pts):
-            a1 = 2 * math.pi * i / pts
-            a2 = 2 * math.pi * (i + 1) / pts
-            x1 = int(hx + r * math.cos(a1))
-            y1 = int(hy + r * math.sin(a1))
-            x2 = int(hx + r * math.cos(a2))
-            y2 = int(hy + r * math.sin(a2))
-            await call("mouse", operation="drag", x=x1, y=y1, x2=x2, y2=y2)
-            time.sleep(0.02)
-        for i in range(6):
-            a = 2 * math.pi * i / 6
-            sx = int(hx + r * 0.1 * math.cos(a))
-            sy = int(hy + r * 0.1 * math.sin(a))
-            ex = int(hx + r * math.cos(a))
-            ey = int(hy + r * math.sin(a))
-            await call("mouse", operation="drag", x=sx, y=sy, x2=ex, y2=ey)
-            time.sleep(0.02)
+    # Wheels (24 segments for smooth circles)
+    phase("Wheels")
+    for hx, hy in [(bw_x, bw_y), (fw_x, fw_y)]:
+        r = 28 * S
+        for i in range(24):
+            a1 = 2 * math.pi * i / 24
+            a2 = 2 * math.pi * (i + 1) / 24
+            await call("mouse", operation="drag",
+                x=int(hx + r * math.cos(a1)), y=int(hy + r * math.sin(a1)),
+                x2=int(hx + r * math.cos(a2)), y2=int(hy + r * math.sin(a2)))
+            time.sleep(0.015)
+        for i in range(8):
+            a = 2 * math.pi * i / 8
+            await call("mouse", operation="drag",
+                x=int(hx + r * 0.1 * math.cos(a)), y=int(hy + r * 0.1 * math.sin(a)),
+                x2=int(hx + r * math.cos(a)), y2=int(hy + r * math.sin(a)))
+            time.sleep(0.015)
+        # Tire outline (slightly larger)
+        tr = r + 3 * S
+        for i in range(24):
+            a1 = 2 * math.pi * i / 24
+            a2 = 2 * math.pi * (i + 1) / 24
+            await call("mouse", operation="drag",
+                x=int(hx + tr * math.cos(a1)), y=int(hy + tr * math.sin(a1)),
+                x2=int(hx + tr * math.cos(a2)), y2=int(hy + tr * math.sin(a2)))
+            time.sleep(0.01)
 
-    # ── Draw pelican body (black outline) ──
-    phase("Draw pelican body")
+    # Pedals
+    phase("Pedals")
+    for dx in [-8 * S, 8 * S]:
+        pr = 3 * S
+        for i in range(10):
+            a1 = 2 * math.pi * i / 10
+            a2 = 2 * math.pi * (i + 1) / 10
+            await call("mouse", operation="drag",
+                x=int(pedal_x + dx + pr * math.cos(a1)), y=int(pedal_y + pr * math.sin(a1)),
+                x2=int(pedal_x + dx + pr * math.cos(a2)), y2=int(pedal_y + pr * math.sin(a2)))
+            time.sleep(0.01)
+
+    # ── PELICAN BODY (smooth oval, tilted) ──
+    phase("Pelican body")
+    bx, by = cx - 15 * S, cy - 40 * S + dy
+    rw, rh = 32 * S, 22 * S
+    for i in range(24):
+        a1 = 2 * math.pi * i / 24
+        a2 = 2 * math.pi * (i + 1) / 24
+        await call("mouse", operation="drag",
+            x=int(bx + rw * math.cos(a1)), y=int(by + rh * math.sin(a1)),
+            x2=int(bx + rw * math.cos(a2)), y2=int(by + rh * math.sin(a2)))
+        time.sleep(0.015)
+
+    # Wing
+    phase("Wing")
+    wx1, wy1 = bx + 5 * S, by - 10 * S
+    wx2, wy2 = bx - 20 * S, by - 25 * S
+    wx3, wy3 = bx - 25 * S, by
+    await call("mouse", operation="drag", x=wx1, y=wy1, x2=wx2, y2=wy2)
+    time.sleep(0.1)
+    await call("mouse", operation="drag", x=wx2, y=wy2, x2=wx3, y2=wy3)
+    time.sleep(0.1)
+    await call("mouse", operation="drag", x=wx3, y=wy3, x2=wx1, y2=wy1)
+    time.sleep(0.1)
+
+    # Tail feathers
+    phase("Tail")
+    tx, ty = bx - rw, by + 5 * S
+    await call("mouse", operation="drag", x=tx, y=ty, x2=tx - 12 * S, y2=ty - 5 * S)
+    time.sleep(0.1)
+    await call("mouse", operation="drag", x=tx, y=ty, x2=tx - 12 * S, y2=ty + 5 * S)
+    time.sleep(0.1)
+
+    # ── HEAD + NECK ──
+    phase("Head")
+    hx, hy = bx + 25 * S, by - 22 * S
+    hr = 11 * S
+    # Neck
+    await call("mouse", operation="drag", x=bx + 20 * S, y=by - 15 * S, x2=hx - 5 * S, y2=hy + 5 * S)
+    time.sleep(0.1)
+    # Head circle
+    for i in range(16):
+        a1 = 2 * math.pi * i / 16
+        a2 = 2 * math.pi * (i + 1) / 16
+        await call("mouse", operation="drag",
+            x=int(hx + hr * math.cos(a1)), y=int(hy + hr * math.sin(a1)),
+            x2=int(hx + hr * math.cos(a2)), y2=int(hy + hr * math.sin(a2)))
+        time.sleep(0.015)
+
+    # ── BEAK (yellow + orange pouch) ──
+    phase("Beak")
+    await pick(5)  # yellow
+    # Upper beak
+    await call("mouse", operation="drag", x=hx + hr, y=hy, x2=hx + 50 * S, y2=hy - 4 * S)
+    time.sleep(0.1)
+    await call("mouse", operation="drag", x=hx + 50 * S, y=hy - 4 * S, x2=hx + 52 * S, y2=hy + 6 * S)
+    time.sleep(0.1)
+    # Hook at tip
+    await call("mouse", operation="drag", x=hx + 52 * S, y=hy + 6 * S, x2=hx + 45 * S, y2=hy + 10 * S)
+    time.sleep(0.1)
+    await pick(6)  # orange pouch
+    await call("mouse", operation="drag", x=hx + 45 * S, y=hy + 10 * S, x2=hx + 12 * S, y2=hy + 12 * S)
+    time.sleep(0.1)
+    # Pouch bottom
+    await call("mouse", operation="drag", x=hx + 12 * S, y=hy + 12 * S, x2=hx + 8 * S, y2=hy + 18 * S)
+    time.sleep(0.1)
+    await call("mouse", operation="drag", x=hx + 8 * S, y=hy + 18 * S, x2=hx + hr - 2 * S, y2=hy + 5 * S)
+    time.sleep(0.1)
     await pick(0)  # black
-    bx, by = cx - 20 * S, cy - 45 * S
-    pts = 16
-    rw, rh = 30 * S, 20 * S
-    for i in range(pts):
-        a1 = 2 * math.pi * i / pts
-        a2 = 2 * math.pi * (i + 1) / pts
-        x1 = int(bx + rw * math.cos(a1))
-        y1 = int(by + rh * math.sin(a1))
-        x2 = int(bx + rw * math.cos(a2))
-        y2 = int(by + rh * math.sin(a2))
-        await call("mouse", operation="drag", x=x1, y=y1, x2=x2, y2=y2)
-        time.sleep(0.02)
 
-    # ── Draw head (white) ──
-    phase("Draw head")
-    hx, hy = bx + 25 * S, by - 20 * S
-    hr = 10 * S
-    for i in range(14):
-        a1 = 2 * math.pi * i / 14
-        a2 = 2 * math.pi * (i + 1) / 14
-        x1 = int(hx + hr * math.cos(a1))
-        y1 = int(hy + hr * math.sin(a1))
-        x2 = int(hx + hr * math.cos(a2))
-        y2 = int(hy + hr * math.sin(a2))
-        await call("mouse", operation="drag", x=x1, y=y1, x2=x2, y2=y2)
-        time.sleep(0.02)
-
-    # ── Draw beak (yellow upper, orange pouch) ──
-    phase("Draw beak")
-    await pick(5)  # yellow for upper beak
-    await call("mouse", operation="drag", x=hx + hr, y=hy, x2=hx + 45 * S, y2=hy - 3 * S)
-    time.sleep(0.1)
-    await call("mouse", operation="drag", x=hx + 45 * S, y=hy - 3 * S, x2=hx + 45 * S, y2=hy + 8 * S)
-    time.sleep(0.1)
-    await call("mouse", operation="drag", x=hx + 45 * S, y=hy + 8 * S, x2=hx + 15 * S, y2=hy + 10 * S)
-    time.sleep(0.1)
-    await pick(6)  # orange for pouch
-    await call("mouse", operation="drag", x=hx + 15 * S, y=hy + 10 * S, x2=hx + hr, y2=hy + 3 * S)
-    time.sleep(0.1)
-    await pick(0)  # back to black for remaining
-
-    # ── Draw eye ──
-    phase("Draw eye")
-    await call("mouse", operation="click", x=hx + 3 * S, y=hy - 3 * S)
+    # Eye
+    await call("mouse", operation="click", x=hx + 4 * S, y=hy - 3 * S)
     time.sleep(0.1)
 
-    # ── Draw legs ──
-    phase("Draw legs")
-    await call("mouse", operation="drag", x=bx - 8 * S, y=by + rh, x2=pedal_x - 8 * S, y2=pedal_y)
+    # ── LEGS (jointed: thigh + calf) ──
+    phase("Legs")
+    # Front leg
+    knee_x = bx + 5 * S
+    knee_y = by + rh + 15 * S
+    await call("mouse", operation="drag", x=bx + 8 * S, y=by + rh, x2=knee_x, y2=knee_y)
     time.sleep(0.1)
-    await call("mouse", operation="drag", x=bx + 8 * S, y=by + rh, x2=pedal_x + 8 * S, y2=pedal_y)
+    await call("mouse", operation="drag", x=knee_x, y=knee_y, x2=pedal_x + 8 * S, y2=pedal_y)
+    time.sleep(0.1)
+    # Back leg
+    knee2_x = bx - 10 * S
+    knee2_y = by + rh + 15 * S
+    await call("mouse", operation="drag", x=bx - 8 * S, y=by + rh, x2=knee2_x, y2=knee2_y)
+    time.sleep(0.1)
+    await call("mouse", operation="drag", x=knee2_x, y=knee2_y, x2=pedal_x - 8 * S, y2=pedal_y)
     time.sleep(0.1)
 
-    # ── Draw handlebars ──
-    phase("Draw handlebars")
-    await call("mouse", operation="drag", x=bar_x - 10 * S, y=bar_y, x2=bar_x + 10 * S, y2=bar_y)
+    # ── HANDLEBARS ──
+    phase("Handlebars")
+    await call("mouse", operation="drag", x=bar_x - 12 * S, y=bar_y, x2=bar_x + 12 * S, y2=bar_y)
     time.sleep(0.1)
-
-    # ── Draw wheel spokes ──
-    phase("Draw spokes")
-    for wx, wy in [(canvas_ox + 60, canvas_oy + 80), (canvas_ox + 60, canvas_oy + 80)]:
-        for dx, dy in [(0, -20), (0, 20), (-20, 0), (20, 0), (-15, -15), (15, 15)]:
-            await call("mouse", operation="drag", x=wx, y=wy, x2=wx + dx, y2=wy + dy)
-            time.sleep(0.05)
+    # Grips
+    await call("mouse", operation="drag", x=bar_x - 14 * S, y=bar_y - 2 * S, x2=bar_x - 12 * S, y2=bar_y + 2 * S)
+    time.sleep(0.1)
+    await call("mouse", operation="drag", x=bar_x + 12 * S, y=bar_y - 2 * S, x2=bar_x + 14 * S, y2=bar_y + 2 * S)
+    time.sleep(0.1)
 
     # ── Screenshot ──
     phase("Screenshot")
