@@ -145,10 +145,11 @@ mouse control, clipboard operations, and autonomous mission planning.
     print(f"  Screenshot: ocr_scans/screenshot_text_{ts}.png")
     time.sleep(1)
 
-    # ── Phase 7: OCR readback (font enlarged for readability) ──
+    # ── Phase 7: OCR readback ──
     demo_phase("Phase 7: OCR readback")
     r = await _call("visual", operation="extract_text", window_handle=hwnd,
-        region_left=0, region_top=120, region_right=1900, region_bottom=1050)
+        region_left=0, region_top=120, region_right=1900, region_bottom=850,
+        ocr_provider="windowsmedia")
     text = (r.data or {}).get("text", "") if r.data else ""
     ocr_preview = ""
     if text:
