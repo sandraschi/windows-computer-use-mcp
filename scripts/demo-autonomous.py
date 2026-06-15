@@ -113,13 +113,19 @@ async def main():
 "A herd of cows,    "Automated by AI."  "100 installers,
  automated by AI."                        $2 in costs."
 """
-    # Focus Notepad, click into edit area, type cows (slow so user can see)
+    # Focus Notepad, click center of edit area via coordinates, paste clipboard
     await _call("windows", operation="focus", handle=hwnd)
-    time.sleep(0.3)
-    await _call("elements", operation="click", window_handle=hwnd, class_name="NotepadTextBox")
     time.sleep(0.5)
-    await _call("keyboard", operation="type", text=COWS, interval=0.06)
-    print("  Cow herd typed into Notepad")
+    r = await _call("windows", operation="rect", handle=hwnd)
+    if r.status == "success" and r.data:
+        edit_x = r.data.get("left", 100) + 80
+        edit_y = r.data.get("top", 100) + 100
+        await _call("mouse", operation="click", x=edit_x, y=edit_y)
+        time.sleep(0.3)
+    await _call("system", operation="clipboard_set", text=COWS)
+    time.sleep(0.2)
+    await _call("keyboard", operation="hotkey", keys=["ctrl", "v"])
+    print("  Cow herd pasted into Notepad")
     time.sleep(3)
 
     # ── Phase 5: Screenshot ────────────────────────────────────────────
