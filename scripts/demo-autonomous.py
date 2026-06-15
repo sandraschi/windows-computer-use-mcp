@@ -110,8 +110,8 @@ async def main():
         hwnd = None
     time.sleep(1)
 
-    # ── Phase 5: Type prose with varying font sizes ────────────────────
-    demo_phase("Phase 5: Type prose with changing font size")
+    # ── Phase 5: Type prose into Notepad ───────────────────────────────
+    demo_phase("Phase 5: Type prose into Notepad")
     DEMO_TEXT = """Windows Computer Use MCP — Autonomous Demo
 
 This is a test of the OCR system. It should read this correctly.
