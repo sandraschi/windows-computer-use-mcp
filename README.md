@@ -105,38 +105,19 @@ Other important non-`py` deps: **FastMCP** (MCP server), **FastAPI** + **uvicorn
 
 ## Documentation
 
-### For operators
-
 | Doc | Content |
 |-----|---------|
-| [INSTALL.md](INSTALL.md) | Desktop app, `uv` / `uvx`, MCP client wiring |
-| [docs/SAFETY.md](docs/SAFETY.md) | HITL, kill switch, opt-in face & keylogger |
-| [docs/MEMOPS_CUA.md](docs/MEMOPS_CUA.md) | Computer use agent doctrine (fleet CUA role) |
-| [examples/README.md](examples/README.md) | Runnable demos and paint orchestration |
-
-### For developers
-
-| Doc | Content |
-|-----|---------|
-| [docs/PRD.md](docs/PRD.md) | Product requirements |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System diagram, components, fleet role |
-| [docs/TOOLS.md](docs/TOOLS.md) | Portmanteau MCP tools reference |
-| [docs/TESTING.md](docs/TESTING.md) | CI vs local pytest, hardware markers |
-| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Contributor quick start |
+| [INSTALL.md](INSTALL.md) | Desktop app, `uv`, MCP client config |
+| [docs/README.md](docs/README.md) | Full documentation hub |
+| [docs/SAFETY.md](docs/SAFETY.md) | HITL, kill switch, opt-in features |
+| [docs/TOOLS.md](docs/TOOLS.md) | Portmanteau tool reference |
+| [tests/README.md](tests/README.md) | Test suite guide and e2e setup |
+| [examples/README.md](examples/README.md) | Runnable demos |
+| [mcpb/README.md](mcpb/README.md) | MCPB bundle packaging |
+| [skills/desktop-automation-protocol/SKILL.md](skills/desktop-automation-protocol/SKILL.md) | Cursor agent skill |
 | [CHANGELOG.md](CHANGELOG.md) | Release history |
 
-### Packaging
-
-| Doc | Content |
-|-----|---------|
-| [mcpb/README.md](mcpb/README.md) | MCPB bundle (Claude Desktop `.mcpb`) |
-
-### Prompts & skills
-
-| Asset | Purpose |
-|-------|---------|
-| [skills/desktop-automation-protocol/SKILL.md](skills/desktop-automation-protocol/SKILL.md) | Cursor agent skill |
-| `desktop_automation_operator_protocol` | MCP prompt (`src/windows_computer_use_mcp/prompts.py`) |
+An MCP prompt is also registered: `desktop_automation_operator_protocol` (see `src/windows_computer_use_mcp/prompts.py`).
 
 ---
 
