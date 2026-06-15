@@ -11,7 +11,7 @@
 
 | You | It |
 |-----|----|
-| Use it as an **MCP server** fast | Claude, Cursor, DeepSeek call `automation_click`, `automation_screenshot`, `automation_ocr` — 22 tools |
+| Use it as an **MCP server** | Claude, Cursor, DeepSeek call `automation_click`, `automation_screenshot`, `automation_ocr` — 22 tools |
 | Use it as an **autonomous agent** | Give it a goal: `automation_mission(run="install app, verify UI, screenshot result")` — it plans, executes, retries, and reports |
 | Use it as a **webapp** | `start.ps1` opens a React dashboard at http://127.0.0.1:10788 with HITL, crawler, logging |
 | Use it as a **desktop app** | The NSIS installer bundles everything into one binary — no Python, no uv, no git needed |
