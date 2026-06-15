@@ -1,0 +1,9 @@
+name: screenshot_demo
+description: "Take a screenshot, save to file"
+version: "1.0"
+steps:
+  - tool: visual
+    params:
+      operation: screenshot
+      output_path: "screenshot_demo.png"
+    label: "Take screenshot"

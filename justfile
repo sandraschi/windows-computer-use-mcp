@@ -187,6 +187,10 @@ e2e:
 mcpb-pack:
     pwsh -NoProfile -File .\scripts\build-mcpb-package.ps1 -NoSign
 
+# Run a portable YAML/JSON workflow file
+run-workflow FILE:
+    uv run python scripts/run-workflow.py {{FILE}}
+
 # Remove build artifacts (keeps .mcpb and .exe in dist/)
 clean:
     if (Test-Path "build") { Remove-Item -Recurse -Force build }
