@@ -79,14 +79,18 @@ async def main():
     # Use window center as origin for all drawing
     canvas_left = left + width // 2
     canvas_top = top + 250
+    cx = canvas_left
+    cy = canvas_top
+    canvas_ox = cx
+    canvas_oy = cy
     # Click the canvas to ensure it's active
-    await call("mouse", operation="click", x=canvas_left, y=canvas_top)
-    print(f"  Canvas center at ({canvas_left}, {canvas_top})")
+    await call("mouse", operation="click", x=cx, y=cy)
+    print(f"  Canvas center at ({cx}, {cy})")
     time.sleep(0.3)
 
     # ── Draw bicycle back wheel ──
     phase("Draw back wheel")
-    await call("mouse", operation="click", x=canvas_ox + 60, y=canvas_oy + 80)
+    await call("mouse", operation="click", x=cx + 60, y=cy + 80)
     time.sleep(0.3)
     # Draw a circle-ish shape with drag
     await call("mouse", operation="click", x=canvas_ox + 60, y=canvas_oy + 80)
