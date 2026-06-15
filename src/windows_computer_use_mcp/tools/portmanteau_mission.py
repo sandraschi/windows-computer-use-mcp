@@ -26,6 +26,33 @@ from windows_computer_use_mcp.retry_policy import RetryPolicy, RetryResult
 from windows_computer_use_mcp.tools.models import MissionOperationRequest, ToolResult
 
 _MISSIONS: dict[str, dict[str, Any]] = {}
+_MAX_CONSECUTIVE_FAILURES = 5
+_WORKFLOW_CONTEXT: dict[str, Any] = {}
+
+
+def _check_window_alive(handle: int | None) -> bool:
+    """Return True if the window handle still exists."""
+    if handle is None:
+        return True
+    try:
+        from pywinauto import Desktop
+        Desktop(backend="uia").window(handle=handle).exists(timeout=0.5)
+        return True
+    except Exception:
+        return False
+
+
+def _relaunch_app(app_path: str | None) -> bool:
+    """Try to re-launch an application."""
+    if not app_path:
+        return False
+    try:
+        from pywinauto import Application
+        Application().start(app_path)
+        return True
+    except Exception as e:
+        logger.warning("relaunch failed for %s: %s", app_path, e)
+        return False
 
 
 def _generate_id() -> str:
@@ -114,6 +141,8 @@ async def _run_mission(goal: str, ctx: Context | None, mission_id: str) -> ToolR
     _MISSIONS[mission_id]["plan"] = steps
     results = []
     total = len(steps)
+    consecutive_failures = 0
+    _WORKFLOW_CONTEXT[mission_id] = {}
 
     for i, step in enumerate(steps):
         mission_state = _MISSIONS.get(mission_id)
@@ -127,6 +156,29 @@ async def _run_mission(goal: str, ctx: Context | None, mission_id: str) -> ToolR
         params = step.get("params", {})
         label = step.get("label", tool_name)
         expected = step.get("expect", None)
+        window_handle = step.get("window_handle") or params.get("window_handle") or params.get("handle")
+
+        # Self-heal: check if target window is still alive
+        app_path = step.get("app_path")
+        if not _check_window_alive(window_handle) and app_path:
+            if ctx:
+                await ctx.info(f"Window lost — re-launching {app_path}")
+            if _relaunch_app(app_path):
+                time.sleep(2)
+            else:
+                logger.warning("Could not re-launch %s — skipping step", app_path)
+                consecutive_failures += 1
+                results.append({"step": i + 1, "label": label, "tool": tool_name, "success": False, "message": f"Window dead, relaunch failed"})
+                if consecutive_failures >= _MAX_CONSECUTIVE_FAILURES:
+                    break
+                continue
+
+        # Cross-app data flow: resolve $ref references in params
+        if tool_name in ("elements", "smart", "keyboard", "mouse"):
+            for k, v in list(params.items()):
+                if isinstance(v, str) and v.startswith("$ref:"):
+                    ref_key = v[5:]
+                    params[k] = _WORKFLOW_CONTEXT[mission_id].get(ref_key, v)
 
         if ctx:
             await ctx.info(f"Step {i + 1}/{total}: {label}")
@@ -151,13 +203,33 @@ async def _run_mission(goal: str, ctx: Context | None, mission_id: str) -> ToolR
             "attempts": retry_result.attempts,
             "message": retry_result.message,
         }
+
+        # Self-heal: track consecutive failures
+        if retry_result.success:
+            consecutive_failures = 0
+        else:
+            consecutive_failures += 1
+            logger.warning("Mission step %d/%d failed (%d consecutive): %s", i + 1, total, consecutive_failures, retry_result.message)
+
         if expected and retry_result.success and isinstance(retry_result.data, dict):
             step_result["verified"] = retry_result.data.get("verify")
 
+        # Data flow: store extract results in workflow context
+        if retry_result.success and tool_name in ("elements", "smart") and step.get("store_as"):
+            store_key = step["store_as"]
+            result_data = {}
+            if isinstance(retry_result.data, dict):
+                result_data = retry_result.data
+            _WORKFLOW_CONTEXT[mission_id][store_key] = result_data
+            step_result["stored"] = store_key
+
         results.append(step_result)
 
-        if not retry_result.success:
-            logger.warning("Mission step %d/%d failed: %s — continuing", i + 1, total, retry_result.message)
+        if consecutive_failures >= _MAX_CONSECUTIVE_FAILURES:
+            logger.warning("Aborting mission: %d consecutive failures", consecutive_failures)
+            if ctx:
+                await ctx.info(f"Aborting — {consecutive_failures} consecutive failures.")
+            break
 
     _MISSIONS[mission_id]["status"] = "complete"
     _MISSIONS[mission_id]["results"] = results
