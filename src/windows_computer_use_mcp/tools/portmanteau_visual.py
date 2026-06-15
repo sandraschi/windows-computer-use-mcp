@@ -15,7 +15,6 @@ SUPPORTED OPERATIONS:
 """
 
 import base64
-import io
 import logging
 import os
 import tempfile
@@ -126,7 +125,9 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
                 else:
                     screenshot = ImageGrab.grab()
 
-                # Convert to bytes
+                import io
+                import shutil
+                import subprocess
                 img_buffer = io.BytesIO()
                 screenshot.save(img_buffer, format=format_ext.upper())
                 img_bytes = img_buffer.getvalue()
@@ -212,8 +213,10 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
                         logger.warning("Windows Media OCR failed (%s), falling back to Tesseract", e)
                         text = pytesseract.image_to_string(image, lang=language, config=ocr_config)
                     finally:
-                        try: os.remove(temp_path)
-                        except: pass
+                        try:
+                            os.remove(temp_path)
+                        except Exception:
+                            pass
                     avg_confidence = -1
                 else:
                     text = pytesseract.image_to_string(image, lang=language, config=ocr_config)
@@ -389,7 +392,9 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
 
             # === RECORD / RECORD_TO_GIF (ffmpeg-based screen capture) ===
             elif operation in ("record", "record_to_gif"):
-                import io, subprocess, shutil
+                import io
+                import shutil
+                import subprocess
                 rec_duration = request.duration
                 rec_fps = request.fps
                 out_path = request.output_path or os.path.join(
