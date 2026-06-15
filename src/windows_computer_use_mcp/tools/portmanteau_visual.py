@@ -192,20 +192,30 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
                 # Convert to grayscale for better OCR
                 image = image.convert("L")
 
-                # Choose OCR provider
-                provider = (request.ocr_provider or "").lower()
-                if provider == "windowsmedia":
+                # Choose OCR provider: default = Windows Media OCR, fallback = Tesseract
+                provider = (request.ocr_provider or os.environ.get("WINDOWS_COMPUTER_USE_MCP_OCR_PROVIDER", "")).lower()
+                if provider == "tesseract":
+                    use_tesseract = True
+                elif provider == "windowsmedia":
+                    use_tesseract = False
+                else:
+                    from windows_computer_use_mcp.windows_media_ocr import is_available as wm_avail
+                    use_tesseract = not wm_avail()
+
+                if not use_tesseract:
                     from windows_computer_use_mcp.windows_media_ocr import extract_text as wm_ocr
                     temp_path = f"_ocr_temp_{int(time.time())}.png"
                     try:
                         image.save(temp_path)
                         text = wm_ocr(temp_path)
+                    except Exception as e:
+                        logger.warning("Windows Media OCR failed (%s), falling back to Tesseract", e)
+                        text = pytesseract.image_to_string(image, lang=language, config=ocr_config)
                     finally:
                         try: os.remove(temp_path)
                         except: pass
                     avg_confidence = -1
                 else:
-                    # Tesseract (default)
                     text = pytesseract.image_to_string(image, lang=language, config=ocr_config)
                     try:
                         data = pytesseract.image_to_data(
