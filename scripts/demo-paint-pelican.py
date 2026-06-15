@@ -17,24 +17,29 @@ from windows_computer_use_mcp.tools.models import ToolResult
 
 
 async def call(tool: str, **params) -> ToolResult:
-    import importlib, inspect
-    mod = importlib.import_module(f"windows_computer_use_mcp.tools.portmanteau_{tool}")
-    fn = None
-    for name in dir(mod):
-        if name.startswith("automation_") and callable(getattr(mod, name)):
-            fn = getattr(mod, name)
-            break
-    sig = inspect.signature(fn)
-    is_async = inspect.iscoroutinefunction(fn)
-    request_type = None
-    for p in sig.parameters.values():
-        if hasattr(p.annotation, "model_validate"):
-            request_type = p.annotation
-            break
-    if request_type:
-        obj = request_type.model_validate(params)
-        return await fn(obj) if is_async else fn(obj)
-    return await fn(**params) if is_async else fn(**params)
+    try:
+        import importlib, inspect
+        mod = importlib.import_module(f"windows_computer_use_mcp.tools.portmanteau_{tool}")
+        fn = None
+        for name in dir(mod):
+            if name.startswith("automation_") and callable(getattr(mod, name)):
+                fn = getattr(mod, name)
+                break
+        if fn is None:
+            return ToolResult(status="error", message=f"Tool not found: {tool}")
+        sig = inspect.signature(fn)
+        is_async = inspect.iscoroutinefunction(fn)
+        request_type = None
+        for p in sig.parameters.values():
+            if hasattr(p.annotation, "model_validate"):
+                request_type = p.annotation
+                break
+        if request_type:
+            obj = request_type.model_validate(params)
+            return await fn(obj) if is_async else fn(obj)
+        return await fn(**params) if is_async else fn(**params)
+    except Exception as e:
+        return ToolResult(status="error", message=f"call({tool}) failed: {e}")
 
 
 def phase(label: str):
@@ -46,8 +51,12 @@ async def main():
     # Open Paint
     phase("Open Paint")
     import subprocess
-    subprocess.Popen("start mspaint", shell=True)
-    print(f"  Paint launched")
+    try:
+        subprocess.Popen("start mspaint", shell=True)
+        print(f"  Paint launched")
+    except Exception as e:
+        print(f"  Paint launch failed: {e}")
+        return
     time.sleep(4)
 
     # Find and maximize
