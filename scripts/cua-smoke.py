@@ -62,17 +62,17 @@ _CONFIG = load_config()
 
 BACKEND_PORT = int(cfg("backend_port", 10789))
 BACKEND_URL = f"http://127.0.0.1:{BACKEND_PORT}"
-PRODUCT_NAME = cfg("product_name", "Windows Computer Use Operator")
+PRODUCT_NAME = cfg("product_name", "Windows Computer Use")
 HEALTH_PATH = cfg("health_path", "/api/v1/health")
 DIAGNOSTICS_PATH = cfg("diagnostics_path", "/api/v1/diagnostics")
 FEATURE_PATH = cfg("feature_smoke_path", "/api/v1/system/info")
 WINDOW_TITLE_RE = cfg("window_title_re", "Windows Computer Use")
 BRIDGE_OK_TEXT = cfg("bridge_ok_text", "REST bridge reachable")
-INSTALL_DIR = cfg("install_dir", "%LOCALAPPDATA%\\Windows Computer Use Operator")
-OPERATOR_EXE = cfg("operator_exe", "windows-computer-use-mcp-operator.exe")
-PROCESS_NAMES = cfg("backend_process_names", ["windows-computer-use-mcp-operator", "windows-computer-use-mcp-backend"])
-NSIS_GLOB = cfg("nsis_glob", "web_sota/src-tauri/target/release/bundle/nsis/Windows Computer Use Operator_*_x64-setup.exe")
-REGISTRY_FILTER = cfg("uninstall_registry_filter", "*Pywinauto*")
+INSTALL_DIR = cfg("install_dir", "%LOCALAPPDATA%\\Windows Computer Use")
+OPERATOR_EXE = cfg("operator_exe", "windows-computer-use-operator.exe")
+PROCESS_NAMES = cfg("backend_process_names", ["windows-computer-use-operator", "windows-computer-use-backend"])
+NSIS_GLOB = cfg("nsis_glob", "web_sota/src-tauri/target/release/bundle/nsis/Windows Computer Use_*_x64-setup.exe")
+REGISTRY_FILTER = cfg("uninstall_registry_filter", "*Windows Computer Use*")
 MAX_RETRY = 10
 RETRY_DELAY = 3
 REPO_NAME = cfg("repo_name", "windows-computer-use-mcp")
@@ -682,6 +682,7 @@ def write_cert_report(screenshots_base: str, passed: int, total: int, all_ok: bo
 # ── Main ──────────────────────────────────────────────────────────────
 
 def main():
+    global MCD_CERT_DIR
     parser = argparse.ArgumentParser(description="CUA-NSIS smoke test")
     parser.add_argument("--installer", help="Path to NSIS installer .exe")
     parser.add_argument("--config", help="Path to cua-nsis-config.json")
@@ -691,7 +692,6 @@ def main():
 
     if args.config:
         _CONFIG.update(load_config(args.config))
-    global MCD_CERT_DIR
     MCD_CERT_DIR = args.mcd_dir
 
     # Parse nav routes: support --nav "Dashboard:Overview,Logging:Logs,Settings:Settings"
