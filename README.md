@@ -37,7 +37,7 @@ Pair with **[virtualization-mcp](https://github.com/sandraschi/virtualization-mc
 
 ---
 
-## Quick Start — Three Ways to Run
+## Quick Start — Four Ways to Run
 
 ### 🖥️ Method 1: MCP Server (stdio — for Cursor / Claude Desktop)
 
@@ -78,6 +78,42 @@ Opens **http://127.0.0.1:10788** — a full React dashboard with targets, tool h
 Download `Windows Computer Use_*_x64-setup.exe` from [Releases](https://github.com/sandraschi/windows-computer-use-mcp/releases). One installer — no Python, `uv`, or git needed on the target machine. The operator app bundles the React UI + embedded Python backend in a single binary.
 
 After installing, launch **Windows Computer Use** from the Start menu. It opens the operator dashboard and exposes MCP at `http://127.0.0.1:10789/mcp`.
+
+### 🌐 Method 4: HTTP / SSE / REST API (for any HTTP-capable tool)
+
+The backend also serves a full REST API and FastMCP streamable HTTP endpoint:
+
+| Endpoint | What it does |
+|----------|-------------|
+| `http://127.0.0.1:10789/mcp` | FastMCP streamable HTTP — any MCP client that supports HTTP transport |
+| `http://127.0.0.1:10789/api/v1/health` | Health check (returns JSON) |
+| `http://127.0.0.1:10789/api/v1/diagnostics` | Server diagnostics |
+| `http://127.0.0.1:10789/api/v1/system/info` | System information |
+| `http://127.0.0.1:10789/docs` | Swagger UI (interactive API browser) |
+
+Start with:
+
+```powershell
+uv run uvicorn windows_computer_use_mcp.server:app --host 127.0.0.1 --port 10789
+```
+
+Once running, any tool that speaks HTTP can call the MCP endpoint — curl, Python scripts, PowerShell, CI pipelines, or MCP hosts that support URL-based server configuration:
+
+```json
+{
+  "mcpServers": {
+    "windows-computer-use": {
+      "url": "http://127.0.0.1:10789/mcp"
+    }
+  }
+}
+```
+
+```powershell
+# Or call it directly from any script:
+curl http://127.0.0.1:10789/api/v1/health
+python -c "import httpx; print(httpx.get('http://127.0.0.1:10789/api/v1/health').json())"
+```
 
 ---
 
