@@ -12,6 +12,7 @@ Hub for **windows-computer-use-mcp**. Root overview: [README.md](../README.md). 
 | [py-stack.md](py-stack.md) | Python dependency deep dive |
 | [SAFETY.md](SAFETY.md) | HITL, kill switch, isolation, opt-in invasive tools |
 | [TESTING.md](TESTING.md) | CI vs local pytest, hardware markers |
+| [composing-with-playwright.md](composing-with-playwright.md) | Browser automation via Playwright MCP |
 | [DEVELOPMENT.md](DEVELOPMENT.md) | Layout, justfile, CI parity |
 
 ## CUA

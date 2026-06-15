@@ -57,6 +57,7 @@ See **[INSTALL.md](INSTALL.md)** for detailed setup. Run `just demo` for example
 | [INSTALL.md](INSTALL.md) | Setup: desktop app, uv, MCP config |
 | [docs/README.md](docs/README.md) | Full documentation hub |
 | [docs/py-stack.md](docs/py-stack.md) | Python dependency deep dive |
+| [docs/composing-with-playwright.md](docs/composing-with-playwright.md) | Browser automation with Playwright MCP |
 | [docs/SAFETY.md](docs/SAFETY.md) | HITL, kill switch, opt-in features |
 | [docs/TOOLS.md](docs/TOOLS.md) | Portmanteau tool reference |
 | [tests/README.md](tests/README.md) | Test suite guide and e2e setup |
@@ -82,8 +83,11 @@ See **[INSTALL.md](INSTALL.md)** for detailed setup. Run `just demo` for example
 | Repo | What it does |
 |------|-------------|
 | **[autohotkey-mcp](https://github.com/sandraschi/autohotkey-mcp)** | Raw input recording/replay via AHK |
+| **[browser-mcp](https://github.com/sandraschi/browser-mcp)** | Playwright browser control — for **webapps, HTML DOM, websites** |
 | **[virtualization-mcp](https://github.com/sandraschi/virtualization-mcp)** | Sandbox / VM isolation |
 | **[windows-operations-mcp](https://github.com/sandraschi/windows-operations-mcp)** | Registry, services, accounts |
+
+**Browser vs desktop:** This server drives **Win32 / UI Automation**. For HTML/DOM and websites, pair with **[browser-mcp](https://github.com/sandraschi/browser-mcp)** (Playwright). Both MCPs can run side by side — use one profile that loads both and let the LLM pick the right tool for the target.
 
 Fleet standards: [mcp-central-docs](https://github.com/sandraschi/mcp-central-docs).
 

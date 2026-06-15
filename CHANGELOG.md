@@ -28,10 +28,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- README slimmed to fleet standard: hero + TOC + 4-method quick-start table + sub-readme nav.
+- README slimmed to fleet standard: hero + TOC + 4-method quick-start table + sub-readme nav. Includes cross-ref to browser-mcp.
 - `docs/TOOLS.md` rewritten with all 22 tools, phase annotations, and examples.
-- `docs/README.md` hub linked to py-stack.md.
+- `docs/README.md` hub linked to py-stack.md and composing-with-playwright.md.
 - `docs/py-stack.md` updated with Tesseract auto-install instructions.
+- `docs/composing-with-playwright.md` added — patterns and config for running both MCPs side by side.
 
 ## [0.6.0] — 2026-06-15
 
