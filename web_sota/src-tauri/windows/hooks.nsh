@@ -26,8 +26,14 @@
 !macroend
 
 !macro NSIS_HOOK_POSTINSTALL
-  IfFileExists "$INSTDIR\resources\install-mcp-clients.ps1" 0 mcp_hook_done
+  ; Option 1: Register MCP in Cursor / Claude Desktop
+  IfFileExists "$INSTDIR\resources\install-mcp-clients.ps1" 0 tesseract_hook
     DetailPrint "Optional: register windows-computer-use-mcp in Cursor / Claude Desktop"
     ExecWait 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$INSTDIR\resources\install-mcp-clients.ps1" -Interactive'
-  mcp_hook_done:
+  tesseract_hook:
+  ; Option 2: Install Tesseract OCR (required for OCR features)
+  IfFileExists "$INSTDIR\resources\install-tesseract.ps1" 0 hook_done
+    DetailPrint "Optional: install Tesseract OCR for text extraction"
+    ExecWait 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$INSTDIR\resources\install-tesseract.ps1" -Interactive'
+  hook_done:
 !macroend

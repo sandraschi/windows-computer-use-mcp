@@ -143,4 +143,21 @@ Paths: Cursor → `%USERPROFILE%\.cursor\mcp.json` · Claude → `%APPDATA%\Clau
 
 ---
 
+## Optional: Tesseract OCR
+
+OCR features (`automation_visual extract_text`, `assert_text`, OCR element scanning) require **Tesseract 5.x**. Not bundled — ~15 MB download.
+
+**Desktop installer:** the NSIS setup offers a checkbox to install Tesseract automatically.
+
+**From source:**
+```powershell
+just install-tesseract   # interactive dialog
+# or silently:
+.\scripts\install-tesseract.ps1
+```
+
+**Manual:** download from [UB-Mannheim/tesseract](https://github.com/UB-Mannheim/tesseract/releases) and run the installer.
+
+---
+
 *See [README.md](README.md) for features, safety, and tool overview.*

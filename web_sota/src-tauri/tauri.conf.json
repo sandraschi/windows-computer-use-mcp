@@ -29,7 +29,8 @@
 		"icon": ["icons/icon.png", "icons/icon.ico"],
 		"resources": [
 			"resources/windows-computer-use-backend.exe",
-			"../scripts/install-mcp-clients.ps1"
+			"../scripts/install-mcp-clients.ps1",
+			"../scripts/install-tesseract.ps1"
 		],
 		"windows": {
 			"webviewInstallMode": {

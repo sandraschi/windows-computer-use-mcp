@@ -138,6 +138,10 @@ audit-deps:
 check-machine-paths:
     pwsh -NoProfile -File .\scripts\check-no-machine-paths.ps1
 
+# Download and install Tesseract OCR 5.x (for OCR features)
+install-tesseract:
+    pwsh -NoProfile -File .\scripts\install-tesseract.ps1 -Interactive
+
 # Quick smoke test: verify all 18 tools import and the server starts
 smoke:
     pwsh -NoProfile -Command "uv run python -c '"'"'
