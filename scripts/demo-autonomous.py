@@ -112,7 +112,11 @@ async def main():
 
     # ── Phase 5: Type text into Notepad ────────────────────────────────
     demo_phase("Phase 5: Type ASCII art cow herd")
-    COWS = """         (__)              (__)              (__)
+    COWS = """This is a test of the OCR system.
+It should read this prose text correctly.
+Now let's see if it can handle the ASCII art:
+
+         (__)              (__)              (__)
          (oo)              (oo)              (oo)
    /------\\/        /------\\/        /------\\/
   / |    ||        / |    ||        / |    ||
