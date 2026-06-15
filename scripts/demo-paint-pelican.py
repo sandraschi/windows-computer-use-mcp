@@ -88,33 +88,17 @@ async def main():
     await call("windows", operation="focus", handle=hwnd)
     time.sleep(0.5)
 
-    # Agentic canvas discovery: list elements, find the canvas by size
-    r = await call("elements", operation="list", window_handle=hwnd, max_depth=2)
-    canvas_rect = None
-    if r.status == "success" and r.data:
-        for elem in r.data.get("elements", []):
-            rect = elem.get("rect") or {}
-            ew = rect.get("width", 0)
-            eh = rect.get("height", 0)
-            # Canvas is the largest rectangular area (white drawing surface)
-            if ew > 400 and eh > 300:
-                canvas_rect = rect
-                print(f"  Found canvas: ({rect.get('left')},{rect.get('top')}) {ew}x{eh}")
-                break
-
-    if not canvas_rect:
-        # Fallback: use window center
-        print("  Canvas not found via UIA, using window center")
-        canvas_rect = {"left": left + 100, "top": top + 200, "width": width - 200, "height": 600}
-
-    cx = canvas_rect["left"] + canvas_rect["width"] // 2
-    cy = canvas_rect["top"] + canvas_rect["height"] // 2
+    # Use known-safe canvas coordinates (maximized Paint, default 800x600 canvas)
+    # Canvas is centered in the window below the ribbon
+    canvas_left = max(left, 0) + (width - 800) // 2 if width > 800 else left + 50
+    canvas_top = max(top, 0) + 140  # below ribbon
+    cx = canvas_left + 400  # center of 800px canvas
+    cy = canvas_top + 300   # center of 600px canvas
     canvas_ox = cx
     canvas_oy = cy
-    # Click the canvas to ensure it's active
     phase("Click canvas center")
     await call("mouse", operation="click", x=cx, y=cy)
-    print(f"  Canvas center at ({cx}, {cy})")
+    print(f"  Canvas center at ({cx}, {cy})  (canvas: {canvas_left},{canvas_top})")
     time.sleep(0.3)
 
     import math
