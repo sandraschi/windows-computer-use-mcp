@@ -5,16 +5,17 @@ Run with: uv run python scripts/demo-autonomous.py
 Record the screen with OBS / Windows Game Bar for a shareable video.
 """
 
+import asyncio
 import time
+from typing import Any
 
-from windows_computer_use_mcp.mission_store import _persist_dir
-from windows_computer_use_mcp.retry_policy import RetryPolicy
 from windows_computer_use_mcp.tools.models import ToolResult
 
 
-def _call(tool: str, **params) -> ToolResult:
-    """Call an MCP tool by name."""
+async def _call(tool: str, **params) -> ToolResult:
+    """Call an MCP tool by name, handling both sync and async tools."""
     import importlib
+    import inspect
     mod = importlib.import_module(f"windows_computer_use_mcp.tools.portmanteau_{tool}")
     fn = None
     for name in dir(mod):
@@ -23,8 +24,8 @@ def _call(tool: str, **params) -> ToolResult:
             break
     if fn is None:
         raise RuntimeError(f"No tool found in portmanteau_{tool}")
-    import inspect
     sig = inspect.signature(fn)
+    is_async_fn = inspect.iscoroutinefunction(fn)
     request_type = None
     for p in sig.parameters.values():
         if hasattr(p.annotation, "model_validate"):
@@ -32,8 +33,12 @@ def _call(tool: str, **params) -> ToolResult:
             break
     if request_type:
         obj = request_type.model_validate(params)
-        return fn(obj)
-    return fn(**params)
+        if is_async_fn:
+            return await fn(obj)
+        return await asyncio.to_thread(fn, obj)
+    if is_async_fn:
+        return await fn(**params)
+    return await asyncio.to_thread(lambda: fn(**params))
 
 
 def demo_phase(label: str):
@@ -44,7 +49,7 @@ def demo_phase(label: str):
     time.sleep(1)
 
 
-def main():
+async def main():
     print("")
     print("  WINDOWS COMPUTER USE - AUTONOMOUS DEMO")
     print("  The repo showcasing itself.")
@@ -52,7 +57,7 @@ def main():
 
     # ── Phase 1: Discover the desktop ──────────────────────────────────
     demo_phase("Phase 1: Discover running apps")
-    r = _call("smart", operation="list_apps")
+    r = await _call("smart", operation="list_apps")
     print(f"  Found {len(r.data.get('apps', []))} running apps:")
     for app in r.data.get("apps", [])[:5]:
         print(f"    - {app['app']} (handle={app['handle']})")
@@ -60,17 +65,17 @@ def main():
 
     # ── Phase 2: Open Notepad ──────────────────────────────────────────
     demo_phase("Phase 2: Open Notepad")
-    r = _call("system", operation="start_app", app_path="notepad.exe")
+    r = await _call("system", operation="start_app", app_path="notepad.exe")
     print(f"  Notepad started (PID: {r.data.get('process_id', '?')})")
     time.sleep(2)
 
     # ── Phase 3: Find the window ───────────────────────────────────────
     demo_phase("Phase 3: Find and maximize Notepad window")
-    r = _call("windows", operation="find", title="Notepad")
+    r = await _call("windows", operation="find", title="Notepad")
     if r.status == "success":
         hwnd = r.data["windows"][0]["handle"]
         print(f"  Found Notepad (handle={hwnd})")
-        _call("windows", operation="maximize", handle=hwnd)
+        await _call("windows", operation="maximize", handle=hwnd)
         print("  Maximized")
     else:
         print(f"  Window find: {r.message}")
@@ -79,21 +84,21 @@ def main():
 
     # ── Phase 4: Type text ─────────────────────────────────────────────
     demo_phase("Phase 4: Type text into Notepad")
-    _call("elements", operation="set_text", window_handle=hwnd, title="Text Editor",
+    await _call("elements", operation="set_text", window_handle=hwnd, title="Text Editor",
           text="Hello from Windows Computer Use MCP!\n\nThis is an autonomous demo.\nThe repo drives its own installer testing.\n\n100 installers, one run, $2 in LLM costs.\nZero human intervention.", verify=True)
     print("  Text typed with outcome verification")
     time.sleep(2)
 
     # ── Phase 5: Screenshot ────────────────────────────────────────────
     demo_phase("Phase 5: Screenshot")
-    r = _call("visual", operation="screenshot", window_handle=hwnd)
-    print(f"  Screenshot: {r.data.get('path', '?')}")
+    r = await _call("visual", operation="screenshot", window_handle=hwnd)
+    print(f"  Screenshot: {(r.data or {}).get('path', '?')}")
     time.sleep(1)
 
     # ── Phase 6: OCR the screenshot ────────────────────────────────────
     demo_phase("Phase 6: OCR - read what we typed")
-    r = _call("visual", operation="extract_text", window_handle=hwnd)
-    text = r.data.get("text", "")
+    r = await _call("visual", operation="extract_text", window_handle=hwnd)
+    text = (r.data or {}).get("text", "") if r.data else ""
     if text:
         lines = [l for l in text.strip().split("\n") if l.strip()]
         print(f"  OCR read {len(lines)} lines. First line: '{lines[0]}'")
@@ -101,22 +106,22 @@ def main():
 
     # ── Phase 7: Save the file ─────────────────────────────────────────
     demo_phase("Phase 7: Save (Ctrl+S)")
-    _call("keyboard", operation="hotkey", keys=["ctrl", "s"])
+    await _call("keyboard", operation="hotkey", keys=["ctrl", "s"])
     time.sleep(1)
     # Type filename in Save dialog
-    _call("dialog", operation="submit_path", path="demo-autonomous.txt")
+    await _call("dialog", operation="submit_path", path="demo-autonomous.txt")
     print("  Saved as demo-autonomous.txt")
     time.sleep(1)
 
     # ── Phase 8: Close Notepad ─────────────────────────────────────────
     demo_phase("Phase 8: Close Notepad")
-    _call("keyboard", operation="hotkey", keys=["alt", "f4"])
+    await _call("keyboard", operation="hotkey", keys=["alt", "f4"])
     print("  Notepad closed")
     time.sleep(1)
 
     # ── Phase 9: Telemetry summary ─────────────────────────────────────
     demo_phase("Phase 9: Telemetry stats")
-    r = _call("system", operation="telemetry")
+    r = await _call("system", operation="telemetry")
     stats = r.data.get("stats", {})
     print(f"  Total actions logged: {stats.get('total_actions', 0)}")
     by_tool = stats.get("by_tool", {})
@@ -134,4 +139,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
