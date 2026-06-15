@@ -39,6 +39,9 @@ async def call(tool: str, **params) -> ToolResult:
             return await fn(obj) if is_async else fn(obj)
         return await fn(**params) if is_async else fn(**params)
     except Exception as e:
+        import traceback
+        print(f"  [call error] {tool}({params}): {e}")
+        traceback.print_exc()
         return ToolResult(status="error", message=f"call({tool}) failed: {e}")
 
 
@@ -115,7 +118,7 @@ async def main():
     time.sleep(0.3)
 
     import math
-    dy = 80
+    dy = 0
     S = 2
 
     # ── BICYCLE ──
