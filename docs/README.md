@@ -13,6 +13,7 @@ Hub for **windows-computer-use-mcp**. Root overview: [README.md](../README.md). 
 | [SAFETY.md](SAFETY.md) | HITL, kill switch, isolation, opt-in invasive tools |
 | [TESTING.md](TESTING.md) | CI vs local pytest, hardware markers |
 | [composing-with-playwright.md](composing-with-playwright.md) | Browser automation via Playwright MCP |
+| [ocr.md](ocr.md) | OCR system — Tesseract setup, limitations, competition |
 | [DEVELOPMENT.md](DEVELOPMENT.md) | Layout, justfile, CI parity |
 
 ## CUA
