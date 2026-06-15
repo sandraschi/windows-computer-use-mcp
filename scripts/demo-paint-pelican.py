@@ -153,7 +153,7 @@ async def main():
     print(f"  Screenshot taken")
 
     # ── Keep on screen for viewing ──
-    print("\n🎨 Pelican on a bike! Ready for recording. Closing in 10 seconds...")
+    print("\n*** Pelican on a bike! Ready for recording. Closing in 10 seconds... ***")
     time.sleep(10)
 
     # Close without saving
