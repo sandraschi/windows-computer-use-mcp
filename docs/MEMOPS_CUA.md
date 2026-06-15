@@ -1,7 +1,7 @@
 ---
 title: CUA-MCP — computer use doctrine (2026-06-08)
 status: active
-tags: [cua, memops, pywinauto-mcp, vroidstudio, fleet, automation, gui]
+tags: [cua, memops, windows-computer-use-mcp, vroidstudio, fleet, automation, gui]
 related:
   - docs/CUA_ROADMAP.md
   - docs/CUA_ASSISTANT_TODO.md
@@ -18,7 +18,7 @@ related:
 
 | Public | Internal (until v1.0) | Port |
 |--------|------------------------|------|
-| **cua-mcp** | `pywinauto-mcp` / `pywinauto_mcp` | 10789 |
+| **cua-mcp** | `windows-computer-use-mcp` / `windows_computer_use_mcp` | 10789 |
 
 Nobody knows pywinauto. Use **CUA-MCP (Computer Use Agent)** in docs and fleet tables.
 
@@ -72,7 +72,7 @@ Track: [CUA_ASSISTANT_TODO.md](CUA_ASSISTANT_TODO.md)
 $env:CUA_MCP_URL = "http://127.0.0.1:10789"
 $env:CUA_MCP_KEYBOARD = "win32"
 $env:CUA_MCP_RETRY_ATTEMPTS = "3"
-$env:PYWINAUTO_MCP_DISPATCH = "foreground"   # VRoid / Unity
+$env:WINDOWS_COMPUTER_USE_MCP_DISPATCH = "foreground"   # VRoid / Unity
 $env:SYSTEM_ADMIN_MCP_URL = "http://127.0.0.1:10861"
 $env:VROID_USE_CUA_TASK = "1"
 $env:VROID_USE_SYSADMIN_PREFLIGHT = "1"

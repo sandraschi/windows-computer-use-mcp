@@ -4,11 +4,11 @@ from __future__ import annotations
 
 import pytest
 
-from pywinauto_mcp.desktop_state.capture import DesktopStateCapture, normalize_elements_for_snapshot
-from pywinauto_mcp.snapshot_store import SnapshotStore
-from pywinauto_mcp.tools.models import ElementOperationRequest, WindowStateRequest
-from pywinauto_mcp.tools.portmanteau_elements import automation_elements
-from pywinauto_mcp.tools.window_state import get_window_state
+from windows_computer_use_mcp.desktop_state.capture import DesktopStateCapture, normalize_elements_for_snapshot
+from windows_computer_use_mcp.snapshot_store import SnapshotStore
+from windows_computer_use_mcp.tools.models import ElementOperationRequest, WindowStateRequest
+from windows_computer_use_mcp.tools.portmanteau_elements import automation_elements
+from windows_computer_use_mcp.tools.window_state import get_window_state
 
 pytestmark = [
     pytest.mark.e2e,

@@ -115,7 +115,7 @@ export function Chat() {
 		const parts = [persona.system];
 		if (includeRepo && repoMarkdown.trim()) {
 			parts.push(
-				`--- Repository knowledge (pywinauto-mcp) ---\n${repoMarkdown}`,
+				`--- Repository knowledge (windows-computer-use-mcp) ---\n${repoMarkdown}`,
 			);
 		}
 		return parts.join("\n\n");

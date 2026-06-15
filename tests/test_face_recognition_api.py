@@ -11,7 +11,7 @@ import pytest
 
 sys.path.append(str(Path(__file__).parent.parent))
 
-from pywinauto_mcp.face_recognition import FaceData
+from windows_computer_use_mcp.face_recognition import FaceData
 
 # Test data - use mocks instead of requiring actual image files
 TEST_IMAGE_DIR = Path(__file__).parent / "test_images"
@@ -29,7 +29,7 @@ def client():
 @pytest.fixture
 def mock_face_recognizer():
     """Mock the face recognizer for testing."""
-    with patch("pywinauto_mcp.face_recognition.face_recognizer") as mock:
+    with patch("windows_computer_use_mcp.face_recognition.face_recognizer") as mock:
         # Setup mock return values
         mock.recognize_face.return_value = (True, "Test User", 0.85)
         mock.capture_and_verify_face.return_value = (True, "Test User", 0.88)

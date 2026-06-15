@@ -1,4 +1,4 @@
-# pywinauto-mcp
+# windows-computer-use-mcp
 
 Windows **computer use agent** (CUA-MCP): structured native UI automation via Pywinauto/UIA — read docs/SAFETY.md. Not a browser agent; not covert surveillance.
 
@@ -44,5 +44,5 @@ All long-running operations (`analyze_winapp`, `global_keylogger`) show a "CUA a
 
 ## Metadata
 
-- Package: pywinauto-mcp 0.5.x
+- Package: windows-computer-use-mcp 0.5.x
 - License: MIT

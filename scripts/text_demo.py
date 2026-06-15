@@ -4,14 +4,14 @@ import subprocess
 import sys
 import time
 
-# Add src to sys.path to allow imports of pywinauto_mcp
+# Add src to sys.path to allow imports of windows_computer_use_mcp
 sys.path.append(os.path.join(os.getcwd(), "src"))
 
 try:
-    from pywinauto_mcp.tools.portmanteau_keyboard import automation_keyboard
-    from pywinauto_mcp.tools.portmanteau_windows import automation_windows
+    from windows_computer_use_mcp.tools.portmanteau_keyboard import automation_keyboard
+    from windows_computer_use_mcp.tools.portmanteau_windows import automation_windows
 except ImportError as e:
-    print(f"Error: Could not import pywinauto_mcp tools. {e}")
+    print(f"Error: Could not import windows_computer_use_mcp tools. {e}")
     sys.exit(1)
 
 # Configure logging to be quiet

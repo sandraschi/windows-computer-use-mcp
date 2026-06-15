@@ -1,10 +1,10 @@
-# pywinauto-mcp — Agent Guide
+# windows-computer-use-mcp — Agent Guide
 
 ## Overview
 Windows UI automation (PyWinAuto): desktop control — read docs/SAFETY.md; pair with virtualization-mcp for Sandbox/VM isolation. FastMCP 3.2.0 agentic sampling.
 
 ## Entry Points
-- `uv run pywinauto-mcp` → `pywinauto_mcp.main:main`
+- `uv run windows-computer-use-mcp` → `windows_computer_use_mcp.main:main`
 
 ## Standards
 - FastMCP 3.2+ portmanteau tool pattern — tools use `operation` enum param

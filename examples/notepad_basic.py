@@ -31,7 +31,7 @@ async def run_notepad_example():
     # Tool: mcp_pywinauto_window_mgr(operation="close", window_title="* - Notepad")
     print("[4] Closing Notepad (without saving)...")
 
-    print("\nExample logic completed. To run this via MCP, start the pywinauto-mcp server")
+    print("\nExample logic completed. To run this via MCP, start the windows-computer-use-mcp server")
     print("and use your favorite MCP client (Cursor, Windsurf, or Claude Desktop).")
 
 

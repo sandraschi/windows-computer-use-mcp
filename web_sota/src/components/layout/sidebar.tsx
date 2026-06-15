@@ -8,6 +8,7 @@ import {
 	Lock,
 	MessageSquare,
 	Monitor,
+	ScrollText,
 	Search,
 	Settings,
 	Wrench,
@@ -33,6 +34,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 		{ href: "/chat", label: "Local LLM", icon: MessageSquare },
 		{ href: "/help", label: "Help", icon: BookOpen },
 		{ href: "/biometrics", label: "Biometrics", icon: Lock },
+		{ href: "/logs", label: "Logs", icon: ScrollText },
 		{ href: "/settings", label: "Settings", icon: Settings },
 	];
 
@@ -48,7 +50,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 					<Activity className="h-6 w-6 text-blue-500" />
 					{!collapsed && (
 						<span className="animate-in fade-in duration-300">
-							Pywinauto-MCP
+							windows-computer-use-mcp
 						</span>
 					)}
 				</div>

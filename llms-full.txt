@@ -1,4 +1,4 @@
-# pywinauto-mcp — Full Documentation
+# windows-computer-use-mcp — Full Documentation
 
 Windows **computer use agent**: structured native UI automation via Pywinauto/UIA.
 Read docs/SAFETY.md before production use.
@@ -60,8 +60,8 @@ All long-running operations show a blinking red "CUA at work" overlay:
 ## Architecture
 
 ```
-Agent → MCP (stdio) → pywinauto-mcp → UIA / Win32 API → Windows app
-Agent → HTTP → pywinauto-mcp (10789) → same
+Agent → MCP (stdio) → windows-computer-use-mcp → UIA / Win32 API → Windows app
+Agent → HTTP → windows-computer-use-mcp (10789) → same
 Web UI → Vite (10788) → proxy → API (10789)
 Tauri → WebView → embedded backend (10789)
 ```
@@ -70,6 +70,6 @@ Tauri → WebView → embedded backend (10789)
 
 | Need | Use |
 |------|-----|
-| UIA element tree, OCR, structured UI automation | pywinauto-mcp |
+| UIA element tree, OCR, structured UI automation | windows-computer-use-mcp |
 | Raw input recording/replay, hotkey macros | autohotkey-mcp |
 | Both show "CUA at work" HUD during operations | |

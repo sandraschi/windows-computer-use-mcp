@@ -1,6 +1,6 @@
-# PyWinAuto MCP Test Suite
+# Windows Computer Use Test Suite
 
-Comprehensive test harness for PyWinAuto MCP server.
+Comprehensive test harness for Windows Computer Use server.
 
 ## E2E (LibreOffice Calc — Cua parity)
 
@@ -12,7 +12,7 @@ uv run pytest -m e2e -v --no-cov
 
 Optional: `$env:PYWINAUTO_E2E_SOFFICE = "C:\Program Files\LibreOffice\program\soffice.exe"`
 
-Tests live under `tests/e2e/` and set `PYWINAUTO_MCP_LOOSE_UIA=1` for LibreOffice UIA nodes.
+Tests live under `tests/e2e/` and set `WINDOWS_COMPUTER_USE_MCP_LOOSE_UIA=1` for LibreOffice UIA nodes.
 
 ## Test Structure
 
@@ -37,7 +37,7 @@ pytest
 
 ### Run with coverage
 ```bash
-pytest --cov=src/pywinauto_mcp --cov-report=html
+pytest --cov=src/windows_computer_use_mcp --cov-report=html
 ```
 
 ### Run specific test file
@@ -109,10 +109,10 @@ Common fixtures available in `conftest.py`:
 class TestMyTool:
     """Tests for my_tool."""
     
-    @patch('pywinauto_mcp.tools.my_module.some_dependency')
+    @patch('windows_computer_use_mcp.tools.my_module.some_dependency')
     def test_my_tool_success(self, mock_dep, app_instance):
         """Test my_tool with successful execution."""
-        from pywinauto_mcp.tools.my_module import my_tool
+        from windows_computer_use_mcp.tools.my_module import my_tool
         
         mock_dep.return_value = "expected_result"
         

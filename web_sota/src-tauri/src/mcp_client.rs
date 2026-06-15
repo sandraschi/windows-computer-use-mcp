@@ -2,7 +2,7 @@ use serde::Serialize;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-const SERVER_KEY: &str = "pywinauto-mcp";
+const SERVER_KEY: &str = "windows-computer-use-mcp";
 const MCP_URL: &str = "http://127.0.0.1:10789/mcp";
 
 fn cursor_config_path() -> Option<PathBuf> {
@@ -132,7 +132,7 @@ pub fn register_mcp_clients(cursor: bool, claude: bool) -> Result<String, String
         return Err("Select at least one MCP client".into());
     }
 
-    let mut message = format!("Registered pywinauto-mcp in {}", updated.join(" and "));
+    let mut message = format!("Registered windows-computer-use-mcp in {}", updated.join(" and "));
     if !skipped.is_empty() {
         message.push_str(&format!(" (skipped {})", skipped.join(", ")));
     }

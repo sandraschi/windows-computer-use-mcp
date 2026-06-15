@@ -4,11 +4,11 @@
 
 **Windows only.** One installer — no Python, `uv`, or git required on the target machine.
 
-1. Download **`Pywinauto MCP Operator_*_x64-setup.exe`** from [GitHub Releases](https://github.com/sandraschi/pywinauto-mcp/releases) (or build locally below).
+1. Download **`Windows Computer Use Operator_*_x64-setup.exe`** from [GitHub Releases](https://github.com/sandraschi/windows-computer-use-mcp/releases) (or build locally below).
 2. Run the installer. The NSIS setup may offer to register the MCP server in **Cursor** and **Claude Desktop**.
-3. Launch **Pywinauto MCP Operator** from the Start menu.
+3. Launch **Windows Computer Use Operator** from the Start menu.
 
-That opens `pywinauto-mcp-operator.exe`, which:
+That opens `windows-computer-use-operator.exe`, which:
 
 - Shows the operator web UI (Targets, tools hub, HITL, etc.)
 - Starts the bundled MCP/REST backend on `http://127.0.0.1:10789`
@@ -24,7 +24,7 @@ Full architecture: **[docs/DESKTOP_APP.md](docs/DESKTOP_APP.md)** · Fleet Tauri
 
 ```powershell
 winget install Rustlang.Rustup    # if needed; ensure %USERPROFILE%\.cargo\bin on PATH
-cd D:\Dev\repos\pywinauto-mcp\web_sota
+cd D:\Dev\repos\windows-computer-use-mcp\web_sota
 npm install
 npm run icons:generate            # once
 npm run tauri:build
@@ -32,8 +32,8 @@ npm run tauri:build
 
 Artifacts:
 
-- `web_sota/src-tauri/target/release/bundle/nsis/Pywinauto MCP Operator_*_x64-setup.exe`
-- `web_sota/src-tauri/target/release/bundle/msi/Pywinauto MCP Operator_*_x64_en-US.msi`
+- `web_sota/src-tauri/target/release/bundle/nsis/Windows Computer Use Operator_*_x64-setup.exe`
+- `web_sota/src-tauri/target/release/bundle/msi/Windows Computer Use Operator_*_x64_en-US.msi`
 
 Requires Node 20+, Rust stable, `uv` + Python 3.12 for the PyInstaller sidecar freeze.
 
@@ -45,8 +45,8 @@ For hacking on the repo, CI, or MCP **stdio** from source:
 
 ```powershell
 winget install Casey.Just    # Windows
-git clone https://github.com/sandraschi/pywinauto-mcp
-cd pywinauto-mcp
+git clone https://github.com/sandraschi/windows-computer-use-mcp
+cd windows-computer-use-mcp
 just
 ```
 
@@ -75,8 +75,8 @@ npm run tauri:dev
 1. Install [Python 3.12+](https://python.org) and [uv](https://docs.astral.sh/uv/)
 2. Clone and enter the repo:
    ```powershell
-   git clone https://github.com/sandraschi/pywinauto-mcp
-   cd pywinauto-mcp
+    git clone https://github.com/sandraschi/windows-computer-use-mcp
+    cd windows-computer-use-mcp
    ```
 3. Install dependencies:
    ```powershell
@@ -105,9 +105,9 @@ npm run tauri:dev
 ```json
 {
   "mcpServers": {
-    "pywinauto-mcp": {
+    "windows-computer-use": {
       "command": "uv",
-      "args": ["--directory", "D:/Dev/repos/pywinauto-mcp", "run", "python", "-m", "pywinauto_mcp"]
+      "args": ["--directory", "D:/Dev/repos/windows-computer-use-mcp", "run", "python", "-m", "pywinauto_mcp"]
     }
   }
 }
@@ -118,7 +118,7 @@ npm run tauri:dev
 ```json
 {
   "mcpServers": {
-    "pywinauto-mcp": {
+    "windows-computer-use": {
       "url": "http://127.0.0.1:10789/mcp"
     }
   }
@@ -133,13 +133,13 @@ Paths: Cursor → `%USERPROFILE%\.cursor\mcp.json` · Claude → `%APPDATA%\Clau
 
 | Issue | Fix |
 |---|---|
-| Desktop app: MCP tools missing in IDE | Keep **Pywinauto MCP Operator** running; re-register in **Settings** |
+| Desktop app: MCP tools missing in IDE | Keep **Windows Computer Use Operator** running; re-register in **Settings** |
 | Desktop build: `rustc` not found | Add `%USERPROFILE%\.cargo\bin` to PATH |
 | Sidecar build fails on `charset_normalizer` | See `scripts/pyinstaller_hooks/` override in repo; recreate `.venv` if needed |
 | `just` not found | `winget install Casey.Just` |
 | Port conflict | `just kill-all` (fleet ports 10700–11000) |
 | Dependencies out of sync | `uv sync --all-extras` |
-| Something else | [Open a GitHub issue](https://github.com/sandraschi/pywinauto-mcp/issues) |
+| Something else | [Open a GitHub issue](https://github.com/sandraschi/windows-computer-use-mcp/issues) |
 
 ---
 

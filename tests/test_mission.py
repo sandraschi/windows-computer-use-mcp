@@ -4,8 +4,8 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from pywinauto_mcp.tools.models import MissionOperationRequest
-from pywinauto_mcp.tools.portmanteau_mission import automation_mission
+from windows_computer_use_mcp.tools.models import MissionOperationRequest
+from windows_computer_use_mcp.tools.portmanteau_mission import automation_mission
 
 
 class TestAutomationMission:

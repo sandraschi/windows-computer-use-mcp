@@ -8,8 +8,8 @@ from unittest.mock import MagicMock, patch
 class TestPortmanteauWindowsMock:
     """Mock-based tests for the automation_windows portmanteau tool."""
 
-    @patch("pywinauto_mcp.tools.portmanteau_windows._get_desktop")
-    @patch("pywinauto_mcp.tools.portmanteau_windows.automation_windows")
+    @patch("windows_computer_use_mcp.tools.portmanteau_windows._get_desktop")
+    @patch("windows_computer_use_mcp.tools.portmanteau_windows.automation_windows")
     def test_activate_window_success(self, mock_automation_windows, mock_get_desktop, app_instance):
         """Test successful window activation with mocks."""
         # Setup mocks
@@ -37,7 +37,7 @@ class TestPortmanteauWindowsMock:
         mock_automation_windows.return_value = expected_result
 
         # Import here to get the patched version
-        from pywinauto_mcp.tools.portmanteau_windows import automation_windows
+        from windows_computer_use_mcp.tools.portmanteau_windows import automation_windows
 
         # Call the function
         result = automation_windows("activate", handle=12345)
@@ -45,8 +45,8 @@ class TestPortmanteauWindowsMock:
         # Verify the result
         assert result == expected_result
 
-    @patch("pywinauto_mcp.tools.portmanteau_windows._get_desktop")
-    @patch("pywinauto_mcp.tools.portmanteau_windows.automation_windows")
+    @patch("windows_computer_use_mcp.tools.portmanteau_windows._get_desktop")
+    @patch("windows_computer_use_mcp.tools.portmanteau_windows.automation_windows")
     def test_activate_minimized_window(self, mock_automation_windows, mock_get_desktop, app_instance):
         """Test activating a minimized window with mocks."""
         # Setup mocks
@@ -74,7 +74,7 @@ class TestPortmanteauWindowsMock:
         mock_automation_windows.return_value = expected_result
 
         # Import here to get the patched version
-        from pywinauto_mcp.tools.portmanteau_windows import automation_windows
+        from windows_computer_use_mcp.tools.portmanteau_windows import automation_windows
 
         # Call the function
         result = automation_windows("activate", handle=12345)
@@ -82,8 +82,8 @@ class TestPortmanteauWindowsMock:
         # Verify the result
         assert result == expected_result
 
-    @patch("pywinauto_mcp.tools.portmanteau_windows._get_desktop")
-    @patch("pywinauto_mcp.tools.portmanteau_windows.automation_windows")
+    @patch("windows_computer_use_mcp.tools.portmanteau_windows._get_desktop")
+    @patch("windows_computer_use_mcp.tools.portmanteau_windows.automation_windows")
     def test_activate_window_failure(self, mock_automation_windows, mock_get_desktop, app_instance):
         """Test window activation failure with mocks."""
         # Setup the mock to return an error result
@@ -105,7 +105,7 @@ class TestPortmanteauWindowsMock:
         mock_automation_windows.return_value = expected_result
 
         # Import here to get the patched version
-        from pywinauto_mcp.tools.portmanteau_windows import automation_windows
+        from windows_computer_use_mcp.tools.portmanteau_windows import automation_windows
 
         # Call the function
         result = automation_windows("activate", handle=99999)
@@ -113,8 +113,8 @@ class TestPortmanteauWindowsMock:
         # Verify the error result
         assert result == expected_result
 
-    @patch("pywinauto_mcp.tools.portmanteau_windows._get_desktop")
-    @patch("pywinauto_mcp.tools.portmanteau_windows.automation_windows")
+    @patch("windows_computer_use_mcp.tools.portmanteau_windows._get_desktop")
+    @patch("windows_computer_use_mcp.tools.portmanteau_windows.automation_windows")
     def test_activate_nonexistent_window(self, mock_automation_windows, mock_get_desktop, app_instance):
         """Test activating a non-existent window with mocks."""
         # Setup the mock to return an error result for non-existent window
@@ -136,7 +136,7 @@ class TestPortmanteauWindowsMock:
         mock_automation_windows.return_value = expected_result
 
         # Import here to get the patched version
-        from pywinauto_mcp.tools.portmanteau_windows import automation_windows
+        from windows_computer_use_mcp.tools.portmanteau_windows import automation_windows
 
         # Call the function
         result = automation_windows("activate", handle=99999)
@@ -144,8 +144,8 @@ class TestPortmanteauWindowsMock:
         # Verify the error result
         assert result == expected_result
 
-    @patch("pywinauto_mcp.tools.portmanteau_windows._get_desktop")
-    @patch("pywinauto_mcp.tools.portmanteau_windows.automation_windows")
+    @patch("windows_computer_use_mcp.tools.portmanteau_windows._get_desktop")
+    @patch("windows_computer_use_mcp.tools.portmanteau_windows.automation_windows")
     def test_activate_window_verify_focus(self, mock_automation_windows, mock_get_desktop, app_instance):
         """Test window activation with focus verification using mocks."""
         # Setup the mock to return a success result but without focus
@@ -162,7 +162,7 @@ class TestPortmanteauWindowsMock:
         mock_automation_windows.return_value = expected_result
 
         # Import here to get the patched version
-        from pywinauto_mcp.tools.portmanteau_windows import automation_windows
+        from windows_computer_use_mcp.tools.portmanteau_windows import automation_windows
 
         # Call the function
         result = automation_windows("activate", handle=12345)

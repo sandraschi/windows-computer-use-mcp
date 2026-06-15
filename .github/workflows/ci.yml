@@ -30,4 +30,4 @@ jobs:
         run: uv run pytest tests -q --tb=short -m "not e2e and not slow"
 
       - name: Import smoke
-        run: uv run python -c "from pywinauto_mcp.app import app; print('ok')"
+        run: uv run python -c "from windows_computer_use_mcp.app import app; print('ok')"

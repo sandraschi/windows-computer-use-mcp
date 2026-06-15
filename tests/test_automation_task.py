@@ -3,10 +3,10 @@
 from pathlib import Path
 from unittest.mock import patch
 
-from pywinauto_mcp import task_engine
-from pywinauto_mcp.app_profiles import get_profile, list_profiles
-from pywinauto_mcp.tools.models import TaskOperationRequest, ToolResult
-from pywinauto_mcp.tools.portmanteau_task import automation_task
+from windows_computer_use_mcp import task_engine
+from windows_computer_use_mcp.app_profiles import get_profile, list_profiles
+from windows_computer_use_mcp.tools.models import TaskOperationRequest, ToolResult
+from windows_computer_use_mcp.tools.portmanteau_task import automation_task
 
 
 def test_assert_outcome_file_exists(tmp_path: Path):
@@ -29,7 +29,7 @@ def test_list_profiles():
     assert any(p["app_id"] == "vroidstudio" for p in list_profiles())
 
 
-@patch("pywinauto_mcp.task_engine._execute_step")
+@patch("windows_computer_use_mcp.task_engine._execute_step")
 def test_run_task_success(mock_exec, tmp_path: Path):
     f = tmp_path / "model.vrm"
     f.write_bytes(b"data")
@@ -54,7 +54,7 @@ def test_run_task_success(mock_exec, tmp_path: Path):
     assert len(session.evidence) == 2
 
 
-@patch("pywinauto_mcp.task_engine._execute_step")
+@patch("windows_computer_use_mcp.task_engine._execute_step")
 def test_run_task_fails_with_evidence(mock_exec, tmp_path: Path):
     mock_exec.side_effect = RuntimeError("shortcut missed")
     session = task_engine.run_task(
@@ -66,8 +66,8 @@ def test_run_task_fails_with_evidence(mock_exec, tmp_path: Path):
     assert session.evidence[0]["status"] == "failed"
 
 
-@patch("pywinauto_mcp.task_engine._invalidate_snapshots_after_mutation")
-@patch("pywinauto_mcp.task_engine._execute_step")
+@patch("windows_computer_use_mcp.task_engine._invalidate_snapshots_after_mutation")
+@patch("windows_computer_use_mcp.task_engine._execute_step")
 def test_run_task_invalidates_snapshots_on_mutation(mock_exec, mock_inv, tmp_path: Path):
     mock_exec.return_value = {"kind": "shortcut", "action": "new"}
     mock_inv.return_value = {"invalidated": 2, "ui_hash": "abc"}
@@ -83,7 +83,7 @@ def test_run_task_invalidates_snapshots_on_mutation(mock_exec, mock_inv, tmp_pat
     assert session.evidence[0].get("snapshot_invalidation") == {"invalidated": 2, "ui_hash": "abc"}
 
 
-@patch("pywinauto_mcp.task_engine._execute_step")
+@patch("windows_computer_use_mcp.task_engine._execute_step")
 def test_run_task_optional_step_skipped(mock_exec, tmp_path: Path):
     mock_exec.side_effect = RuntimeError("optional miss")
     session = task_engine.run_task(
@@ -106,7 +106,7 @@ def test_automation_task_list_profiles():
 
 
 def test_automation_task_list_templates():
-    from pywinauto_mcp.template_library import ensure_placeholder_templates
+    from windows_computer_use_mcp.template_library import ensure_placeholder_templates
 
     ensure_placeholder_templates("vroidstudio")
     req = TaskOperationRequest(operation="list_templates", app="vroidstudio")

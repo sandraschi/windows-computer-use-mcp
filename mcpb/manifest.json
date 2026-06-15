@@ -1,6 +1,6 @@
 {
   "manifest_version": "0.2",
-  "name": "pywinauto-mcp",
+  "name": "windows-computer-use-mcp",
   "version": "0.5.4",
   "description": "Windows computer use agent (CUA-MCP): native UI automation via portmanteau MCP tools. High privilege — read docs/SAFETY.md; pair with virtualization-mcp for Sandbox/VM. HITL, kill switch, rate limits.",
   "author": {
@@ -10,14 +10,14 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/sandraschi/pywinauto-mcp"
+    "url": "https://github.com/sandraschi/windows-computer-use-mcp"
   },
   "server": {
     "type": "python",
-    "entry_point": "src/pywinauto_mcp/main.py",
+    "entry_point": "src/windows_computer_use_mcp/main.py",
     "mcp_config": {
       "command": "python",
-      "args": ["-m", "pywinauto_mcp"],
+      "args": ["-m", "windows_computer_use_mcp"],
       "env": {
         "PYTHONPATH": "${__dirname}/src",
         "PYTHONUNBUFFERED": "1"

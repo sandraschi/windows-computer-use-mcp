@@ -1,4 +1,4 @@
-# pywinauto-mcp — Safety & isolation
+# windows-computer-use-mcp — Safety & isolation
 
 **Read this before enabling this server in an IDE.** Desktop automation is **host-powerful**; “sandbox safety” for **untrusted UI** requires a **second fleet server**, not pywinauto alone.
 
@@ -34,19 +34,19 @@ Optional, high-risk features (for example **`global_keylogger`** — see **§6**
 
 | Goal | Install |
 |------|---------|
-| **Drive the real Windows desktop** (your session) | **pywinauto-mcp** (this repo) + **`approve_automation`**, env limits below |
+| **Drive the real Windows desktop** (your session) | **windows-computer-use-mcp** (this repo) + **`approve_automation`**, env limits below |
 | **Disposable desktop** (Windows Sandbox / VM) for installs + UI tests | **Also install `virtualization-mcp`** (fleet repo) — launches Sandbox, maps `assets`, optional dev stack / AIRGAP |
 
-**pywinauto-mcp does not spin up Windows Sandbox.** For **full** isolation, add **virtualization-mcp** to your MCP client and use it to **provision** the box; run **automation inside the guest** (script with pywinauto) or a test runner — see fleet doc below.
+**windows-computer-use-mcp does not spin up Windows Sandbox.** For **full** isolation, add **virtualization-mcp** to your MCP client and use it to **provision** the box; run **automation inside the guest** (script with pywinauto) or a test runner — see fleet doc below.
 
 ---
 
 ## 2. Built into this server (host session)
 
 - **HITL (human-in-the-loop):** `approve_automation` — required for mutating **mouse** / **keyboard** (except `automation_mouse("position")` and `automation_mouse("telemetry")`).
-- **Env:** `PYWINAUTO_MCP_KILL_SWITCH`, `PYWINAUTO_MCP_MAX_ACTIONS_PER_MINUTE`, `PYWINAUTO_MCP_DRY_RUN`.
-- **HITL (human-in-the-loop) bypass:** `PYWINAUTO_MCP_BYPASS_HITL=1` allows zero-friction automation in trusted demo environments (disables security prompts).
-- **Pointer injection:** Mutating **mouse** paths use **`win32_mouse`** (`SetCursorPos` / `mouse_event`, DPI-aware), not PyAutoGUI alone. **Failsafe:** moving the cursor to the **upper-left screen corner** aborts injected pointer ops (same idea as PyAutoGUI). **`PYWINAUTO_MCP_BYPASS_HITL=1`** disables both **`pyautogui.FAILSAFE`** and that **`win32_mouse`** corner check for trusted demos/CI.
+- **Env:** `WINDOWS_COMPUTER_USE_MCP_KILL_SWITCH`, `WINDOWS_COMPUTER_USE_MCP_MAX_ACTIONS_PER_MINUTE`, `WINDOWS_COMPUTER_USE_MCP_DRY_RUN`.
+- **HITL (human-in-the-loop) bypass:** `WINDOWS_COMPUTER_USE_MCP_BYPASS_HITL=1` allows zero-friction automation in trusted demo environments (disables security prompts).
+- **Pointer injection:** Mutating **mouse** paths use **`win32_mouse`** (`SetCursorPos` / `mouse_event`, DPI-aware), not PyAutoGUI alone. **Failsafe:** moving the cursor to the **upper-left screen corner** aborts injected pointer ops (same idea as PyAutoGUI). **`WINDOWS_COMPUTER_USE_MCP_BYPASS_HITL=1`** disables both **`pyautogui.FAILSAFE`** and that **`win32_mouse`** corner check for trusted demos/CI.
 - **Tool:** `automation_safety(status | reset_counters)`.
 - **Telemetry HUD:** The `automation_mouse("telemetry")` operation provides visible, on-screen verification of inputs. It is **non-persistent** and **localized** (volatile memory only), ensuring auditing without the security risks of background logging.
 
@@ -56,16 +56,16 @@ Optional, high-risk features (for example **`global_keylogger`** — see **§6**
 
 Clone **mcp-central-docs** (sibling repo) and read:
 
-- **`patterns/PYWINAUTO_MCP_SAFETY.md`** — sampling amplification, IDE chain rules, **sandboxed execution** (guest-side pywinauto + virtualization-mcp).
+- **`patterns/WINDOWS_COMPUTER_USE_MCP_SAFETY.md`** — sampling amplification, IDE chain rules, **sandboxed execution** (guest-side pywinauto + virtualization-mcp).
 - **`patterns/FLEET_COMPUTER_USE_MCP.md`** — computer-use architecture, mitigations.
 
 ---
 
 ## 4. Do not
 
-- Put **pywinauto-mcp** in the **default IDE chain** for **web-only** work — use a **browser MCP** (typically **Playwright**-based) for Vite/webapps and **HTML DOM** / network / console analysis. **pywinauto** targets **native Windows UI**, not the browser’s DOM; keep the split explicit.
+- Put **windows-computer-use-mcp** in the **default IDE chain** for **web-only** work — use a **browser MCP** (typically **Playwright**-based) for Vite/webapps and **HTML DOM** / network / console analysis. **pywinauto** targets **native Windows UI**, not the browser’s DOM; keep the split explicit.
 - Rely on **host** pywinauto to “click inside” the Windows Sandbox window — automate **inside** the guest session instead.
-- Treat **OpenManus** + **openmanus-mcp** + **pywinauto** + **OpenClaw / Manus-class** autonomy as **low-friction** — that combination **multiplies** tool loops and sampling against **OS-wide** input. See **mcp-central-docs** `patterns/PYWINAUTO_MCP_SAFETY.md` § *OpenManus, openmanus-mcp, OpenClaw, Manus-class* and **integrations/openmanus.md** (Caution block).
+- Treat **OpenManus** + **openmanus-mcp** + **pywinauto** + **OpenClaw / Manus-class** autonomy as **low-friction** — that combination **multiplies** tool loops and sampling against **OS-wide** input. See **mcp-central-docs** `patterns/WINDOWS_COMPUTER_USE_MCP_SAFETY.md` § *OpenManus, openmanus-mcp, OpenClaw, Manus-class* and **integrations/openmanus.md** (Caution block).
 
 ---
 
@@ -75,7 +75,7 @@ Clone **mcp-central-docs** (sibling repo) and read:
 
 The **`automation_face`** tool is **off by default**. Two steps are required to expose it:
 
-1. **Operator opt-in (runtime):** set **`PYWINAUTO_MCP_ENABLE_FACE=1`** (or `true` / `yes` / `on`) in the server environment (see **`automation_safety(status)`** — `face_tool_opt_in` / `PYWINAUTO_MCP_ENABLE_FACE`).
+1. **Operator opt-in (runtime):** set **`WINDOWS_COMPUTER_USE_MCP_ENABLE_FACE=1`** (or `true` / `yes` / `on`) in the server environment (see **`automation_safety(status)`** — `face_tool_opt_in` / `WINDOWS_COMPUTER_USE_MCP_ENABLE_FACE`).
 2. **Dependencies:** install the **`face`** extra (see `pyproject.toml`) so the face-recognition stack is available.
 
 Without both, the server does **not** register **`automation_face`**; other portmanteau tools are unchanged.
@@ -95,7 +95,7 @@ Describe it as **optional**, **consent-based**, **local**, and **for operator pr
 
 ### If you do not need it
 
-Leave **`PYWINAUTO_MCP_ENABLE_FACE`** unset (default). Do not install the **`face`** extra. Window/element automation does not require face features.
+Leave **`WINDOWS_COMPUTER_USE_MCP_ENABLE_FACE`** unset (default). Do not install the **`face`** extra. Window/element automation does not require face features.
 
 ### Camera hardware (`capture`)
 
@@ -116,9 +116,9 @@ This project is **not** a hacker or spyware tool. **`global_keylogger`** exists 
 
 The **`global_keylogger`** tool is **off by default**. The server does **not** register it unless you set:
 
-- **`PYWINAUTO_MCP_ENABLE_KEYLOGGER=1`** (or `true` / `yes` / `on`) in the server environment.
+- **`WINDOWS_COMPUTER_USE_MCP_ENABLE_KEYLOGGER=1`** (or `true` / `yes` / `on`) in the server environment.
 
-See **`automation_safety(status)`** — `keylogger_tool_opt_in` / `PYWINAUTO_MCP_ENABLE_KEYLOGGER`.
+See **`automation_safety(status)`** — `keylogger_tool_opt_in` / `WINDOWS_COMPUTER_USE_MCP_ENABLE_KEYLOGGER`.
 
 ### Why it exists
 
@@ -127,12 +127,12 @@ Session-wide keyboard hooks support **authorized** debugging and analysis (for e
 ### How it is gated
 
 - **Opt-in** at registration time (env above).
-- **`approve_automation`** / **HITL (human-in-the-loop)** applies to **`start`** the same way as other sensitive input tools (unless **`PYWINAUTO_MCP_BYPASS_HITL`** is set — see §2).
-- **`PYWINAUTO_MCP_KILL_SWITCH=1`** blocks starting capture; **`PYWINAUTO_MCP_DRY_RUN=1`** simulates **`start`** without installing the hook.
+- **`approve_automation`** / **HITL (human-in-the-loop)** applies to **`start`** the same way as other sensitive input tools (unless **`WINDOWS_COMPUTER_USE_MCP_BYPASS_HITL`** is set — see §2).
+- **`WINDOWS_COMPUTER_USE_MCP_KILL_SWITCH=1`** blocks starting capture; **`WINDOWS_COMPUTER_USE_MCP_DRY_RUN=1`** simulates **`start`** without installing the hook.
 - The MCP server attempts to **stop** the listener on shutdown.
 - Events live in a **bounded in-memory ring buffer** exposed only via MCP `read` — not written to hidden log files.
 - **`start`** requires **HITL approval** (same as other sensitive input) unless bypass is explicitly set.
 
 ### If you do not need it
 
-Leave **`PYWINAUTO_MCP_ENABLE_KEYLOGGER`** unset. Window, element, mouse, and normal keyboard **simulation** do not require it.
+Leave **`WINDOWS_COMPUTER_USE_MCP_ENABLE_KEYLOGGER`** unset. Window, element, mouse, and normal keyboard **simulation** do not require it.

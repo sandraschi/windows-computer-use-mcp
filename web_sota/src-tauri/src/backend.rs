@@ -11,7 +11,7 @@ use tauri::{AppHandle, Emitter, Manager};
 
 pub struct BackendProcess(pub Mutex<Option<Child>>);
 
-const BACKEND_NAME: &str = "pywinauto-mcp-backend.exe";
+const BACKEND_NAME: &str = "windows-computer-use-backend.exe";
 const BACKEND_PORT: u16 = 10789;
 
 fn dev_backend_path() -> Option<PathBuf> {
@@ -20,7 +20,7 @@ fn dev_backend_path() -> Option<PathBuf> {
     }
     let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("binaries")
-        .join("pywinauto-mcp-backend-x86_64-pc-windows-msvc.exe");
+        .join("windows-computer-use-backend-x86_64-pc-windows-msvc.exe");
     path.exists().then_some(path)
 }
 
@@ -47,7 +47,7 @@ fn resolve_bundled_backend(app: &AppHandle) -> Result<PathBuf, String> {
 
     if let Ok(path) = app
         .path()
-        .resolve("resources/pywinauto-mcp-backend.exe", BaseDirectory::Resource)
+        .resolve("resources/windows-computer-use-backend.exe", BaseDirectory::Resource)
     {
         tried.push(path.display().to_string());
         if path.exists() {
@@ -143,9 +143,9 @@ pub fn spawn_backend(app: AppHandle, state: &BackendProcess) -> Result<String, S
     let mut command = Command::new(&backend_path);
     command
         .current_dir(&workdir)
-        .env("PYWINAUTO_MCP_PORT", BACKEND_PORT.to_string())
-        .env("PYWINAUTO_MCP_HOST", "127.0.0.1")
-        .env("PYWINAUTO_TAURI", "1")
+        .env("WINDOWS_COMPUTER_USE_MCP_PORT", BACKEND_PORT.to_string())
+        .env("WINDOWS_COMPUTER_USE_MCP_HOST", "127.0.0.1")
+        .env("WINDOWS_COMPUTER_USE_TAURI", "1")
         .stdout(Stdio::piped())
         .stderr(Stdio::piped());
 

@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 @pytest.fixture(scope="session")
 def app_instance():
     """Get the FastMCP app instance."""
-    from pywinauto_mcp.app import app
+    from windows_computer_use_mcp.app import app
 
     return app
 
@@ -82,9 +82,9 @@ def mock_pyautogui():
     # We patch it in multiple modules because portmanteau tools import it directly
     mock_instance = MagicMock()
     patches = [
-        patch("pywinauto_mcp.tools.portmanteau_mouse.pyautogui", mock_instance),
-        patch("pywinauto_mcp.tools.portmanteau_elements.pyautogui", mock_instance),
-        patch("pywinauto_mcp.tools.portmanteau_keyboard.pyautogui", mock_instance),
+        patch("windows_computer_use_mcp.tools.portmanteau_mouse.pyautogui", mock_instance),
+        patch("windows_computer_use_mcp.tools.portmanteau_elements.pyautogui", mock_instance),
+        patch("windows_computer_use_mcp.tools.portmanteau_keyboard.pyautogui", mock_instance),
     ]
 
     for p in patches:
@@ -115,11 +115,11 @@ def mock_desktop_uia():
     """Mock pywinauto.Desktop for UIA-based element discovery."""
     # Patch all locations where Desktop is instantiated
     with (
-        patch("pywinauto_mcp.tools.portmanteau_elements.Desktop") as mock_elem_desktop,
-        patch("pywinauto_mcp.tools.portmanteau_windows.Desktop") as mock_win_desktop,
-        patch("pywinauto_mcp.tools.portmanteau_visual.Desktop") as mock_vis_desktop,
-        patch("pywinauto_mcp.tools.utils.Desktop") as mock_utils_desktop,
-        patch("pywinauto_mcp.desktop_state.walker.Desktop") as mock_walker_desktop,
+        patch("windows_computer_use_mcp.tools.portmanteau_elements.Desktop") as mock_elem_desktop,
+        patch("windows_computer_use_mcp.tools.portmanteau_windows.Desktop") as mock_win_desktop,
+        patch("windows_computer_use_mcp.tools.portmanteau_visual.Desktop") as mock_vis_desktop,
+        patch("windows_computer_use_mcp.tools.utils.Desktop") as mock_utils_desktop,
+        patch("windows_computer_use_mcp.desktop_state.walker.Desktop") as mock_walker_desktop,
     ):
         mock_instance = MagicMock()
         mock_elem_desktop.return_value = mock_instance
@@ -136,8 +136,8 @@ def mock_pywinauto():
     """Mock pywinauto for testing."""
     # Patch in the new portmanteau locations
     patches = [
-        patch("pywinauto_mcp.tools.portmanteau_windows.Application"),
-        patch("pywinauto_mcp.tools.portmanteau_windows.findwindows"),
+        patch("windows_computer_use_mcp.tools.portmanteau_windows.Application"),
+        patch("windows_computer_use_mcp.tools.portmanteau_windows.findwindows"),
     ]
 
     mock_objs = [p.start() for p in patches]
@@ -156,7 +156,7 @@ def mock_pywinauto():
 @pytest.fixture
 def mock_pygetwindow():
     """Mock pygetwindow for testing."""
-    with patch("pywinauto_mcp.tools.portmanteau_system.gw") as mock:
+    with patch("windows_computer_use_mcp.tools.portmanteau_system.gw") as mock:
         mock_window = MagicMock()
         mock_window.title = "Test Window"
         mock_window.isActive = True
@@ -168,7 +168,7 @@ def mock_pygetwindow():
 @pytest.fixture
 def mock_psutil():
     """Mock psutil for testing."""
-    with patch("pywinauto_mcp.tools.portmanteau_system.psutil") as mock:
+    with patch("windows_computer_use_mcp.tools.portmanteau_system.psutil") as mock:
         mock_process = MagicMock()
         mock_process.name.return_value = "test.exe"
         mock_process.pid = 1234
@@ -185,7 +185,7 @@ def temp_test_dir(tmp_path):
 @pytest.fixture(autouse=True)
 def mock_approval():
     """Mock approval_state.is_approved to always return True for tests."""
-    with patch("pywinauto_mcp.app.approval_state.is_approved") as mock:
+    with patch("windows_computer_use_mcp.app.approval_state.is_approved") as mock:
         mock.return_value = True
         yield mock
 
@@ -204,7 +204,7 @@ def sample_image_path(tmp_path):
 @pytest.fixture
 def mock_ocr():
     """Mock OCR functionality."""
-    with patch("pywinauto_mcp.tools.portmanteau_visual.pytesseract") as mock:
+    with patch("windows_computer_use_mcp.tools.portmanteau_visual.pytesseract") as mock:
         mock.image_to_string.return_value = "Sample OCR Text"
         mock.image_to_data.return_value = []
         yield mock
@@ -213,7 +213,7 @@ def mock_ocr():
 @pytest.fixture
 def mock_face_recognition():
     """Mock face recognition functionality."""
-    with patch("pywinauto_mcp.tools.portmanteau_face.face_recognition") as mock:
+    with patch("windows_computer_use_mcp.tools.portmanteau_face.face_recognition") as mock:
         mock.face_locations.return_value = [(100, 200, 300, 400)]
         mock.face_encodings.return_value = [[0.1] * 128]
         mock.compare_faces.return_value = [True]
@@ -224,7 +224,7 @@ def mock_face_recognition():
 @pytest.fixture
 def mock_cv2():
     """Mock OpenCV for testing."""
-    with patch("pywinauto_mcp.tools.portmanteau_visual.cv2") as mock:
+    with patch("windows_computer_use_mcp.tools.portmanteau_visual.cv2") as mock:
         mock.imread.return_value = None
         mock.imwrite.return_value = True
         mock.VideoCapture.return_value = MagicMock()
@@ -235,8 +235,8 @@ def mock_cv2():
 def mock_pil():
     """Mock PIL/Pillow for testing."""
     with (
-        patch("pywinauto_mcp.tools.portmanteau_visual.Image") as mock_image,
-        patch("pywinauto_mcp.tools.portmanteau_visual.ImageGrab") as mock_grab,
+        patch("windows_computer_use_mcp.tools.portmanteau_visual.Image") as mock_image,
+        patch("windows_computer_use_mcp.tools.portmanteau_visual.ImageGrab") as mock_grab,
     ):
         mock_img = MagicMock()
         mock_img.size = (1920, 1080)

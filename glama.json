@@ -3,7 +3,7 @@
   "maintainers": [
     "sandraschi"
   ],
-  "name": "pywinauto-mcp",
+  "name": "windows-computer-use-mcp",
   "description": "Windows computer use agent (CUA-MCP): native UI automation via portmanteau MCP tools — windows, elements, mouse, keyboard, visual, assert, dialog, shortcut, task. High privilege — read docs/SAFETY.md; pair with virtualization-mcp for Sandbox/VM. HITL, kill switch, rate limits. FastMCP 3.2+.",
   "type": "mcp_server",
   "status": "production",
@@ -86,7 +86,7 @@
       ],
       "documentation": [
         "docs/SAFETY.md",
-        "mcp-central-docs/patterns/PYWINAUTO_MCP_SAFETY.md"
+        "mcp-central-docs/patterns/WINDOWS_COMPUTER_USE_MCP_SAFETY.md"
       ]
     }
   }

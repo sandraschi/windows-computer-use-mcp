@@ -25,7 +25,7 @@ assignees: ''
 ## 📋 Environment
 - **OS**: [e.g., Windows 10, Windows 11]
 - **Python Version**: [e.g., 3.11.0]
-- **PyWinAuto MCP Version**: [e.g., 0.2.0]
+- **Windows Computer Use Version**: [e.g., 0.2.0]
 - **Installation Method**: [DXT/PyPI/Source]
 
 ## 📊 Logs/Screenshots

@@ -1,8 +1,8 @@
 {
 	"$schema": "https://schema.tauri.app/config/2",
-	"productName": "Pywinauto MCP Operator",
+	"productName": "Windows Computer Use",
 	"version": "0.5.4",
-	"identifier": "com.sandraschi.pywinauto-mcp",
+	"identifier": "com.sandraschi.windows-computer-use-mcp",
 	"build": {
 		"beforeDevCommand": "npm run dev",
 		"devUrl": "http://127.0.0.1:10788",
@@ -13,7 +13,7 @@
 		"windows": [
 			{
 				"label": "main",
-				"title": "Pywinauto MCP Operator",
+				"title": "Windows Computer Use",
 				"width": 1280,
 				"height": 860,
 				"resizable": true
@@ -28,7 +28,7 @@
 		"targets": ["msi", "nsis"],
 		"icon": ["icons/icon.png", "icons/icon.ico"],
 		"resources": [
-			"resources/pywinauto-mcp-backend.exe",
+			"resources/windows-computer-use-backend.exe",
 			"../scripts/install-mcp-clients.ps1"
 		],
 		"windows": {

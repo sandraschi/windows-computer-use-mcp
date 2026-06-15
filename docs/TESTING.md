@@ -4,7 +4,7 @@ Aligned with **mcp-central-docs** → `standards/testing-environment-aware.md` (
 
 ## Fleet context
 
-**pywinauto-mcp** is the **implemented** variant for **local Windows + OpenCV / USB cameras** (hardware-marked tests skip in CI). Central docs describe the same pattern and **fleet intent**: roll the drop-in scaffold into **all other repos** that touch **hardware** — IP or UVC **cameras**, **robots**, **scanners**, **vacuums**, **smart home / IoT**, and similar — shared **markers** and **hooks**, with **device-specific fixtures** per repo.
+**windows-computer-use-mcp** is the **implemented** variant for **local Windows + OpenCV / USB cameras** (hardware-marked tests skip in CI). Central docs describe the same pattern and **fleet intent**: roll the drop-in scaffold into **all other repos** that touch **hardware** — IP or UVC **cameras**, **robots**, **scanners**, **vacuums**, **smart home / IoT**, and similar — shared **markers** and **hooks**, with **device-specific fixtures** per repo.
 
 ## What this repo does
 
@@ -72,3 +72,19 @@ cd web_sota
 npm run sidecar:build
 npm run tauri:build
 ```
+
+## CUA-NSIS smoke (installed app)
+
+Tests the actual NSIS installer artifact — catches backend unreachable, CSP/CORS, wrong paths, and orphan processes.
+
+`powershell
+just build-native
+just cua-nsis-test
+`
+
+The smoke script (scripts/cua-smoke.py) runs 9 phases: kill → install → launch → window verify → screenshot → feature route → diagnostics → WebView bridge OCR → uninstall.
+
+All phases are non-fatal except install, launch, and WebView bridge (release gate). The config file scripts/cua-nsis-config.json enables fleet reuse.
+
+See docs/ASSESSMENT_BY_CURSOR_2026-06-14_CUA_NSIS.md for full gap analysis.
+

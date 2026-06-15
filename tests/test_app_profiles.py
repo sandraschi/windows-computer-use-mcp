@@ -1,6 +1,6 @@
 """Tests for app profiles and region masks (T2.4)."""
 
-from pywinauto_mcp.app_profiles import get_profile, get_profile_region, list_profiles, region_dict_for_app
+from windows_computer_use_mcp.app_profiles import get_profile, get_profile_region, list_profiles, region_dict_for_app
 
 
 def test_vroid_profile_has_stable_region():

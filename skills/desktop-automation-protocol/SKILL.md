@@ -1,15 +1,15 @@
 ---
 name: desktop-automation-protocol
-description: Foreground and focus rules when driving Windows UI via pywinauto-mcp (step back from terminal/IDE; avoid focus fights).
+description: Foreground and focus rules when driving Windows UI via windows-computer-use-mcp (step back from terminal/IDE; avoid focus fights).
 version: 1.0.0
 standard: SOTA v14.2.0 (FastMCP 3.2.0)
 ---
 
-# Desktop automation protocol (pywinauto-mcp)
+# Desktop automation protocol (windows-computer-use-mcp)
 
 ## When this applies
 
-The user wants to **start an app** and **test or automate it** using **pywinauto** / **pywinauto-mcp** tools.
+The user wants to **start an app** and **test or automate it** using **pywinauto** / **windows-computer-use-mcp** tools.
 
 ## Tell the user
 

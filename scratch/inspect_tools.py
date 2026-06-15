@@ -1,6 +1,6 @@
 import json
 
-from pywinauto_mcp.app import app
+from windows_computer_use_mcp.app import app
 
 
 def inspect_tools():

@@ -1,4 +1,4 @@
-# Register pywinauto-mcp in Cursor and/or Claude Desktop (HTTP streamable MCP).
+# Register windows-computer-use-mcp in Cursor and/or Claude Desktop (HTTP streamable MCP).
 param(
     [switch]$Cursor,
     [switch]$Claude,
@@ -7,7 +7,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$ServerKey = "pywinauto-mcp"
+$ServerKey = "windows-computer-use-mcp"
 $McpUrl = "http://127.0.0.1:10789/mcp"
 
 function Get-CursorConfigPath {

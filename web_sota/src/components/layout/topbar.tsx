@@ -10,7 +10,7 @@ export function Topbar() {
 		<header className="flex h-14 items-center justify-between border-b border-slate-800 bg-slate-950/50 px-6 backdrop-blur-xl">
 			<div className="flex items-center gap-4">
 				<h1 className="text-sm font-medium text-slate-400">
-					<span className="text-slate-100">pywinauto-mcp</span> · dev UI
+					<span className="text-slate-100">windows-computer-use-mcp</span> · dev UI
 				</h1>
 			</div>
 

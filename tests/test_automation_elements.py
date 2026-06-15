@@ -2,8 +2,8 @@
 
 from unittest.mock import MagicMock
 
-from pywinauto_mcp.tools.models import ElementOperationRequest
-from pywinauto_mcp.tools.portmanteau_elements import automation_elements
+from windows_computer_use_mcp.tools.models import ElementOperationRequest
+from windows_computer_use_mcp.tools.portmanteau_elements import automation_elements
 
 
 class TestAutomationElements:

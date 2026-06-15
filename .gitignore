@@ -164,9 +164,9 @@ web_sota/dist/
 web_sota/playwright-report/
 web_sota/test-results/
 web_sota/src-tauri/binaries/*.exe
-web_sota/src-tauri/resources/pywinauto-mcp-backend.exe
-dist/pywinauto-mcp-backend.exe
-build/pywinauto-mcp-backend/
+web_sota/src-tauri/resources/windows-computer-use-backend.exe
+dist/windows-computer-use-backend.exe
+build/windows-computer-use-backend/
 web_sota/src-tauri/target/
 build/sidecar/
 

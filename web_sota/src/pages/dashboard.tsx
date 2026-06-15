@@ -7,7 +7,7 @@ import {
 	LayoutDashboard,
 	Network,
 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { apiPath } from "@/lib/api";
@@ -41,6 +41,8 @@ export function Dashboard() {
 	const [host, setHost] = useState<HostInfo | null>(null);
 	const [hostFetchedAt, setHostFetchedAt] = useState<string>("");
 	const [hostError, setHostError] = useState<string>("");
+	const retryRef = useRef(0);
+	const retryTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
 	const refresh = useCallback(() => {
 		fetch(apiPath("/api/v1/health"))
@@ -49,14 +51,17 @@ export function Dashboard() {
 				if (r.ok && (j as { status?: string }).status === "ok") {
 					setBridge("ok");
 					setBridgeDetail("REST bridge reachable");
+					retryRef.current = 0;
 				} else {
 					setBridge("error");
 					setBridgeDetail(`HTTP ${r.status}`);
+					scheduleRetry();
 				}
 			})
-			.catch((e) => {
+			.catch(() => {
 				setBridge("error");
-				setBridgeDetail(String(e));
+				setBridgeDetail("Backend not ready");
+				scheduleRetry();
 			});
 
 		fetch(apiPath("/api/v1/system/info"))
@@ -71,24 +76,44 @@ export function Dashboard() {
 				setHost(j.info);
 				setHostFetchedAt(j.timestamp ?? new Date().toISOString());
 			})
-			.catch((e) => {
+			.catch(() => {
 				setHost(null);
-				setHostError(String(e));
+				setHostError("Backend not ready");
 			});
 	}, []);
 
+	const scheduleRetry = useCallback(() => {
+		if (retryRef.current >= 5) return;
+		const delay = Math.min(1000 * Math.pow(2, retryRef.current), 30000);
+		retryRef.current++;
+		if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+		retryTimerRef.current = setTimeout(refresh, delay);
+	}, [refresh]);
+
 	useEffect(() => {
 		refresh();
+		const isTauri = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+		let unlistenTauri: () => void;
+		if (isTauri) {
+			import("@tauri-apps/api/event").then(({ listen }) => {
+				listen<string>("backend-status", () => {
+					retryRef.current = 0;
+					refresh();
+				}).then((off) => { unlistenTauri = off; });
+			});
+		}
 		const id = window.setInterval(refresh, 45000);
 		return () => {
 			window.clearInterval(id);
+			if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
+			if (unlistenTauri) unlistenTauri();
 		};
 	}, [refresh]);
 
 	return (
 		<div className="space-y-6">
 			<div className="flex flex-wrap items-center justify-between gap-3">
-				<div>
+				<div data-testid="dashboard-header">
 					<h2 className="text-2xl font-bold tracking-tight text-white">
 						Automation Dashboard
 					</h2>
@@ -101,12 +126,13 @@ export function Dashboard() {
 						</code>
 						). Backend:{" "}
 						{bridge === "loading" && (
-							<span className="text-slate-500">checking…</span>
+							<span className="text-slate-500" data-testid="bridge-status-loading">checking…</span>
 						)}
 						{bridge === "ok" && (
 							<Badge
 								variant="outline"
 								className="border-emerald-500/40 text-emerald-400"
+								data-testid="bridge-status-ok"
 							>
 								connected — {bridgeDetail}
 							</Badge>
@@ -115,18 +141,19 @@ export function Dashboard() {
 							<Badge
 								variant="outline"
 								className="border-amber-500/40 text-amber-400"
+								data-testid="bridge-status-error"
 							>
 								unreachable — {bridgeDetail}
 							</Badge>
 						)}
 					</p>
 					{hostFetchedAt && (
-						<p className="text-xs text-slate-500 mt-1">
+						<p className="text-xs text-slate-500 mt-1" data-testid="host-fetched-at">
 							Last host snapshot: {hostFetchedAt}
 						</p>
 					)}
 					{hostError && (
-						<p className="text-xs text-amber-400 mt-1">
+						<p className="text-xs text-amber-400 mt-1" data-testid="host-error">
 							Host metrics: {hostError}
 						</p>
 					)}
@@ -134,7 +161,7 @@ export function Dashboard() {
 			</div>
 
 			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-				<Card className="border-slate-800 bg-slate-950/50">
+				<Card className="border-slate-800 bg-slate-950/50" data-testid="kpi-cpu">
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 						<CardTitle className="text-sm font-medium text-slate-200">
 							CPU
@@ -142,14 +169,14 @@ export function Dashboard() {
 						<Cpu className="h-4 w-4 text-emerald-500" />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold text-white">
+						<div className="text-2xl font-bold text-white" data-testid="cpu-value">
 							{host ? `${host.cpu_percent.toFixed(1)}%` : "—"}
 						</div>
 						<p className="text-xs text-slate-400">1s sample (psutil)</p>
 					</CardContent>
 				</Card>
 
-				<Card className="border-slate-800 bg-slate-950/50">
+				<Card className="border-slate-800 bg-slate-950/50" data-testid="kpi-memory">
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 						<CardTitle className="text-sm font-medium text-slate-200">
 							Memory
@@ -157,7 +184,7 @@ export function Dashboard() {
 						<Activity className="h-4 w-4 text-blue-500" />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold text-white">
+						<div className="text-2xl font-bold text-white" data-testid="memory-value">
 							{host ? `${host.memory_percent.toFixed(1)}%` : "—"}
 						</div>
 						<p className="text-xs text-slate-400">
@@ -168,7 +195,7 @@ export function Dashboard() {
 					</CardContent>
 				</Card>
 
-				<Card className="border-slate-800 bg-slate-950/50">
+				<Card className="border-slate-800 bg-slate-950/50" data-testid="kpi-disk">
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 						<CardTitle className="text-sm font-medium text-slate-200">
 							Disk
@@ -176,7 +203,7 @@ export function Dashboard() {
 						<HardDrive className="h-4 w-4 text-purple-500" />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold text-white">
+						<div className="text-2xl font-bold text-white" data-testid="disk-value">
 							{host ? `${host.disk_percent.toFixed(1)}%` : "—"}
 						</div>
 						<p className="text-xs text-slate-400">
@@ -187,7 +214,7 @@ export function Dashboard() {
 					</CardContent>
 				</Card>
 
-				<Card className="border-slate-800 bg-slate-950/50">
+				<Card className="border-slate-800 bg-slate-950/50" data-testid="kpi-network">
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 						<CardTitle className="text-sm font-medium text-slate-200">
 							Network
@@ -195,7 +222,7 @@ export function Dashboard() {
 						<Network className="h-4 w-4 text-amber-500" />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold text-white">
+						<div className="text-2xl font-bold text-white" data-testid="network-value">
 							{host
 								? `${host.network_bytes_sent_mb} / ${host.network_bytes_recv_mb}`
 								: "—"}

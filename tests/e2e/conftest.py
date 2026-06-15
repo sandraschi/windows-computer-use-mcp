@@ -35,7 +35,7 @@ SOFFICE_EXE = _resolve_soffice()
 @pytest.fixture(autouse=True)
 def loose_libreoffice_uia(monkeypatch):
     """LibreOffice exposes many Custom/Pane nodes — include named visible controls."""
-    monkeypatch.setenv("PYWINAUTO_MCP_LOOSE_UIA", "1")
+    monkeypatch.setenv("windows_computer_use_mcp_LOOSE_UIA", "1")
 SKIP_NO_SOFFICE = pytest.mark.skipif(
     SOFFICE_EXE is None,
     reason="LibreOffice soffice not found (set PYWINAUTO_E2E_SOFFICE)",

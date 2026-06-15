@@ -1,7 +1,7 @@
 [package]
-name = "pywinauto-mcp-operator"
+name = "windows-computer-use-operator"
 version = "0.5.4"
-description = "Tauri desktop shell for pywinauto-mcp operator UI"
+description = "Tauri desktop shell for windows-computer-use-mcp operator UI"
 edition = "2021"
 
 [build-dependencies]

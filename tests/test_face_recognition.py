@@ -12,7 +12,7 @@ import pytest
 
 sys.path.append(str(Path(__file__).parent.parent))
 
-from pywinauto_mcp.face_recognition import FaceRecognition
+from windows_computer_use_mcp.face_recognition import FaceRecognition
 
 # Test data
 TEST_IMAGE_DIR = Path(__file__).parent / "test_images"
@@ -31,7 +31,7 @@ def face_rec():
     from cryptography.fernet import Fernet
 
     # Use a temporary directory for test data
-    with patch("pywinauto_mcp.face_recognition.KNOWN_FACES_DIR", Path("tests/test_data/known_faces")):
+    with patch("windows_computer_use_mcp.face_recognition.KNOWN_FACES_DIR", Path("tests/test_data/known_faces")):
         # Create the test directory if it doesn't exist
         os.makedirs("tests/test_data/known_faces", exist_ok=True)
 
@@ -42,7 +42,7 @@ def face_rec():
         raw_key = base64.urlsafe_b64decode(valid_key)
 
         # Initialize with a valid encryption key (raw bytes)
-        with patch("pywinauto_mcp.face_recognition.ENCRYPTION_KEY", raw_key):
+        with patch("windows_computer_use_mcp.face_recognition.ENCRYPTION_KEY", raw_key):
             yield FaceRecognition(tolerance=0.6, model="hog")
 
     # Cleanup: Remove test data after tests

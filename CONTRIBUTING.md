@@ -1,6 +1,6 @@
-# 🤝 Contributing to PyWinAuto MCP
+# 🤝 Contributing to Windows Computer Use
 
-Thank you for your interest in contributing to PyWinAuto MCP! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to Windows Computer Use! This document provides guidelines and information for contributors.
 
 ## 📋 Table of Contents
 - [Code of Conduct](#code-of-conduct)
@@ -32,8 +32,8 @@ This project follows a code of conduct to ensure a welcoming environment for all
 ### Quick Setup
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/pywinauto-mcp.git
-cd pywinauto-mcp
+git clone https://github.com/yourusername/windows-computer-use-mcp.git
+cd windows-computer-use-mcp
 
 # Create virtual environment
 python -m venv venv
@@ -62,8 +62,8 @@ pre-commit install
 
 ### Project Structure
 ```
-pywinauto-mcp/
-├── src/pywinauto_mcp/     # Main package
+windows-computer-use-mcp/
+├── src/windows_computer_use_mcp/     # Main package
 │   ├── tools/            # MCP tools
 │   ├── api/              # REST API endpoints
 │   ├── core/             # Core functionality
@@ -77,7 +77,7 @@ pywinauto-mcp/
 ## 🔄 Development Workflow
 
 ### 1. Choose an Issue
-- Check [GitHub Issues](https://github.com/yourusername/pywinauto-mcp/issues) for open tasks
+- Check [GitHub Issues](https://github.com/yourusername/windows-computer-use-mcp/issues) for open tasks
 - Look for issues labeled `good first issue` or `help wanted`
 - Comment on the issue to indicate you're working on it
 
@@ -101,7 +101,7 @@ git checkout -b fix/issue-number-description
 pytest tests/ -v
 
 # Run with coverage
-pytest tests/ --cov=pywinauto_mcp
+pytest tests/ --cov=windows_computer_use_mcp
 
 # Run specific test file
 pytest tests/test_specific_feature.py
@@ -141,13 +141,13 @@ pytest -v
 pytest tests/test_face_recognition.py::test_add_face
 
 # Run tests with coverage
-pytest --cov=pywinauto_mcp --cov-report=html
+pytest --cov=windows_computer_use_mcp --cov-report=html
 ```
 
 ### Writing Tests
 ```python
 import pytest
-from pywinauto_mcp.tools.window import get_window_title
+from windows_computer_use_mcp.tools.window import get_window_title
 
 def test_get_window_title():
     """Test getting window title."""
@@ -242,4 +242,4 @@ Contributors will be recognized in:
 
 ---
 
-Thank you for contributing to PyWinAuto MCP! Your efforts help make Windows automation more accessible and powerful for everyone. 🚀
+Thank you for contributing to Windows Computer Use! Your efforts help make Windows automation more accessible and powerful for everyone. 🚀

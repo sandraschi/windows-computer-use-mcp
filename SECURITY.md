@@ -2,7 +2,7 @@
 
 ## 🛡️ Security Overview
 
-PyWinAuto MCP takes security seriously. **Face recognition is optional** and only exposed when **`PYWINAUTO_MCP_ENABLE_FACE=1`** and the **`face`** extra are installed (see **`docs/SAFETY.md` §5**). Core desktop automation does not require it.
+Windows Computer Use takes security seriously. **Face recognition is optional** and only exposed when **`WINDOWS_COMPUTER_USE_MCP_ENABLE_FACE=1`** and the **`face`** extra are installed (see **`docs/SAFETY.md` §5**). Core desktop automation does not require it.
 
 ## 🚨 Reporting Security Vulnerabilities
 
@@ -24,7 +24,7 @@ When reporting a vulnerability, please provide:
 ## 🔐 Security Features
 
 ### Face recognition (when enabled)
-- **Opt-in**: Runtime flag **`PYWINAUTO_MCP_ENABLE_FACE`** plus **`face`** extra — see **`docs/SAFETY.md`**.
+- **Opt-in**: Runtime flag **`WINDOWS_COMPUTER_USE_MCP_ENABLE_FACE`** plus **`face`** extra — see **`docs/SAFETY.md`**.
 - **Encrypted storage**: Face data is stored with strong encryption
 - **Local-only**: Intended for local operator-presence workflows; data does not leave the machine by design
 
@@ -44,7 +44,7 @@ When reporting a vulnerability, please provide:
 1. **Run in Virtual Environment**: Use virtual environments to isolate the installation
 2. **Limit Permissions**: Run with minimal required Windows permissions
 3. **Network Access**: Only expose the server on localhost unless necessary
-4. **Regular Updates**: Keep PyWinAuto MCP and dependencies updated
+4. **Regular Updates**: Keep Windows Computer Use and dependencies updated
 
 ### For Developers
 1. **Code Review**: All changes undergo security review
@@ -91,7 +91,7 @@ When reporting a vulnerability, please provide:
 
 ## 🚫 Prohibited Activities
 
-PyWinAuto MCP should not be used for:
+Windows Computer Use should not be used for:
 - Unauthorized access to systems
 - Malware or virus creation
 - Privacy violations
@@ -111,4 +111,4 @@ Security is a collaborative effort. We appreciate the security research communit
 
 ---
 
-*This security policy applies to PyWinAuto MCP and its associated repositories.*
+*This security policy applies to Windows Computer Use and its associated repositories.*

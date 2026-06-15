@@ -1,6 +1,6 @@
-# AGENT_PROTOCOLS - PyWinAuto MCP [v14.2.0]
+# AGENT_PROTOCOLS - Windows Computer Use [v14.2.0]
 
-This document establishes the authoritative operational protocols for AI agents consuming the `pywinauto-mcp` service on Windows 11 environments.
+This document establishes the authoritative operational protocols for AI agents consuming the `windows-computer-use-mcp` service on Windows 11 environments.
 
 ## I. Operational Guardrails
 
@@ -10,7 +10,7 @@ This document establishes the authoritative operational protocols for AI agents 
 - **Fail-Safe**: Tools will return an error if called outside the safety window for non-read-only operations.
 
 ### 2. Physical Safety & System Stability
-- **Kill Switch**: The system obeys the `PYWINAUTO_MCP_KILL_SWITCH` environment variable. If set to `true`, all automation tools will immediately abort.
+- **Kill Switch**: The system obeys the `WINDOWS_COMPUTER_USE_MCP_KILL_SWITCH` environment variable. If set to `true`, all automation tools will immediately abort.
 - **Rate Limiting**: AI agents must not exceed 20 UI actions per minute to prevent OS instability.
 - **Dry Run Mode**: Agents should use `DRY_RUN=true` for initial validation of complex UI selectors.
 

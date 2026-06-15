@@ -3,9 +3,9 @@ requires = ["setuptools>=42.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "pywinauto-mcp"
+name = "windows-computer-use-mcp"
 version = "0.5.4"
-description = "CUA-MCP (Computer Use Agent): Windows GUI automation with verification — read docs/SAFETY.md and docs/CUA_ROADMAP.md. FastMCP 3.2.0 agentic sampling."
+description = "Windows Computer Use for AI Agents — click, screenshot, type, drag, OCR, and verify native Windows UI via MCP. FastMCP 3.2.0 agentic sampling."
 readme = "README.md"
 authors = [
     {name = "Sandra Schilling", email = "sandra@example.com"},
@@ -60,13 +60,15 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/sandraschi/pywinauto-mcp"
-Documentation = "https://github.com/sandraschi/pywinauto-mcp#readme"
-Issues = "https://github.com/sandraschi/pywinauto-mcp/issues"
-Source = "https://github.com/sandraschi/pywinauto-mcp"
+Homepage = "https://github.com/sandraschi/windows-computer-use-mcp"
+Documentation = "https://github.com/sandraschi/windows-computer-use-mcp#readme"
+Issues = "https://github.com/sandraschi/windows-computer-use-mcp/issues"
+Source = "https://github.com/sandraschi/windows-computer-use-mcp"
 
 [project.scripts]
-pywinauto-mcp = "pywinauto_mcp.main:main"
+windows-computer-use-mcp = "windows_computer_use_mcp.main:main"
+# Legacy alias for backward compatibility
+windows-computer-use-mcp = "windows_computer_use_mcp.main:main"
 
 [project.optional-dependencies]
 face = [
@@ -108,11 +110,11 @@ desktop = [
 ]
 
 all = [
-    "pywinauto-mcp[face,dev,desktop]",
+    "windows-computer-use-mcp[face,dev,desktop]",
 ]
 
 [project.entry-points]
-"fastmcp.plugins" = { pywinauto = "pywinauto_mcp.plugins:setup_plugin" }
+"fastmcp.plugins" = { pywinauto = "windows_computer_use_mcp.plugins:setup_plugin" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -152,11 +154,11 @@ warn_no_return = true
 warn_unreachable = true
 
 [tool.mcpb]
-name = "pywinauto-mcp"
-display_name = "PyWinAuto MCP - Portmanteau Edition"
+name = "windows-computer-use-mcp"
+display_name = "Windows Computer Use - MCP"
 version = "0.4.2"
 description = "Windows UI automation with 8 comprehensive portmanteau tools"
-entry_point = "pywinauto_mcp.main:app"
+entry_point = "windows_computer_use_mcp.main:app"
 
 [tool.ruff]
 line-length = 120
@@ -187,9 +189,9 @@ ignore = [
 # Examples tweak sys.path before importing sibling helpers
 "examples/demo_notepad_grid.py" = ["E402"]
 "examples/demo_notepad_typewriter.py" = ["E402"]
-"src/pywinauto_mcp/security_endpoints.py" = ["E402"]
-"src/pywinauto_mcp/tools/portmanteau_face.py" = ["E402"]
-"src/pywinauto_mcp/tools/portmanteau_mission.py" = ["E402"]
+"src/windows_computer_use_mcp/security_endpoints.py" = ["E402"]
+"src/windows_computer_use_mcp/tools/portmanteau_face.py" = ["E402"]
+"src/windows_computer_use_mcp/tools/portmanteau_mission.py" = ["E402"]
 "scratch/**" = ["B023"]
 
 [tool.ruff.format]

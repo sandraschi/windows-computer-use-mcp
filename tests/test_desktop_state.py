@@ -2,14 +2,14 @@
 
 from unittest.mock import MagicMock, patch
 
-from pywinauto_mcp.tools.desktop_state import get_desktop_state
-from pywinauto_mcp.tools.models import DesktopStateRequest
+from windows_computer_use_mcp.tools.desktop_state import get_desktop_state
+from windows_computer_use_mcp.tools.models import DesktopStateRequest
 
 
 class TestGetDesktopState:
     """Tests for get_desktop_state tool."""
 
-    @patch("pywinauto_mcp.tools.desktop_state.DesktopStateCapture")
+    @patch("windows_computer_use_mcp.tools.desktop_state.DesktopStateCapture")
     def test_get_desktop_state_basic(self, mock_capture_class, verify_result):
         """Test basic desktop state capture."""
         mock_capturer = MagicMock()
@@ -28,7 +28,7 @@ class TestGetDesktopState:
         assert result.data["element_count"] == 2
         assert len(result.data["interactive_elements"]) == 1
 
-    @patch("pywinauto_mcp.tools.desktop_state.DesktopStateCapture")
+    @patch("windows_computer_use_mcp.tools.desktop_state.DesktopStateCapture")
     def test_get_desktop_state_with_vision(self, mock_capture_class, verify_result):
         """Test desktop state capture with vision enabled."""
         mock_capturer = MagicMock()
@@ -47,7 +47,7 @@ class TestGetDesktopState:
         verify_result(result)
         mock_capturer.capture.assert_called_once_with(use_vision=True, use_ocr=False)
 
-    @patch("pywinauto_mcp.tools.desktop_state.DesktopStateCapture")
+    @patch("windows_computer_use_mcp.tools.desktop_state.DesktopStateCapture")
     def test_get_desktop_state_with_ocr(self, mock_capture_class, verify_result):
         """Test desktop state capture with OCR enabled."""
         mock_capturer = MagicMock()
@@ -65,7 +65,7 @@ class TestGetDesktopState:
         verify_result(result)
         mock_capturer.capture.assert_called_once_with(use_vision=False, use_ocr=True)
 
-    @patch("pywinauto_mcp.tools.desktop_state.DesktopStateCapture")
+    @patch("windows_computer_use_mcp.tools.desktop_state.DesktopStateCapture")
     def test_get_desktop_state_with_custom_depth(self, mock_capture_class, verify_result):
         """Test desktop state capture with custom max_depth."""
         mock_capturer = MagicMock()
@@ -83,7 +83,7 @@ class TestGetDesktopState:
         verify_result(result)
         mock_capture_class.assert_called_once_with(max_depth=15, element_timeout=0.5)
 
-    @patch("pywinauto_mcp.tools.desktop_state.DesktopStateCapture")
+    @patch("windows_computer_use_mcp.tools.desktop_state.DesktopStateCapture")
     def test_get_desktop_state_error_handling(self, mock_capture_class, verify_result):
         """Test desktop state capture error handling."""
         mock_capturer = MagicMock()

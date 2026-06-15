@@ -4,7 +4,7 @@ Windows **computer use agent** — MCP host drives portmanteau tools; server act
 
 ```
 ┌─────────────────┐     stdio / HTTP      ┌──────────────────────────┐
-│  MCP host       │ ◄──────────────────► │  pywinauto-mcp           │
+│  MCP host       │ ◄──────────────────► │  windows-computer-use-mcp│
 │  (Cursor,       │      /mcp             │  FastMCP 3.2 + FastAPI    │
 │   Claude, …)    │                       │  port 10789              │
 └─────────────────┘                       └───────────┬──────────────┘
@@ -23,10 +23,10 @@ Windows **computer use agent** — MCP host drives portmanteau tools; server act
 
 | Layer | Path | Role |
 |-------|------|------|
-| MCP surface | `src/pywinauto_mcp/app.py`, `tools/` | Portmanteau tool registration |
-| Transport | `src/pywinauto_mcp/transport.py`, `server.py` | stdio + ASGI `/mcp` + REST `/api/v1` |
-| Input | `src/pywinauto_mcp/win32_mouse.py` | DPI-aware pointer injection |
-| Safety | `src/pywinauto_mcp/safety*.py` | HITL, kill switch, rate limits |
+| MCP surface | `src/windows_computer_use_mcp/app.py`, `tools/` | Portmanteau tool registration |
+| Transport | `src/windows_computer_use_mcp/transport.py`, `server.py` | stdio + ASGI `/mcp` + REST `/api/v1` |
+| Input | `src/windows_computer_use_mcp/win32_mouse.py` | DPI-aware pointer injection |
+| Safety | `src/windows_computer_use_mcp/safety*.py` | HITL, kill switch, rate limits |
 | Web operator | `web_sota/` | Vite UI on **10788** → proxy **10789** |
 | Desktop app | `web_sota/src-tauri/` | Tauri operator + PyInstaller sidecar |
 

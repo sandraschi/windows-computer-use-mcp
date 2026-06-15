@@ -1,6 +1,6 @@
 # Documentation index
 
-Hub for **pywinauto-mcp** — the fleet's Windows **computer use agent**. Root overview: [README.md](../README.md) (includes **Python stack** and **opt-in invasive tools**). Releases: [CHANGELOG.md](../CHANGELOG.md).
+Hub for **windows-computer-use-mcp** — the fleet's Windows **computer use agent**. Root overview: [README.md](../README.md) (includes **Python stack** and **opt-in invasive tools**). Releases: [CHANGELOG.md](../CHANGELOG.md).
 
 **Canonical map:** [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md) — lists stale/archival folders (`notepadpp/`, old `COMPLETE_DOCUMENTATION_STRUCTURE.md`, etc.).
 
@@ -46,7 +46,7 @@ Hub for **pywinauto-mcp** — the fleet's Windows **computer use agent**. Root o
 
 ## Fleet cross-links
 
-- **mcp-central-docs** — `patterns/PYWINAUTO_MCP_SAFETY.md`, `standards/testing-environment-aware.md`, `standards/MCPB_PACKAGING_STANDARDS.md`
+- **mcp-central-docs** — `patterns/WINDOWS_COMPUTER_USE_MCP_SAFETY.md`, `standards/testing-environment-aware.md`, `standards/MCPB_PACKAGING_STANDARDS.md`
 - **Sibling:** [autohotkey-mcp](https://github.com/sandraschi/autohotkey-mcp) — AHK scriptlets (orthogonal to native UI here)
 
 **Scope:** Native **desktop** UI only. **Website** automation belongs on a browser MCP (typically Playwright).

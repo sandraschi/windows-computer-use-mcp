@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from pywinauto_mcp import template_library
+from windows_computer_use_mcp import template_library
 
 
 def test_manifest_lists_vroid_templates():

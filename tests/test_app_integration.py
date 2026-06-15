@@ -1,7 +1,7 @@
 import pytest
 
 # Trigger tool registration
-from pywinauto_mcp.app import app
+from windows_computer_use_mcp.app import app
 
 
 class TestAppInitialization:
@@ -11,7 +11,7 @@ class TestAppInitialization:
         """Test that app instance is created."""
         assert app is not None
         assert hasattr(app, "name")
-        assert app.name == "pywinauto-mcp"
+        assert app.name == "windows-computer-use-mcp"
 
     def test_app_version(self):
         """Test that app has correct version from pyproject.toml."""
@@ -20,7 +20,7 @@ class TestAppInitialization:
 
     def test_ocr_availability_flag(self):
         """Test OCR availability flag."""
-        from pywinauto_mcp.app import OCR_AVAILABLE
+        from windows_computer_use_mcp.app import OCR_AVAILABLE
 
         assert isinstance(OCR_AVAILABLE, bool)
 
@@ -66,14 +66,14 @@ class TestModuleImports:
     def test_all_tool_modules_importable(self):
         """Test that all tool modules can be imported."""
         modules = [
-            "pywinauto_mcp.tools.portmanteau_windows",
-            "pywinauto_mcp.tools.portmanteau_elements",
-            "pywinauto_mcp.tools.portmanteau_mouse",
-            "pywinauto_mcp.tools.portmanteau_keyboard",
-            "pywinauto_mcp.tools.portmanteau_visual",
-            "pywinauto_mcp.tools.portmanteau_system",
-            "pywinauto_mcp.tools.portmanteau_mission",
-            "pywinauto_mcp.tools.desktop_state",
+            "windows_computer_use_mcp.tools.portmanteau_windows",
+            "windows_computer_use_mcp.tools.portmanteau_elements",
+            "windows_computer_use_mcp.tools.portmanteau_mouse",
+            "windows_computer_use_mcp.tools.portmanteau_keyboard",
+            "windows_computer_use_mcp.tools.portmanteau_visual",
+            "windows_computer_use_mcp.tools.portmanteau_system",
+            "windows_computer_use_mcp.tools.portmanteau_mission",
+            "windows_computer_use_mcp.tools.desktop_state",
         ]
 
         for module_name in modules:

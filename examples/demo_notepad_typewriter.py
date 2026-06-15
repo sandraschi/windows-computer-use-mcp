@@ -27,7 +27,7 @@ from pywinauto import Desktop
 
 logger = logging.getLogger(__name__)
 
-TEXT = """=== pywinauto-mcp demo ===
+TEXT = """=== windows-computer-use-mcp demo ===
 
 The cursor danced, nine panes aligned,
 And this line was typed by design.

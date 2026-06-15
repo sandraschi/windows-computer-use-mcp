@@ -5,9 +5,9 @@ from pathlib import Path
 import pytest
 from PIL import Image, ImageDraw
 
-from pywinauto_mcp import assert_engine
-from pywinauto_mcp.tools.models import AssertOperationRequest, ToolResult
-from pywinauto_mcp.tools.portmanteau_assert import automation_assert
+from windows_computer_use_mcp import assert_engine
+from windows_computer_use_mcp.tools.models import AssertOperationRequest, ToolResult
+from windows_computer_use_mcp.tools.portmanteau_assert import automation_assert
 
 
 def _solid(path: Path, color: tuple[int, int, int], size: tuple[int, int] = (100, 100)) -> Path:

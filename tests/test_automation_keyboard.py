@@ -8,8 +8,8 @@ class TestAutomationKeyboard:
 
     def test_keyboard_type(self, mock_pyautogui, verify_result):
         """Test typing text."""
-        from pywinauto_mcp.tools.models import KeyboardOperationRequest
-        from pywinauto_mcp.tools.portmanteau_keyboard import automation_keyboard
+        from windows_computer_use_mcp.tools.models import KeyboardOperationRequest
+        from windows_computer_use_mcp.tools.portmanteau_keyboard import automation_keyboard
 
         req = KeyboardOperationRequest(operation="type", text="Hello World", interval=0.1)
         result = automation_keyboard(req)
@@ -19,8 +19,8 @@ class TestAutomationKeyboard:
 
     def test_keyboard_press(self, mock_pyautogui, verify_result):
         """Test pressing a key."""
-        from pywinauto_mcp.tools.models import KeyboardOperationRequest
-        from pywinauto_mcp.tools.portmanteau_keyboard import automation_keyboard
+        from windows_computer_use_mcp.tools.models import KeyboardOperationRequest
+        from windows_computer_use_mcp.tools.portmanteau_keyboard import automation_keyboard
 
         req = KeyboardOperationRequest(operation="press", key="enter")
         result = automation_keyboard(req)
@@ -30,8 +30,8 @@ class TestAutomationKeyboard:
 
     def test_keyboard_hotkey(self, mock_pyautogui, verify_result):
         """Test pressing a hotkey combination."""
-        from pywinauto_mcp.tools.models import KeyboardOperationRequest
-        from pywinauto_mcp.tools.portmanteau_keyboard import automation_keyboard
+        from windows_computer_use_mcp.tools.models import KeyboardOperationRequest
+        from windows_computer_use_mcp.tools.portmanteau_keyboard import automation_keyboard
 
         req = KeyboardOperationRequest(operation="hotkey", keys=["ctrl", "c"])
         result = automation_keyboard(req)
@@ -51,7 +51,7 @@ class TestAutomationKeyboard:
         import pytest
         from pydantic import ValidationError
 
-        from pywinauto_mcp.tools.models import KeyboardOperationRequest
+        from windows_computer_use_mcp.tools.models import KeyboardOperationRequest
 
         with pytest.raises(ValidationError):
             KeyboardOperationRequest(operation="invalid_op", text="test")

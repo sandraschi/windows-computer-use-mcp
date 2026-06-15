@@ -2,7 +2,7 @@
 
 import pytest
 
-from pywinauto_mcp.retry import with_retry
+from windows_computer_use_mcp.retry import with_retry
 
 
 def test_with_retry_succeeds_second_attempt():

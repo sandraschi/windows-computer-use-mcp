@@ -5,8 +5,8 @@
 #>
 param(
     [string]$TauriStartsDir = "D:\Dev\Tauri starts",
-    [string]$ShortcutName = "pywinauto-mcp-setup.lnk",
-    [string]$ProductLabel = "pywinauto-mcp",
+    [string]$ShortcutName = "windows-computer-use-mcp-setup.lnk",
+    [string]$ProductLabel = "windows-computer-use-mcp",
     [string]$NsisDir = "",
     [string]$InstallerPath = ""
 )

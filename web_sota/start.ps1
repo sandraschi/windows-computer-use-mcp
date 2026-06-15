@@ -37,7 +37,7 @@ if (-not (Test-Path "node_modules")) { npm install }
 Write-Host "Starting Python backend on port $BackendPort ..." -ForegroundColor Cyan
 
 $srcPath = Join-Path $ProjectRoot "src"
-$backendCmd = "`$env:PYTHONPATH = '$srcPath'; Set-Location '$ProjectRoot'; uv run uvicorn pywinauto_mcp.server:app --host 127.0.0.1 --port $BackendPort --log-level info"
+$backendCmd = "`$env:PYTHONPATH = '$srcPath'; Set-Location '$ProjectRoot'; uv run uvicorn windows_computer_use_mcp.server:app --host 127.0.0.1 --port $BackendPort --log-level info"
 
 Start-Process powershell -ArgumentList "-NoExit", "-Command", $backendCmd -WorkingDirectory $ProjectRoot -WindowStyle Normal
 

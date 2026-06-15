@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from pywinauto_mcp.tools import utils
+from windows_computer_use_mcp.tools import utils
 
 
 class TestErrorResponse:
@@ -91,7 +91,7 @@ class TestHandleErrors:
 class TestLogExecution:
     """Tests for log_execution decorator."""
 
-    @patch("pywinauto_mcp.tools.utils.logger")
+    @patch("windows_computer_use_mcp.tools.utils.logger")
     def test_log_execution_success(self, mock_logger):
         """Test execution logging with successful function."""
 
@@ -104,7 +104,7 @@ class TestLogExecution:
         assert result == "result"
         assert mock_logger.info.called
 
-    @patch("pywinauto_mcp.tools.utils.logger")
+    @patch("windows_computer_use_mcp.tools.utils.logger")
     def test_log_execution_exception(self, mock_logger):
         """Test execution logging with exception."""
 
@@ -121,7 +121,7 @@ class TestLogExecution:
 class TestTimer:
     """Tests for timer context manager."""
 
-    @patch("pywinauto_mcp.tools.utils.logger")
+    @patch("windows_computer_use_mcp.tools.utils.logger")
     def test_timer_context_manager(self, mock_logger):
         """Test timer context manager."""
         with utils.timer("test operation"):
@@ -133,7 +133,7 @@ class TestTimer:
 class TestValidateWindowHandle:
     """Tests for validate_window_handle function."""
 
-    @patch("pywinauto_mcp.tools.utils.Desktop")
+    @patch("windows_computer_use_mcp.tools.utils.Desktop")
     def test_validate_window_handle_valid(self, mock_desktop):
         """Test validating a valid window handle."""
         mock_desktop_obj = MagicMock()
@@ -146,7 +146,7 @@ class TestValidateWindowHandle:
 
         assert result is True
 
-    @patch("pywinauto_mcp.tools.utils.Desktop")
+    @patch("windows_computer_use_mcp.tools.utils.Desktop")
     def test_validate_window_handle_invalid(self, mock_desktop):
         """Test validating an invalid window handle."""
         mock_desktop_obj = MagicMock()
@@ -161,7 +161,7 @@ class TestValidateWindowHandle:
 class TestGetDesktop:
     """Tests for get_desktop function."""
 
-    @patch("pywinauto_mcp.tools.utils.Desktop")
+    @patch("windows_computer_use_mcp.tools.utils.Desktop")
     def test_get_desktop_success(self, mock_desktop):
         """Test getting desktop instance successfully."""
         mock_desktop_obj = MagicMock()
@@ -172,8 +172,8 @@ class TestGetDesktop:
         assert result == mock_desktop_obj
         mock_desktop.assert_called_once_with(backend="uia")
 
-    @patch("pywinauto_mcp.tools.utils.Desktop")
-    @patch("pywinauto_mcp.tools.utils.logger")
+    @patch("windows_computer_use_mcp.tools.utils.Desktop")
+    @patch("windows_computer_use_mcp.tools.utils.logger")
     def test_get_desktop_failure(self, mock_logger, mock_desktop):
         """Test getting desktop instance with failure."""
         mock_desktop.side_effect = Exception("Desktop init failed")

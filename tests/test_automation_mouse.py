@@ -10,8 +10,8 @@ class TestAutomationMouse:
         """Test getting mouse position."""
         mock_pyautogui.position.return_value = (100, 200)
 
-        from pywinauto_mcp.tools.models import MouseOperationRequest
-        from pywinauto_mcp.tools.portmanteau_mouse import automation_mouse
+        from windows_computer_use_mcp.tools.models import MouseOperationRequest
+        from windows_computer_use_mcp.tools.portmanteau_mouse import automation_mouse
 
         req = MouseOperationRequest(operation="position")
         result = automation_mouse(req)
@@ -23,8 +23,8 @@ class TestAutomationMouse:
 
     def test_mouse_move_absolute(self, mock_pyautogui, verify_result):
         """Test absolute mouse movement."""
-        from pywinauto_mcp.tools.models import MouseOperationRequest
-        from pywinauto_mcp.tools.portmanteau_mouse import automation_mouse
+        from windows_computer_use_mcp.tools.models import MouseOperationRequest
+        from windows_computer_use_mcp.tools.portmanteau_mouse import automation_mouse
 
         req = MouseOperationRequest(operation="move", x=500, y=600, absolute=True)
         result = automation_mouse(req)
@@ -38,8 +38,8 @@ class TestAutomationMouse:
         """Test relative mouse movement."""
         mock_pyautogui.position.return_value = (150, 150)
 
-        from pywinauto_mcp.tools.models import MouseOperationRequest
-        from pywinauto_mcp.tools.portmanteau_mouse import automation_mouse
+        from windows_computer_use_mcp.tools.models import MouseOperationRequest
+        from windows_computer_use_mcp.tools.portmanteau_mouse import automation_mouse
 
         req = MouseOperationRequest(operation="move_relative", x=50, y=50)
         result = automation_mouse(req)
@@ -51,8 +51,8 @@ class TestAutomationMouse:
 
     def test_mouse_click(self, mock_pyautogui, verify_result):
         """Test mouse click at position."""
-        from pywinauto_mcp.tools.models import MouseOperationRequest
-        from pywinauto_mcp.tools.portmanteau_mouse import automation_mouse
+        from windows_computer_use_mcp.tools.models import MouseOperationRequest
+        from windows_computer_use_mcp.tools.portmanteau_mouse import automation_mouse
 
         req = MouseOperationRequest(operation="click", x=100, y=100, button="left")
         result = automation_mouse(req)
@@ -64,8 +64,8 @@ class TestAutomationMouse:
 
     def test_mouse_double_click(self, mock_pyautogui, verify_result):
         """Test mouse double click."""
-        from pywinauto_mcp.tools.models import MouseOperationRequest
-        from pywinauto_mcp.tools.portmanteau_mouse import automation_mouse
+        from windows_computer_use_mcp.tools.models import MouseOperationRequest
+        from windows_computer_use_mcp.tools.portmanteau_mouse import automation_mouse
 
         req = MouseOperationRequest(operation="double_click", x=100, y=100)
         result = automation_mouse(req)
@@ -75,8 +75,8 @@ class TestAutomationMouse:
 
     def test_mouse_right_click(self, mock_pyautogui, verify_result):
         """Test mouse right click."""
-        from pywinauto_mcp.tools.models import MouseOperationRequest
-        from pywinauto_mcp.tools.portmanteau_mouse import automation_mouse
+        from windows_computer_use_mcp.tools.models import MouseOperationRequest
+        from windows_computer_use_mcp.tools.portmanteau_mouse import automation_mouse
 
         req = MouseOperationRequest(operation="right_click", x=100, y=100)
         result = automation_mouse(req)
@@ -86,8 +86,8 @@ class TestAutomationMouse:
 
     def test_mouse_scroll(self, mock_pyautogui, verify_result):
         """Test mouse scroll."""
-        from pywinauto_mcp.tools.models import MouseOperationRequest
-        from pywinauto_mcp.tools.portmanteau_mouse import automation_mouse
+        from windows_computer_use_mcp.tools.models import MouseOperationRequest
+        from windows_computer_use_mcp.tools.portmanteau_mouse import automation_mouse
 
         req = MouseOperationRequest(operation="scroll", clicks=10)
         result = automation_mouse(req)
@@ -97,8 +97,8 @@ class TestAutomationMouse:
 
     def test_mouse_drag(self, mock_pyautogui, verify_result):
         """Test mouse drag."""
-        from pywinauto_mcp.tools.models import MouseOperationRequest
-        from pywinauto_mcp.tools.portmanteau_mouse import automation_mouse
+        from windows_computer_use_mcp.tools.models import MouseOperationRequest
+        from windows_computer_use_mcp.tools.portmanteau_mouse import automation_mouse
 
         req = MouseOperationRequest(operation="drag", x=100, y=100, x2=200, y2=200)
         result = automation_mouse(req)
@@ -112,7 +112,7 @@ class TestAutomationMouse:
         import pytest
         from pydantic import ValidationError
 
-        from pywinauto_mcp.tools.models import MouseOperationRequest
+        from windows_computer_use_mcp.tools.models import MouseOperationRequest
 
         with pytest.raises(ValidationError):
             MouseOperationRequest(operation="invalid_op")

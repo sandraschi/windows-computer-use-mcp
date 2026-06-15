@@ -120,7 +120,7 @@ export function Tools() {
 					className="px-3 py-1 border-blue-500/20 text-blue-400"
 				>
 					<Wrench className="w-3 h-3 mr-2" />
-					pywinauto-mcp
+					windows-computer-use-mcp
 				</Badge>
 			</div>
 

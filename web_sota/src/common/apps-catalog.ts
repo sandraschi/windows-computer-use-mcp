@@ -42,7 +42,7 @@ export const APPS_CATALOG: AppEntry[] = [
 	{
 		id: "robotics-mcp",
 		label: "Robotics MCP (fleet)",
-		description: "Arms / mobile robots — not pywinauto-mcp; separate server",
+		description: "Arms / mobile robots — not windows-computer-use-mcp; separate server",
 		icon: Bot,
 		url: "http://localhost:10706",
 		port: 10706,

@@ -1,13 +1,13 @@
 """Tests for Cua Driver parity helpers."""
 
-from pywinauto_mcp.desktop_state.capture import _legacy_capture_mode, normalize_elements_for_snapshot
-from pywinauto_mcp.dispatch import (
+from windows_computer_use_mcp.desktop_state.capture import _legacy_capture_mode, normalize_elements_for_snapshot
+from windows_computer_use_mcp.dispatch import (
     BACKGROUND_UNAVAILABLE,
     background_unavailable_result,
     default_dispatch_mode,
     resolve_dispatch,
 )
-from pywinauto_mcp.snapshot_store import SnapshotStore
+from windows_computer_use_mcp.snapshot_store import SnapshotStore
 
 
 def test_legacy_capture_mode():

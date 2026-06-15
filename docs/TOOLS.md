@@ -29,8 +29,8 @@ Portmanteau tools for the Windows **computer use agent**. Each tool takes an `op
 
 | Tool | Enable |
 |------|--------|
-| `automation_face` | **Off by default.** `PYWINAUTO_MCP_ENABLE_FACE=1` + `face` extra |
-| `global_keylogger` | **Off by default.** `PYWINAUTO_MCP_ENABLE_KEYLOGGER=1` — non-stealth debug hook; [SAFETY.md](SAFETY.md) §6 |
+| `automation_face` | **Off by default.** `WINDOWS_COMPUTER_USE_MCP_ENABLE_FACE=1` + `face` extra |
+| `global_keylogger` | **Off by default.** `WINDOWS_COMPUTER_USE_MCP_ENABLE_KEYLOGGER=1` — non-stealth debug hook; [SAFETY.md](SAFETY.md) §6 |
 
 ## Examples
 

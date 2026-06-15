@@ -1,4 +1,5 @@
-import { Activity, Database, MessageSquare, Sliders } from "lucide-react";
+import { Activity, Cpu, Database, MessageSquare, Save, Sliders } from "lucide-react";
+import { useEffect, useState } from "react";
 import { McpClientPanel } from "@/components/McpClientPanel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,8 +14,44 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+interface LlmProvider {
+	id: string;
+	label: string;
+	base_url: string;
+	models: string[];
+	needs_key: boolean;
+}
+
+interface ProvidersResponse {
+	providers: LlmProvider[];
+}
+
 export function Settings() {
 	const mcp = useMcpSetup();
+	const [providers, setProviders] = useState<LlmProvider[]>([]);
+	const [selectedProvider, setSelectedProvider] = useState(() =>
+		localStorage.getItem("pywinauto-llm-provider") || "ollama"
+	);
+	const [selectedModel, setSelectedModel] = useState(() =>
+		localStorage.getItem("pywinauto-llm-model") || ""
+	);
+	const [llmSaved, setLlmSaved] = useState(false);
+
+	useEffect(() => {
+		fetch("/api/llm/providers")
+			.then((r) => r.json() as Promise<ProvidersResponse>)
+			.then((data) => setProviders(data.providers))
+			.catch(() => setProviders([]));
+	}, []);
+
+	const currentProvider = providers.find((p) => p.id === selectedProvider);
+
+	const handleSaveLlm = () => {
+		localStorage.setItem("pywinauto-llm-provider", selectedProvider);
+		localStorage.setItem("pywinauto-llm-model", selectedModel);
+		setLlmSaved(true);
+		setTimeout(() => setLlmSaved(false), 2000);
+	};
 
 	return (
 		<div className="p-6 space-y-6">
@@ -150,6 +187,72 @@ export function Settings() {
 					</CardContent>
 				</Card>
 			</div>
+
+			<Card className="border-slate-800 bg-slate-900/50">
+				<CardHeader>
+					<CardTitle className="flex items-center text-white">
+						<Cpu className="w-5 h-5 mr-2 text-blue-500" />
+						LLM Configuration
+					</CardTitle>
+					<CardDescription>
+						Discovered local LLM providers — set model for chat
+					</CardDescription>
+				</CardHeader>
+				<CardContent className="space-y-4">
+					<div className="grid gap-2">
+						<Label className="text-slate-300">Provider</Label>
+						<select
+							className="bg-slate-950 border border-slate-800 text-slate-100 rounded-md px-3 py-2 text-sm"
+							value={selectedProvider}
+							onChange={(e) => {
+								setSelectedProvider(e.target.value);
+								setSelectedModel("");
+							}}
+						>
+							{providers.length === 0 && (
+								<option value="ollama">Ollama (default)</option>
+							)}
+							{providers.map((p) => (
+								<option key={p.id} value={p.id}>
+									{p.label} {p.models.length === 0 ? "(offline)" : ""}
+								</option>
+							))}
+						</select>
+						<p className="text-xs text-slate-500">
+							{currentProvider?.models.length
+								? `${currentProvider.models.length} model(s) detected`
+								: "Start your local LLM to discover models"}
+						</p>
+					</div>
+					<div className="grid gap-2">
+						<Label className="text-slate-300">Model</Label>
+						<select
+							className="bg-slate-950 border border-slate-800 text-slate-100 rounded-md px-3 py-2 text-sm"
+							value={selectedModel}
+							onChange={(e) => setSelectedModel(e.target.value)}
+						>
+							<option value="">Auto / first available</option>
+							{(currentProvider?.models || []).map((m) => (
+								<option key={m} value={m}>
+									{m}
+								</option>
+							))}
+						</select>
+					</div>
+					<Button
+						variant="outline"
+						className="border-slate-800 text-blue-400 hover:bg-slate-800"
+						onClick={handleSaveLlm}
+					>
+						{llmSaved ? (
+							<Save className="h-4 w-4 mr-1" />
+						) : (
+							<Save className="h-4 w-4 mr-1" />
+						)}
+						{llmSaved ? "Saved" : "Save LLM Settings"}
+					</Button>
+				</CardContent>
+			</Card>
 
 			<Card className="border-slate-800 bg-slate-900/50">
 				<CardHeader>

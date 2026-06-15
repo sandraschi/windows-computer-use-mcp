@@ -3,7 +3,7 @@ import { listen } from "@tauri-apps/api/event";
 import { useCallback, useEffect, useState } from "react";
 import { apiPath } from "@/lib/api";
 
-const ONBOARDING_KEY = "pywinauto-mcp-onboarding-v1";
+const ONBOARDING_KEY = "windows-computer-use-mcp-onboarding-v1";
 
 export type McpRegistrationStatus = {
 	mcpUrl: string;

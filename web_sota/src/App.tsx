@@ -15,6 +15,7 @@ import { Settings } from "@/pages/settings";
 import { Targets } from "@/pages/targets";
 import { Tools } from "@/pages/tools";
 import { Windows } from "@/pages/windows";
+import Logging from "@/pages/Logging";
 
 function App() {
 	return (
@@ -30,8 +31,9 @@ function App() {
 					<Route path="/tools" element={<Tools />} />
 					<Route path="/targets" element={<Targets />} />
 					<Route path="/help" element={<Help />} />
-					<Route path="/settings" element={<Settings />} />
-					<Route path="*" element={<Navigate to="/" replace />} />
+				<Route path="/settings" element={<Settings />} />
+				<Route path="/logs" element={<Logging />} />
+				<Route path="*" element={<Navigate to="/" replace />} />
 				</Routes>
 			</AppLayout>
 		</Router>

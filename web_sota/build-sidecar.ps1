@@ -1,13 +1,13 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-    Build the PyInstaller sidecar for the pywinauto-mcp Tauri operator shell.
+    Build the PyInstaller sidecar for the windows-computer-use-mcp Tauri operator shell.
 #>
 $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
 $Triple = "x86_64-pc-windows-msvc"
 
-Write-Host "=== pywinauto-mcp sidecar build ===" -ForegroundColor Cyan
+Write-Host "=== windows-computer-use-mcp sidecar build ===" -ForegroundColor Cyan
 
 Push-Location $Root
 try {
@@ -20,18 +20,18 @@ try {
         Write-Host "-> PyInstaller: $pi" -ForegroundColor Gray
     }
 
-    Remove-Item -Recurse -Force "$Root\build\pywinauto-mcp-backend" -ErrorAction SilentlyContinue
-    Remove-Item -Force "$Root\dist\pywinauto-mcp-backend.exe" -ErrorAction SilentlyContinue
+    Remove-Item -Recurse -Force "$Root\build\windows-computer-use-backend" -ErrorAction SilentlyContinue
+    Remove-Item -Force "$Root\dist\windows-computer-use-backend.exe" -ErrorAction SilentlyContinue
 
     Write-Host "-> Running PyInstaller..." -ForegroundColor Yellow
-    uv run pyinstaller pywinauto-mcp-backend.spec --clean --noconfirm
+    uv run pyinstaller windows-computer-use-backend.spec --clean --noconfirm
     if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed (exit $LASTEXITCODE)" }
 
-    $src = "$Root\dist\pywinauto-mcp-backend.exe"
+    $src = "$Root\dist\windows-computer-use-backend.exe"
     $resourceDir = "$Root\web_sota\src-tauri\resources"
     $devDir = "$Root\web_sota\src-tauri\binaries"
-    $bundled = "$resourceDir\pywinauto-mcp-backend.exe"
-    $devCopy = "$devDir\pywinauto-mcp-backend-$Triple.exe"
+    $bundled = "$resourceDir\windows-computer-use-backend.exe"
+    $devCopy = "$devDir\windows-computer-use-backend-$Triple.exe"
 
     if (-not (Test-Path $src)) { throw "Build output not found: $src" }
 

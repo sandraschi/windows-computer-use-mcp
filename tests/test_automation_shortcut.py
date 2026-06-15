@@ -2,10 +2,10 @@
 
 from unittest.mock import patch
 
-from pywinauto_mcp import shortcut_engine
-from pywinauto_mcp.app_shortcuts.registry import get_shortcut, list_apps
-from pywinauto_mcp.tools.models import ShortcutOperationRequest, ToolResult
-from pywinauto_mcp.tools.portmanteau_shortcut import automation_shortcut
+from windows_computer_use_mcp import shortcut_engine
+from windows_computer_use_mcp.app_shortcuts.registry import get_shortcut, list_apps
+from windows_computer_use_mcp.tools.models import ShortcutOperationRequest, ToolResult
+from windows_computer_use_mcp.tools.portmanteau_shortcut import automation_shortcut
 
 
 def test_vroid_registry_export():
@@ -17,8 +17,8 @@ def test_list_apps():
     assert "vroidstudio" in list_apps()
 
 
-@patch("pywinauto_mcp.shortcut_engine._send_keys")
-@patch("pywinauto_mcp.shortcut_engine._wait_stable_after")
+@patch("windows_computer_use_mcp.shortcut_engine._send_keys")
+@patch("windows_computer_use_mcp.shortcut_engine._wait_stable_after")
 def test_send_shortcut(mock_stable, mock_send):
     mock_send.return_value = {"method": "pyautogui", "keys": ["f8"]}
     mock_stable.return_value = {"stable": True}

@@ -4,7 +4,7 @@ Run from repo root (with the package on PYTHONPATH), e.g.:
   uv run python examples/demo_mouse_dance.py
   uv run python examples/demo_mouse_dance.py --seconds 12
 
-Uses :mod:`pywinauto_mcp.win32_mouse` (same backend as ``automation_mouse``).
+Uses :mod:`windows_computer_use_mcp.win32_mouse` (same backend as ``automation_mouse``).
 Failsafe is off so the pointer can use the full screen (including upper-left).
 """
 
@@ -14,7 +14,7 @@ import argparse
 import math
 import time
 
-from pywinauto_mcp.win32_mouse import screen_size, set_cursor_pos
+from windows_computer_use_mcp.win32_mouse import screen_size, set_cursor_pos
 
 
 def main() -> None:

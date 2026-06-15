@@ -1,6 +1,6 @@
 # Examples and demos
 
-Runnable scripts for **local Windows** (same dependency stack as `pywinauto-mcp`: `pywinauto`, `pyautogui`). Install the project or use **`uv run`** from the repo root.
+Runnable scripts for **local Windows** (same dependency stack as `windows-computer-use-mcp`: `pywinauto`, `pyautogui`). Install the project or use **`uv run`** from the repo root.
 
 | Script | What it does |
 |--------|----------------|

@@ -24,7 +24,7 @@ With `CI=true`, hardware and destructive tests are skipped automatically — see
 
 | Path | Purpose |
 |------|---------|
-| `src/pywinauto_mcp/` | FastMCP server, portmanteau tools, safety gates |
+| `src/windows_computer_use_mcp/` | FastMCP server, portmanteau tools, safety gates |
 | `web_sota/` | Vite operator UI + FastAPI routes |
 | `web_sota/src-tauri/` | Tauri 2 desktop shell (port **10789** backend) |
 | `mcpb/` | Claude Desktop bundle staging |
@@ -43,7 +43,7 @@ Tauri installer: `uv sync --extra desktop`, then `npm run tauri:build` from `web
 
 ## Fleet references
 
-- **mcp-central-docs** — `standards/testing-environment-aware.md`, `patterns/PYWINAUTO_MCP_SAFETY.md`, `standards/MCPB_PACKAGING_STANDARDS.md`
+- **mcp-central-docs** — `standards/testing-environment-aware.md`, `patterns/WINDOWS_COMPUTER_USE_MCP_SAFETY.md`, `standards/MCPB_PACKAGING_STANDARDS.md`
 - **Sibling:** [autohotkey-mcp](https://github.com/sandraschi/autohotkey-mcp) — hotkey scriptlets, not native UIA
 
 ## Historical dev notes

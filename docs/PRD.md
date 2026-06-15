@@ -1,14 +1,14 @@
-# PRD — pywinauto-mcp (Computer Use Agent)
+# PRD — windows-computer-use-mcp (Computer Use Agent)
 
 ## 1. Overview
 
-**pywinauto-mcp** is the fleet's Windows **computer use agent** — a [Model Context Protocol](https://modelcontextprotocol.io/) server that exposes **portmanteau tools** so AI clients can operate the **real desktop**: discover windows, interact with UI Automation elements, inject mouse/keyboard, capture screenshots/OCR, run shortcuts, handle dialogs, and **verify outcomes** (assert).
+**windows-computer-use-mcp** is the fleet's Windows **computer use agent** — a [Model Context Protocol](https://modelcontextprotocol.io/) server that exposes **portmanteau tools** so AI clients can operate the **real desktop**: discover windows, interact with UI Automation elements, inject mouse/keyboard, capture screenshots/OCR, run shortcuts, handle dialogs, and **verify outcomes** (assert).
 
 **Positioning:** *Hands, not brain.* The host LLM plans; this server executes and reports structured evidence. Closed-loop task running is roadmap ([CUA_ROADMAP.md](CUA_ROADMAP.md)); today operators combine MCP tools + HITL.
 
 **Non-goals:** Not a browser DOM agent (use Playwright MCP). Not an isolation boundary — pair with **`virtualization-mcp`** for Sandbox/VM. See [SAFETY.md](SAFETY.md).
 
-**Package name:** `pywinauto-mcp` / `pywinauto_mcp`. Public fleet label: **CUA-MCP (Computer Use Agent)**.
+**Package name:** `windows-computer-use-mcp` / `windows_computer_use_mcp`. Public fleet label: **Windows Computer Use MCP**.
 
 ## 2. Goals
 
@@ -44,8 +44,8 @@
 
 **Opt-in only (not registered in default / desktop bundle):**
 
-- `automation_face` — implemented local webcam tool; `PYWINAUTO_MCP_ENABLE_FACE=1` + `face` extra ([SAFETY.md](SAFETY.md) §5)
-- `global_keylogger` — implemented session debug hook; non-stealth, HITL-gated; `PYWINAUTO_MCP_ENABLE_KEYLOGGER=1` ([SAFETY.md](SAFETY.md) §6)
+- `automation_face` — implemented local webcam tool; `WINDOWS_COMPUTER_USE_MCP_ENABLE_FACE=1` + `face` extra ([SAFETY.md](SAFETY.md) §5)
+- `global_keylogger` — implemented session debug hook; non-stealth, HITL-gated; `WINDOWS_COMPUTER_USE_MCP_ENABLE_KEYLOGGER=1` ([SAFETY.md](SAFETY.md) §6)
 
 ### 3.2 HTTP / ASGI
 
@@ -86,7 +86,7 @@
 | [MEMOPS_CUA.md](MEMOPS_CUA.md) | Fleet CUA doctrine |
 | [OPERATOR_PROTOCOL.md](OPERATOR_PROTOCOL.md) | Focus during automation |
 | [TESTING.md](TESTING.md) | CI vs local |
-| **mcp-central-docs** | `patterns/PYWINAUTO_MCP_SAFETY.md`, packaging standards |
+| **mcp-central-docs** | `patterns/WINDOWS_COMPUTER_USE_MCP_SAFETY.md`, packaging standards |
 
 ---
 

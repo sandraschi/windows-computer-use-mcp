@@ -23,7 +23,7 @@ Use a **dedicated MCP profile** (not default IDE webapp chain). Read [SAFETY.md]
 ## Environment
 
 ```powershell
-$env:PYWINAUTO_MCP_DISPATCH = "background"   # optional; default foreground
+$env:WINDOWS_COMPUTER_USE_MCP_DISPATCH = "background"   # optional; default foreground
 ```
 
 ## fleet-agent-mcp
@@ -35,5 +35,5 @@ Pair **libreoffice-mcp** for headless PDF/convert; use pywinauto e2e against liv
 ## MCP config snippet
 
 ```powershell
-uv run pywinauto-mcp mcp-config
+uv run windows-computer-use-mcp mcp-config
 ```

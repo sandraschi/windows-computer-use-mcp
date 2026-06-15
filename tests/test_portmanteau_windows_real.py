@@ -93,7 +93,7 @@ class TestPortmanteauWindowsReal:
     @pytest.mark.skipif(SKIP_REAL_TESTS, reason="Real window tests not enabled or not on Windows")
     def test_real_window_activation(self):
         """Test activating a real Notepad window."""
-        from pywinauto_mcp.tools.portmanteau_windows import automation_windows
+        from windows_computer_use_mcp.tools.portmanteau_windows import automation_windows
 
         handle = self._get_test_window_handle()
 
@@ -114,7 +114,7 @@ class TestPortmanteauWindowsReal:
         """Test restoring and activating a minimized window."""
         from pywinauto import Desktop
 
-        from pywinauto_mcp.tools.portmanteau_windows import automation_windows
+        from windows_computer_use_mcp.tools.portmanteau_windows import automation_windows
 
         handle = self._get_test_window_handle()
         desktop = Desktop(backend="uia")

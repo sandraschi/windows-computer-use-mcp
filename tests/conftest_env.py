@@ -2,7 +2,7 @@
 
 **Canonical reference:** ``mcp-central-docs/standards/testing-environment-aware.md``
 
-**pywinauto-mcp adaptation:** This server depends on a **local Windows session** and sometimes **OpenCV /
+**windows-computer-use-mcp adaptation:** This server depends on a **local Windows session** and sometimes **OpenCV /
 USB cameras**, not LAN-only IoT. Therefore ``requires_hardware`` means: **skip in CI**, **allow on any
 local developer machine** where ``CI`` is unset — you do **not** need ``local_with_iot`` (router
 probe) to run webcam tests.

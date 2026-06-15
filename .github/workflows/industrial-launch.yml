@@ -41,7 +41,7 @@ jobs:
         run: |
           uv build
           if [ -d "mcpb" ]; then
-            zip -r dist/pywinauto-mcp.mcpb mcpb/ -x "*.git*"
+            zip -r dist/windows-computer-use-mcp.mcpb mcpb/ -x "*.git*"
           fi
 
       - name: Generate Changelog
@@ -64,15 +64,15 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: "pywinauto-mcp ${{ github.ref_name }}"
+          name: "windows-computer-use-mcp ${{ github.ref_name }}"
           body: |
             ## ${{ github.ref_name }}
 
             **Desktop:** download the NSIS `.exe` or MSI from CI / local `npm run tauri:build` (not attached by this workflow).
 
-            **Claude Desktop:** `pywinauto-mcp.mcpb` below.
+            **Claude Desktop:** `windows-computer-use-mcp.mcpb` below.
 
-            **Python (PyPI):** `uvx pywinauto-mcp` — wheel is on PyPI, not duplicated here.
+            **Python (PyPI):** `uvx windows-computer-use-mcp` — wheel is on PyPI, not duplicated here.
 
             ### What's New
             ${{ steps.changelog.outputs.notes }}

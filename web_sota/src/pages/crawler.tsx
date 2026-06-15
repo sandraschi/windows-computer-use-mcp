@@ -1,43 +1,21 @@
 import { useEffect, useState } from "react";
 import {
     AlertTriangle,
-    Bug,
     ChevronRight,
-    Download,
     Eye,
     EyeOff,
     FileSearch,
-    FolderOpen,
-    Globe,
-    List,
-    Monitor,
     Play,
     RotateCw,
-    Search,
-    Square,
-    StopCircle,
     TreePine,
-    Type,
     X,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { apiPath } from "@/lib/api";
-
-const TYPE_ICONS: Record<string, string> = {
-    Button: "Button",
-    Edit: "Edit",
-    CheckBox: "CheckBox",
-    RadioButton: "Radio",
-    ListItem: "List",
-    MenuItem: "Menu",
-    Text: "Text",
-    default: "Box",
-};
 
 interface Bounds {
     x: number;
@@ -133,7 +111,6 @@ function ElementTree({ elements }: { elements: Element[] }) {
 }
 
 export function Crawler() {
-    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState("start");
     const [windowTitle, setWindowTitle] = useState("");
     const [executable, setExecutable] = useState("");
