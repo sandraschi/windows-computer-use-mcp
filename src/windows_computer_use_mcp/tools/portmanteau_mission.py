@@ -342,6 +342,54 @@ A ToolResult object with mission progress, step results, and next steps.
                     data={"mission_id": mission_id, "status": "cancelled"},
                 )
 
+            if operation == "workflow":
+                app_name = request.app
+                actions = request.actions
+                if not actions:
+                    return ToolResult(status="error", message="'actions' list required for workflow operation.")
+                if app_name:
+                    try:
+                        from pywinauto import Application
+                        Application().start(app_name)
+                        if ctx:
+                            await ctx.info(f"Started {app_name}")
+                    except Exception as e:
+                        logger.warning("workflow start_app %s failed: %s", app_name, e)
+
+                results = []
+                max_time = request.timeout or 120
+                deadline = time.time() + max_time
+                for i, action in enumerate(actions):
+                    if time.time() > deadline:
+                        results.append({"step": i + 1, "label": action.get("label"), "success": False, "error": "timeout"})
+                        break
+                    tool_name = action.get("tool", "")
+                    params = action.get("params", {})
+                    label = action.get("label", tool_name)
+                    if ctx:
+                        await ctx.info(f"Workflow step {i + 1}/{len(actions)}: {label}")
+
+                    def _exec(t=tool_name, p=params):
+                        return _call_tool(t, p)
+
+                    policy = RetryPolicy(max_attempts=2, base_delay=1.0)
+                    retry_result = policy.execute(_exec, label=label)
+                    results.append({
+                        "step": i + 1,
+                        "label": label,
+                        "tool": tool_name,
+                        "success": retry_result.success,
+                        "attempts": retry_result.attempts,
+                        "message": retry_result.message,
+                    })
+
+                success_count = sum(1 for r in results if r["success"])
+                return ToolResult(
+                    status="success" if success_count == len(results) else "blocked",
+                    message=f"Workflow: {success_count}/{len(results)} steps succeeded.",
+                    data={"steps": results, "total": len(results), "succeeded": success_count},
+                )
+
             if operation in ("record", "replay"):
                 from windows_computer_use_mcp.mission_store import record_step, get_steps, clear_mission
                 if operation == "record":

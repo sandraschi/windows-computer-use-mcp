@@ -377,8 +377,17 @@ class AssertOperationRequest(BaseModel):
 class MissionOperationRequest(BaseModel):
     """Request model for high-level agentic missions."""
 
-    operation: Literal["run", "plan", "status", "cancel", "record", "replay"] = Field(
+    operation: Literal["run", "plan", "status", "cancel", "record", "replay", "workflow"] = Field(
         "run", description="The mission operation to perform. 'run' executes the full autonomous loop."
+    )
+    app: str | None = Field(
+        None, description="For 'workflow' operation: target application (e.g. 'notepad.exe')."
+    )
+    actions: list[dict] | None = Field(
+        None, description="For 'workflow' operation: list of action dicts like [{'tool': 'elements', 'params': {...}}]."
+    )
+    timeout: float | None = Field(
+        None, description="Max seconds for the workflow to complete.", ge=1
     )
     goal: str = Field("", description="The high-level objective to achieve (required for plan).")
     strategy: Literal["element", "visual"] = Field(

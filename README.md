@@ -29,21 +29,19 @@ Pair with **[virtualization-mcp](https://github.com/sandraschi/virtualization-mc
 - **Keyboard Input** — type text, send key combinations, shortcuts
 - **UI Element Interaction** — click controls, read/set text, verify states, wait for elements
 - **Visual Intelligence** — screenshots, OCR text extraction, image recognition
+- **Autonomous Missions** — give it a goal, it plans and executes steps with retry + verification
+- **Macro Recording** — record any UI sequence, replay it, verify outcomes match
+- **Multi-App Workflows** — chain actions across Notepad, Calc, Paint, or any Windows app
 - **Closed-Loop Tasks** — multi-step automation with retry, refocus recovery, evidence trails
 - **Face Recognition** — optional plugin for webcam-based verification workflows
 
 ---
 
-## Quick Start
+## Quick Start — Three Ways to Run
 
-```powershell
-git clone https://github.com/sandraschi/windows-computer-use-mcp.git
-cd windows-computer-use-mcp
-just bootstrap
-just serve
-```
+### 🖥️ Method 1: MCP Server (stdio — for Cursor / Claude Desktop)
 
-**MCP (stdio)** — add to Cursor / Claude Desktop:
+Add to your MCP client config:
 
 ```json
 {
@@ -56,9 +54,40 @@ just serve
 }
 ```
 
-**Optional web operator UI:** `.\start.ps1` → http://127.0.0.1:10788 (proxies API on **10789**).
+Or from source:
 
-**Demos:** `just demo` — mouse dance, Notepad grid, typewriter (see [examples/README.md](examples/README.md)).
+```powershell
+git clone https://github.com/sandraschi/windows-computer-use-mcp.git
+cd windows-computer-use-mcp
+just bootstrap
+just serve
+```
+
+Now Claude, Cursor, DeepSeek, or any MCP client can call `automation_click`, `automation_screenshot`, `automation_mission`, etc. directly.
+
+### 🌐 Method 2: Web Operator UI (Vite dashboard)
+
+```powershell
+.\start.ps1
+```
+
+Opens **http://127.0.0.1:10788** — a full React dashboard with targets, tool hub, crawler, HITL controls, and logging. Backend API on **10789**.
+
+### 📦 Method 3: Desktop App (Tauri NSIS Installer)
+
+Download `Windows Computer Use_*_x64-setup.exe` from [Releases](https://github.com/sandraschi/windows-computer-use-mcp/releases). One installer — no Python, `uv`, or git needed on the target machine. The operator app bundles the React UI + embedded Python backend in a single binary.
+
+After installing, launch **Windows Computer Use** from the Start menu. It opens the operator dashboard and exposes MCP at `http://127.0.0.1:10789/mcp`.
+
+---
+
+## Demos
+
+```
+just demo
+```
+
+Runs the mouse dance, Notepad grid, and typewriter demos. See [examples/README.md](examples/README.md).
 
 ---
 
