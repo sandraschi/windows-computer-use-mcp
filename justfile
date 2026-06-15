@@ -109,6 +109,10 @@ demo:
 demo-autonomous:
     uv run python scripts/demo-autonomous.py
 
+# Paint a pelican on a bicycle in MS Paint
+demo-paint:
+    uv run python scripts/demo-paint-pelican.py
+
 # ── Quality ───────────────────────────────────────────────────────────────────
 
 # Execute full test suite with coverage
