@@ -114,6 +114,8 @@ async def main():
     demo_phase("Phase 5: Type ASCII art cow herd")
     COWS = """This is a test of the OCR system.
 It should read this prose text correctly.
+Parentheses (like these) and [brackets] and _underscores_.
+Backslash \\ forward / and dash - in normal text.
 Now let's see if it can handle the ASCII art:
 
          (__)              (__)              (__)
