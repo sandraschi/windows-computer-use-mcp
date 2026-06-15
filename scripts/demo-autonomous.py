@@ -145,7 +145,8 @@ async def main():
     # ── Phase 7: OCR the Notepad edit area (crop out window chrome) ──
     demo_phase("Phase 7: OCR readback")
     r = await _call("visual", operation="extract_text", window_handle=hwnd,
-        region_left=10, region_top=120, region_right=1900, region_bottom=1050)
+        region_left=0, region_top=120, region_right=1900, region_bottom=1050,
+        ocr_config="--psm 6 -c tessedit_enable_dict_correction=0")
     text = (r.data or {}).get("text", "") if r.data else ""
     ocr_preview = ""
     if text:
