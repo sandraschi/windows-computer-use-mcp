@@ -18,37 +18,37 @@ start:
 
 # Start backend in development mode (reload enabled)
 dev:
-    $env:PYTHONPATH = "src"; uv run uvicorn pywinauto_mcp.server:app --reload --port 10789
+    $env:PYTHONPATH = "src"; uv run uvicorn windows_computer_use_mcp.server:app --reload --port 10789
 
 # Launch Microsoft Paint and draw a SOTA Landscape Masterpiece directly via tool calls
 paint-demo:
-    @$env:PYWINAUTO_MCP_BYPASS_HITL = "1"; \
+    @$env:WINDOWS_COMPUTER_USE_MCP_BYPASS_HITL = "1"; \
     Write-Host "🎨 Starting Industrial Paint Demo (Justfile/PowerShell Orchestrated)" -ForegroundColor Cyan; \
     Start-Process "mspaint.exe"; \
     Start-Sleep -Seconds 3; \
     Write-Host "[INIT] Locating Paint window..." -ForegroundColor Gray; \
-    $win = uv run -q python -c "import json; from pywinauto_mcp.tools.portmanteau_windows import automation_windows; print(json.dumps(automation_windows('find', class_name='MSPaintApp')))" | ConvertFrom-Json; \
+    $win = uv run -q python -c "import json; from windows_computer_use_mcp.tools.portmanteau_windows import automation_windows; print(json.dumps(automation_windows('find', class_name='MSPaintApp')))" | ConvertFrom-Json; \
     if (-not $win.success) { Write-Host "[ERROR] Paint not found" -ForegroundColor Red; exit 1 }; \
     $handle = $win.windows[0].handle; \
     Write-Host "[INIT] Maximizing Paint (HWND: $handle)..." -ForegroundColor Gray; \
-    uv run -q python -c "from pywinauto_mcp.tools.portmanteau_windows import automation_windows; automation_windows('maximize', handle=$handle)"; \
-    uv run -q python -c "from pywinauto_mcp.tools.portmanteau_windows import automation_windows; automation_windows('activate', handle=$handle)"; \
+    uv run -q python -c "from windows_computer_use_mcp.tools.portmanteau_windows import automation_windows; automation_windows('maximize', handle=$handle)"; \
+    uv run -q python -c "from windows_computer_use_mcp.tools.portmanteau_windows import automation_windows; automation_windows('activate', handle=$handle)"; \
     Write-Host "[INIT] Discovering Canvas element..." -ForegroundColor Gray; \
-    $canvas = uv run -q python -c "import json; from pywinauto_mcp.tools.portmanteau_elements import automation_elements; print(json.dumps(automation_elements('rect', window_handle=$handle, auto_id='image')))" | ConvertFrom-Json; \
+    $canvas = uv run -q python -c "import json; from windows_computer_use_mcp.tools.portmanteau_elements import automation_elements; print(json.dumps(automation_elements('rect', window_handle=$handle, auto_id='image')))" | ConvertFrom-Json; \
     if (-not $canvas.success) { \
         Write-Host "[WARN] Canvas ID 'image' not found, searching by type..." -ForegroundColor Yellow; \
-        $canvas = uv run -q python -c "import json; from pywinauto_mcp.tools.portmanteau_elements import automation_elements; print(json.dumps(automation_elements('rect', window_handle=$handle, control_type='Image')))" | ConvertFrom-Json; \
+        $canvas = uv run -q python -c "import json; from windows_computer_use_mcp.tools.portmanteau_elements import automation_elements; print(json.dumps(automation_elements('rect', window_handle=$handle, control_type='Image')))" | ConvertFrom-Json; \
     }; \
     if (-not $canvas.success) { Write-Host "[ERROR] Could not find canvas" -ForegroundColor Red; exit 1 }; \
     $cx = $canvas.left; $cy = $canvas.top; $cw = $canvas.width; $ch = $canvas.height; \
     Write-Host "[DRAW] Drawing Meadow (Green)..." -ForegroundColor Green; \
-    uv run -q python -c "from pywinauto_mcp.tools.portmanteau_elements import automation_elements; automation_elements('click', window_handle=$handle, title='Green', exact_match=False)"; \
-    uv run -q python -c "from pywinauto_mcp.tools.portmanteau_mouse import automation_mouse; automation_mouse('drag', x=$($cx+10), y=$($cy+$ch-100), x2=$($cx+$cw-10), y2=$($cy+$ch-100), duration=1.5)"; \
+    uv run -q python -c "from windows_computer_use_mcp.tools.portmanteau_elements import automation_elements; automation_elements('click', window_handle=$handle, title='Green', exact_match=False)"; \
+    uv run -q python -c "from windows_computer_use_mcp.tools.portmanteau_mouse import automation_mouse; automation_mouse('drag', x=$($cx+10), y=$($cy+$ch-100), x2=$($cx+$cw-10), y2=$($cy+$ch-100), duration=1.5)"; \
     Write-Host "[DRAW] Drawing Sky (Blue)..." -ForegroundColor Blue; \
-    uv run -q python -c "from pywinauto_mcp.tools.portmanteau_elements import automation_elements; automation_elements('click', window_handle=$handle, title='Blue', exact_match=False)"; \
-    uv run -q python -c "from pywinauto_mcp.tools.portmanteau_mouse import automation_mouse; automation_mouse('drag', x=$($cx+10), y=$($cy+100), x2=$($cx+$cw-10), y2=$($cy+100), duration=1.5)"; \
+    uv run -q python -c "from windows_computer_use_mcp.tools.portmanteau_elements import automation_elements; automation_elements('click', window_handle=$handle, title='Blue', exact_match=False)"; \
+    uv run -q python -c "from windows_computer_use_mcp.tools.portmanteau_mouse import automation_mouse; automation_mouse('drag', x=$($cx+10), y=$($cy+100), x2=$($cx+$cw-10), y2=$($cy+100), duration=1.5)"; \
     Write-Host "[DRAW] Drawing Sun (Red)..." -ForegroundColor Red; \
-    uv run -q python -c "from pywinauto_mcp.tools.portmanteau_elements import automation_elements; automation_elements('click', window_handle=$handle, title='Red', exact_match=False)"; \
+    uv run -q python -c "from windows_computer_use_mcp.tools.portmanteau_elements import automation_elements; automation_elements('click', window_handle=$handle, title='Red', exact_match=False)"; \
     $sx = $cx + $cw - 150; $sy = $cy + 150; \
     uv run -q python -c "from pywinauto_mcp.tools.portmanteau_mouse import automation_mouse; automation_mouse('drag', x=$sx, y=$sy, x2=$($sx+50), y2=$($sy+50), duration=0.5)"; \
     uv run -q python -c "from pywinauto_mcp.tools.portmanteau_mouse import automation_mouse; automation_mouse('drag', x=$($sx+50), y=$($sy+50), x2=$sx, y2=$($sy+100), duration=0.5)"; \
@@ -59,7 +59,7 @@ paint-demo:
 # Launch Notepad and render SOTA ASCII Art
 text-demo:
     @echo "📝 Executing Text ASCII Demo (HITL Bypassed)..."
-    $env:PYWINAUTO_MCP_BYPASS_HITL = "1"; uv run python scripts/text_demo.py
+    $env:WINDOWS_COMPUTER_USE_MCP_BYPASS_HITL = "1"; uv run python scripts/text_demo.py
 
 # ── Tauri NSIS ─────────────────────────────────────────────────────────────────
 
@@ -149,6 +149,6 @@ clean:
     if (Test-Path "htmlcov") { Remove-Item -Recurse -Force htmlcov }
     if (Test-Path ".coverage") { Remove-Item .coverage }
     if (Test-Path ".pytest_cache") { Remove-Item -Recurse -Force .pytest_cache }
-    if (Test-Path "src/pywinauto_mcp.egg-info") { Remove-Item -Recurse -Force src/pywinauto_mcp.egg-info }
+    if (Test-Path "src/windows_computer_use_mcp.egg-info") { Remove-Item -Recurse -Force src/windows_computer_use_mcp.egg-info }
     Get-ChildItem -Recurse -Filter "__pycache__" | Remove-Item -Recurse -Force
 

@@ -67,8 +67,6 @@ Source = "https://github.com/sandraschi/windows-computer-use-mcp"
 
 [project.scripts]
 windows-computer-use-mcp = "windows_computer_use_mcp.main:main"
-# Legacy alias for backward compatibility
-windows-computer-use-mcp = "windows_computer_use_mcp.main:main"
 
 [project.optional-dependencies]
 face = [
