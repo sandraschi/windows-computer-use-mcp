@@ -87,7 +87,7 @@ build-native: build-sidecar
 cua-nsis-test:
     C:\Windows\py.exe scripts/cua-smoke.py
 
-# ── Demos (examples/*.py) ─────────────────────────────────────────────────────
+# ── Demos (examples/*.py + scripts/) ─────────────────────────────────────────
 
 # Run Python example demos in sequence: mouse dance, nine Notepads in a 3x3 grid, typewriter
 demo:
@@ -98,6 +98,10 @@ demo:
     @Write-Host "[3/3] Notepad typewriter..." -ForegroundColor Cyan
     uv run python examples/demo_notepad_typewriter.py
     @Write-Host "All demos finished." -ForegroundColor Green
+
+# Autonomous demo (showcases the repo using its own tools)
+demo-autonomous:
+    uv run python scripts/demo-autonomous.py
 
 # ── Quality ───────────────────────────────────────────────────────────────────
 
