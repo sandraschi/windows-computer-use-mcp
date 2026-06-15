@@ -102,6 +102,36 @@ Run automation inside a Windows Sandbox or Docker container instead of on the ho
 - [ ] Guest-side agent: lightweight pywinauto runner in the sandbox
 - [ ] Result extraction: screenshots, logs, evidence back to host
 
+## AI Model Notes
+
+### Kimi K2.7 Code (Moonshot AI, June 2026)
+
+Open-weight coding agent model, very relevant to this repo's mission engine:
+
+| Metric | K2.6 | K2.7 Code |
+|--------|------|-----------|
+| MCP Atlas | 69.4 | **76.0** |
+| MCP Mark Verified | 72.8 | **81.1** |
+| Kimi Claw 24/7 | 42.9 | **46.9** |
+| Thinking tokens | baseline | **-30%** |
+
+- **Architecture:** 1T total / 32B activated MoE, 256K context, MLA attention
+- **Multi-step tool call:** Native interleaved thinking + tool call support — matches `automation_mission(run=...)` pattern exactly
+- **License:** Modified MIT (open weight)
+- **Deployment:** INT4 quantization available, fits RTX 4090 at 4-bit
+- **Vision:** MoonViT encoder (400M params) — can process screenshots for visual grounding
+
+Could serve as the LLM backend for `ctx.sample()` in the mission engine, either via API or local inference.
+
+### Other notable Chinese open-weight models
+
+| Model | Company | Notes |
+|-------|---------|-------|
+| DeepSeek V4 / R2 | DeepSeek | Strong general reasoning, used by opencode |
+| Qwen 3.5 | Alibaba | Good code + agentic, 235B MoE |
+| GLM-5 | Zhipu | Strong on Chinese language tasks |
+| Yi-Lightning | 01.AI | Fast inference, good for real-time |
+
 ## Cross-cutting
 
 - **RDP/VNC consolidation:** Consider creating `remote-control-mcp` that unifies RustDesk, RDP, and VNC under a single tool surface. This avoids splitting focus across three repos. rustdesk-mcp can be the reference implementation.
