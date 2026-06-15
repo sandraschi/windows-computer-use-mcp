@@ -98,8 +98,16 @@ async def main():
 
     # ── Phase 4: Type text ─────────────────────────────────────────────
     demo_phase("Phase 4: Type text into Notepad")
+    COWS = '''         (__)              (__)              (__)
+         (oo)              (oo)              (oo)
+   /------\\/        /------\\/        /------\\/
+  / |    ||        / |    ||        / |    ||
+ *  /\\---/\\       *  /\\---/\\       *  /\\---/\\
+    ~~   ~~            ~~   ~~            ~~   ~~
+"A herd of cows,    "Automated by AI."  "100 installers,
+ automated by AI."                        $2 in costs."'''
     await _call("elements", operation="set_text", window_handle=hwnd, title="Text Editor",
-          text="Hello from Windows Computer Use MCP!\n\nThis is an autonomous demo.\nThe repo drives its own installer testing.\n\n100 installers, one run, $2 in LLM costs.\nZero human intervention.", verify=True)
+          text=COWS, verify=True)
     print("  Text typed with outcome verification")
     time.sleep(2)
 
