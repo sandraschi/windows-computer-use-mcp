@@ -160,6 +160,10 @@ for n in sorted(names):
 sys.exit(0 if names else 1)
 '"'"'"
 
+# Run Playwright e2e tests against the web operator UI (requires backend + frontend)
+e2e:
+    cd web_sota; npm run test:e2e
+
 # Build Claude Desktop MCPB bundle (dist/windows-computer-use-mcp.mcpb)
 mcpb-pack:
     pwsh -NoProfile -File .\scripts\build-mcpb-package.ps1 -NoSign

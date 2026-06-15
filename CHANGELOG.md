@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Phase 6: Agent instructions** — CLAUDE.md, AGENTS.md, SKILL.md all updated with full 18-tool surface and usage patterns.
 - **Tesseract auto-install** — `scripts/install-tesseract.ps1` downloads UB-Mannheim Tesseract 5.x silently. Bundled in NSIS installer as optional checkbox. `just install-tesseract` for dev.
 - **`just smoke`** — quick smoke test verifying all tools import and register.
+- **Playwright e2e tests** — 5 spec files covering dashboard (KPIs, host metrics), navigation (all 10 routes via sidebar), REST API (health, diagnostics, system info, 404), and crawler page (form, reports tab). `just e2e` to run.
 
 ### Changed
 
