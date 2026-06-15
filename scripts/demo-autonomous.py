@@ -83,7 +83,7 @@ async def main():
     print(f"  Notepad started (PID: {r.data.get('process_id', '?')})")
     time.sleep(2)
 
-    # ── Phase 3: Find and maximize Notepad window ───────────────────────
+    # ── Phase 3: Find, maximize, and create new blank document ──────────
     demo_phase("Phase 3: Find and maximize Notepad window")
     r = await _call("windows", operation="find", title="Notepad")
     if r.status == "success":
@@ -91,6 +91,12 @@ async def main():
         print(f"  Found Notepad (handle={hwnd})")
         await _call("windows", operation="maximize", handle=hwnd)
         print("  Maximized")
+        # File > New to ensure a fresh blank document
+        await _call("keyboard", operation="hotkey", keys=["alt", "f"])
+        time.sleep(0.8)
+        await _call("keyboard", operation="press", key="n")
+        time.sleep(1.0)
+        print("  New blank document created")
     else:
         print(f"  Window find: {r.message}")
         hwnd = None
@@ -107,19 +113,14 @@ async def main():
 "A herd of cows,    "Automated by AI."  "100 installers,
  automated by AI."                        $2 in costs."
 """
-    # Focus Notepad, click into edit area, clear any residual text, type cows
+    # Focus Notepad, click into edit area, type cows (slow so user can see)
     await _call("windows", operation="focus", handle=hwnd)
     time.sleep(0.3)
     await _call("elements", operation="click", window_handle=hwnd, class_name="NotepadTextBox")
     time.sleep(0.5)
-    # Select all and delete to clear any previous text
-    await _call("keyboard", operation="hotkey", keys=["ctrl", "a"])
-    time.sleep(0.2)
-    await _call("keyboard", operation="press", key="delete")
-    time.sleep(0.3)
-    await _call("keyboard", operation="type", text=COWS, interval=0.02)
+    await _call("keyboard", operation="type", text=COWS, interval=0.06)
     print("  Cow herd typed into Notepad")
-    time.sleep(2)
+    time.sleep(3)
 
     # ── Phase 5: Screenshot ────────────────────────────────────────────
     demo_phase("Phase 5: Screenshot")
