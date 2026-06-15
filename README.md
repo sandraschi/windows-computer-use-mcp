@@ -11,13 +11,10 @@
 
 **Windows Computer Use for AI Agents** — click, screenshot, type, drag, OCR, and verify native Windows UI via MCP. The missing hands for your agentic workflows.
 
----
+> **Exhibit A: 100 Tauri/NSIS installers, one unattended run, $2 in LLM costs.**
+> Install → screenshot → verify → report — zero human intervention. That's the gap this fills.
 
-## What This Is
-
-Most AI agents can reason. Few can act on a real Windows desktop. **windows-computer-use-mcp** bridges that gap — giving Claude, DeepSeek, and any MCP-compatible agent precise, programmatic control over native Windows applications, installers, dialogs, and GUI elements.
-
-Built on [pywinauto](https://github.com/pywinauto/pywinauto) under the hood. Exposed as a clean FastMCP server.
+Built on [pywinauto](https://github.com/pywinauto/pywinauto). Exposed as a clean FastMCP server.
 
 Pair with **[virtualization-mcp](https://github.com/sandraschi/virtualization-mcp)** for Windows Sandbox / VM isolation. Read **[docs/SAFETY.md](docs/SAFETY.md)** before production use.
 
@@ -32,15 +29,8 @@ Pair with **[virtualization-mcp](https://github.com/sandraschi/virtualization-mc
 - **Keyboard Input** — type text, send key combinations, shortcuts
 - **UI Element Interaction** — click controls, read/set text, verify states, wait for elements
 - **Visual Intelligence** — screenshots, OCR text extraction, image recognition
+- **Closed-Loop Tasks** — multi-step automation with retry, refocus recovery, evidence trails
 - **Face Recognition** — optional plugin for webcam-based verification workflows
-
----
-
-## Real-World Use Case
-
-Used in production to build and validate **100 Tauri/NSIS Windows installers** in a single unattended run — install, test, screenshot, verify, report, iterate. **$2 in DeepSeek API costs. Zero human intervention.**
-
-This is what agentic Windows automation actually looks like at scale.
 
 ---
 
@@ -120,33 +110,26 @@ Other important non-`py` deps: **FastMCP** (MCP server), **FastAPI** + **uvicorn
 | Doc | Content |
 |-----|---------|
 | [INSTALL.md](INSTALL.md) | Desktop app, `uv` / `uvx`, MCP client wiring |
-| [docs/SAFETY.md](docs/SAFETY.md) | HITL, kill switch, opt-in face & keylogger (non-stealth) |
-| [docs/OPERATOR_PROTOCOL.md](docs/OPERATOR_PROTOCOL.md) | Foreground focus during automation |
-| [docs/DESKTOP_APP.md](docs/DESKTOP_APP.md) | Tauri operator app + PyInstaller sidecar |
+| [docs/SAFETY.md](docs/SAFETY.md) | HITL, kill switch, opt-in face & keylogger |
 | [docs/MEMOPS_CUA.md](docs/MEMOPS_CUA.md) | Computer use agent doctrine (fleet CUA role) |
-| [docs/CUA_ROADMAP.md](docs/CUA_ROADMAP.md) | Closed-loop assistant roadmap |
 | [examples/README.md](examples/README.md) | Runnable demos and paint orchestration |
 
 ### For developers
 
 | Doc | Content |
 |-----|---------|
-| [docs/README.md](docs/README.md) | Documentation hub |
-| [docs/DOCUMENTATION_INDEX.md](docs/DOCUMENTATION_INDEX.md) | Full map + stale-doc warning |
 | [docs/PRD.md](docs/PRD.md) | Product requirements |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System diagram, components, fleet role |
 | [docs/TOOLS.md](docs/TOOLS.md) | Portmanteau MCP tools reference |
 | [docs/TESTING.md](docs/TESTING.md) | CI vs local pytest, hardware markers |
-| [docs/mcp-technical/README.md](docs/mcp-technical/README.md) | MCP transport, production checklist |
-| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Contributor quick start (archived notes in `docs/development/archive/`) |
+| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Contributor quick start |
 | [CHANGELOG.md](CHANGELOG.md) | Release history |
 
-### Packaging & distribution
+### Packaging
 
 | Doc | Content |
 |-----|---------|
 | [mcpb/README.md](mcpb/README.md) | MCPB bundle (Claude Desktop `.mcpb`) |
-| [docs/mcpb-packaging/README.md](docs/mcpb-packaging/README.md) | Build guide and fleet packaging standards |
 
 ### Prompts & skills
 
