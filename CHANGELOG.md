@@ -6,6 +6,22 @@ All notable changes to Windows Computer Use will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Windows Media OCR as default** — auto-probes WinRT OCR first, falls back to Tesseract. Zero-install on Windows 10/11. Env var `WINDOWS_COMPUTER_USE_MCP_OCR_PROVIDER=tesseract|windowsmedia|auto`.
+- **Screen recording** — `automation_visual(record, duration=10, fps=10)` captures screen to MP4 via ffmpeg. `record_to_gif` produces animated GIF. Pipes frames directly to ffmpeg, no intermediate files.
+- **System tray controller polish** — tool count in status line, recording indicator (red R icon), saved macro list with one-click replay, startup health notification, 5-second polling.
+- **`docs/ROADMAP.md`** — 14-item improvement plan across short/medium/long term, including Kimi K2.7 Code model notes and Chinese open-weight model table.
+- **`winrt-*` extras** — `[windowsmediaocr]` optional dependency group for Windows Media OCR.
+
+### Changed
+
+- OCR default switched from Tesseract to auto-probe (Windows Media OCR → Tesseract fallback).
+- Demo rewritten: types text character-by-character into Notepad (visible typing), then OCR reads it back and pastes result below. Includes bold/italic formatting demo.
+- Tray app now shows `R` icon during recording, lists saved macros from `~/.windows-computer-use-mcp/macros/`.
+
 ## [0.7.0] — 2026-06-15
 
 ### Added

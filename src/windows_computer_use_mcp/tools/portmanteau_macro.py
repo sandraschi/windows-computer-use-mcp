@@ -104,6 +104,7 @@ OPERATIONS:
         operation: str,
         name: str | None = None,
         steps: list[dict] | None = None,
+        record_video: bool = False,
     ) -> ToolResult:
         global _RECORDING, _RECORDING_STEPS, _RECORDING_LOCK
 
@@ -174,10 +175,33 @@ OPERATIONS:
             if not steps_to_run:
                 return ToolResult(status="error", message="No steps to replay.")
 
+            # Start video recording if requested
+            video_path = None
+            ffmpeg_proc = None
+            if record_video:
+                import io, shutil, subprocess
+                ffmpeg_path = shutil.which("ffmpeg") or shutil.which("ffmpeg.exe")
+                if ffmpeg_path:
+                    video_path = str(_macros_dir() / f"{macro_id}_replay_{int(time.time())}.mp4")
+                    ffmpeg_proc = subprocess.Popen(
+                        [ffmpeg_path, "-y", "-f", "image2pipe", "-framerate", "5", "-i", "-",
+                         "-c:v", "libx264", "-pix_fmt", "yuv420p", video_path],
+                        stdin=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                    )
+
             verify = operation == "replay_with_verify"
             results = []
 
             for i, step in enumerate(steps_to_run):
+                # Capture a frame during each step if recording
+                if ffmpeg_proc and ffmpeg_proc.stdin:
+                    try:
+                        from PIL import ImageGrab
+                        buf = io.BytesIO()
+                        ImageGrab.grab().save(buf, format="PNG")
+                        ffmpeg_proc.stdin.write(buf.getvalue())
+                    except Exception:
+                        pass
                 tool_name = step.get("tool", "")
                 params = step.get("params", {})
                 label = step.get("label", tool_name)
@@ -205,11 +229,22 @@ OPERATIONS:
 
                 results.append(step_result)
 
+            # Close ffmpeg if recording
+            if ffmpeg_proc and ffmpeg_proc.stdin:
+                try:
+                    ffmpeg_proc.stdin.close()
+                    ffmpeg_proc.wait(timeout=10)
+                except Exception:
+                    pass
+
             success_count = sum(1 for r in results if r["success"])
+            data = {"macro_id": macro_id, "results": results, "total": len(results), "succeeded": success_count}
+            if video_path:
+                data["video"] = video_path
             return ToolResult(
                 status="success" if success_count == len(results) else "blocked",
-                message=f"Replayed {len(results)} steps: {success_count} succeeded.",
-                data={"macro_id": macro_id, "results": results, "total": len(results), "succeeded": success_count},
+                message=f"Replayed {len(results)} steps: {success_count} succeeded." + (f" Video: {video_path}" if video_path else ""),
+                data=data,
             )
 
         return ToolResult(
