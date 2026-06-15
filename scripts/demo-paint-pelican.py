@@ -106,15 +106,8 @@ async def main():
     time.sleep(0.3)
 
     import math
-    dy = 60  # shift everything down
+    dy = 80
     S = 2
-
-    # Palette color selection
-    pal_y = top + 1010
-    pal_x = left + 12
-    async def pick(n):
-        await call("mouse", operation="click", x=pal_x + n * 30, y=pal_y)
-        time.sleep(0.15)
 
     # ── BICYCLE ──
     phase("Bicycle frame + wheels")
@@ -226,9 +219,8 @@ async def main():
             x2=int(hx + hr * math.cos(a2)), y2=int(hy + hr * math.sin(a2)))
         time.sleep(0.015)
 
-    # ── BEAK (yellow + orange pouch) ──
+    # ── BEAK ──
     phase("Beak")
-    await pick(5)  # yellow
     # Upper beak
     await call("mouse", operation="drag", x=hx + hr, y=hy, x2=hx + 50 * S, y2=hy - 4 * S)
     time.sleep(0.1)
@@ -237,15 +229,13 @@ async def main():
     # Hook at tip
     await call("mouse", operation="drag", x=hx + 52 * S, y=hy + 6 * S, x2=hx + 45 * S, y2=hy + 10 * S)
     time.sleep(0.1)
-    await pick(6)  # orange pouch
+    # Pouch
     await call("mouse", operation="drag", x=hx + 45 * S, y=hy + 10 * S, x2=hx + 12 * S, y2=hy + 12 * S)
     time.sleep(0.1)
-    # Pouch bottom
     await call("mouse", operation="drag", x=hx + 12 * S, y=hy + 12 * S, x2=hx + 8 * S, y2=hy + 18 * S)
     time.sleep(0.1)
     await call("mouse", operation="drag", x=hx + 8 * S, y=hy + 18 * S, x2=hx + hr - 2 * S, y2=hy + 5 * S)
     time.sleep(0.1)
-    await pick(0)  # black
 
     # Eye
     await call("mouse", operation="click", x=hx + 4 * S, y=hy - 3 * S)
