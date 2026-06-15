@@ -209,14 +209,47 @@ def _rebuild(icon: pystray.Icon):
     icon.icon = create_icon("C", (34, 197, 94, 255) if health_check() else (239, 68, 68, 255))
 
 
+def _get_tool_count() -> str:
+    """Fetch registered tool count from diagnostics endpoint."""
+    d = api_get("/api/v1/diagnostics")
+    if d:
+        tools = d.get("tools", {}) or d
+        count = tools.get("count") or tools.get("registered", "?")
+        return f"{count} tools"
+    return "?"
+
+def _list_saved_macros() -> list[str]:
+    """Return list of saved macro names."""
+    if not MACRO_DIR.exists():
+        return []
+    return sorted([f.stem for f in MACRO_DIR.glob("*.jsonl")])[:10]
+
+
 def build_menu():
     global RECORDING, automation_enabled
     health = health_check()
-    status_color = "● OK" if health else "○ DOWN"
+    status_icon = "●" if health else "○"
+    status_text = "OK" if health else "DOWN"
+    tools = _get_tool_count()
     record_label = "■ Stop Recording" if RECORDING else "● Record Macros"
+    rec_indicator = "[REC]" if RECORDING else ""
+
+    macros = _list_saved_macros()
+    macro_items = []
+    if macros:
+        for m in macros:
+            macro_items.append(pystray.MenuItem(
+                f"Replay: {m}",
+                lambda i, name=m: api_post("/api/v1/tools/call", {
+                    "tool": "automation_macro",
+                    "params": {"operation": "replay", "name": name},
+                }),
+            ))
+    else:
+        macro_items.append(pystray.MenuItem("(no saved macros)", None, enabled=False))
 
     return pystray.Menu(
-        pystray.MenuItem(f"Server {status_color}", None, enabled=False),
+        pystray.MenuItem(f"{status_icon} Server {status_text} — {tools} {rec_indicator}", None, enabled=False),
         pystray.MenuItem(f"Ports: 10789 (API) / 10788 (Web)", None, enabled=False),
         pystray.Menu.SEPARATOR,
         pystray.MenuItem(
@@ -231,10 +264,8 @@ def build_menu():
             pystray.MenuItem("Take Screenshot", lambda i, _: run_macro("screenshot", i)),
             pystray.MenuItem("Run Demo", lambda i, _: run_macro("demo", i)),
         )),
-        pystray.MenuItem(
-            record_label,
-            toggle_recording,
-        ),
+        pystray.MenuItem(record_label, toggle_recording),
+        pystray.MenuItem("Saved Macros", pystray.Menu(*macro_items)),
         pystray.Menu.SEPARATOR,
         pystray.MenuItem("View Log", view_log),
         pystray.MenuItem("Server Status", show_server_status),
@@ -269,6 +300,11 @@ def hotkey_listener():
 
 def main():
     MACRO_DIR.mkdir(parents=True, exist_ok=True)
+    ok = health_check()
+    if ok:
+        notify(f"Server OK — {_get_tool_count()}. Ctrl+Shift+R to record macros.")
+    else:
+        notify("Server not reachable on :10789. Start the backend first.")
 
     icon = pystray.Icon(
         "windows-computer-use",
@@ -281,13 +317,18 @@ def main():
 
     def health_poller():
         last_ok = None
+        last_rec = None
         while True:
             ok = health_check()
-            if ok != last_ok:
+            rec = RECORDING
+            if ok != last_ok or rec != last_rec:
                 last_ok = ok
-                icon.icon = create_icon("C", (34, 197, 94, 255) if ok else (239, 68, 68, 255))
+                last_rec = rec
+                label = "R" if rec else "C"
+                color = (220, 38, 38, 255) if rec else ((34, 197, 94, 255) if ok else (239, 68, 68, 255))
+                icon.icon = create_icon(label, color)
                 icon.menu = build_menu()
-            time.sleep(10)
+            time.sleep(5)
 
     threading.Thread(target=health_poller, daemon=True).start()
     icon.run()
