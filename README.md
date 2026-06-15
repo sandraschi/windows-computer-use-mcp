@@ -58,6 +58,7 @@ See **[INSTALL.md](INSTALL.md)** for detailed setup. Run `just demo` for example
 | [docs/README.md](docs/README.md) | Full documentation hub |
 | [docs/py-stack.md](docs/py-stack.md) | Python dependency deep dive |
 | [docs/composing-with-playwright.md](docs/composing-with-playwright.md) | Browser automation with Playwright MCP |
+| [docs/cua-nsis-certification.md](docs/cua-nsis-certification.md) | Dogfooding: using the tool to test its own NSIS installer |
 | [docs/SAFETY.md](docs/SAFETY.md) | HITL, kill switch, opt-in features |
 | [docs/TOOLS.md](docs/TOOLS.md) | Portmanteau tool reference |
 | [tests/README.md](tests/README.md) | Test suite guide and e2e setup |

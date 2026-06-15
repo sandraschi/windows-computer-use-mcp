@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `docs/README.md` hub linked to py-stack.md and composing-with-playwright.md.
 - `docs/py-stack.md` updated with Tesseract auto-install instructions.
 - `docs/composing-with-playwright.md` added — patterns and config for running both MCPs side by side.
+- `docs/cua-nsis-certification.md` — documents the 12-phase dogfooding certification flow with config reference and tool mapping.
 
 ## [0.6.0] — 2026-06-15
 
