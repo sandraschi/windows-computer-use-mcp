@@ -104,19 +104,22 @@ async def main():
 
     # ── Phase 4: Type text into Notepad ────────────────────────────────
     demo_phase("Phase 4: Type ASCII art cow herd")
-    COWS = '''         (__)              (__)              (__)
+    COWS = """         (__)              (__)              (__)
          (oo)              (oo)              (oo)
    /------\\/        /------\\/        /------\\/
   / |    ||        / |    ||        / |    ||
  *  /\\---/\\       *  /\\---/\\       *  /\\---/\\
     ~~   ~~            ~~   ~~            ~~   ~~
 "A herd of cows,    "Automated by AI."  "100 installers,
- automated by AI."                        $2 in costs."'''
-    # Click into the Notepad edit area, then type via keyboard
-    await _call("elements", operation="click", window_handle=hwnd, control_type="Document")
+ automated by AI."                        $2 in costs."
+"""
+    # Focus Notepad and click into the edit area (class=NotepadTextBox on Win11)
+    await _call("windows", operation="focus", handle=hwnd)
+    time.sleep(0.3)
+    await _call("elements", operation="click", window_handle=hwnd, class_name="NotepadTextBox")
     time.sleep(0.5)
-    await _call("keyboard", operation="type", text=COWS, interval=0.01)
-    print("  Cow herd typed via keyboard")
+    await _call("keyboard", operation="type", text=COWS, interval=0.02)
+    print("  Cow herd typed into NotepadTextBox")
     time.sleep(2)
 
     # ── Phase 5: Screenshot ────────────────────────────────────────────
