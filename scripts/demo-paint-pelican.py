@@ -71,19 +71,36 @@ async def main():
     width = r.data.get("width", 1920)
     print(f"  Window: left={left} top={top} width={width}")
 
-    # Focus and click canvas area (below ribbon, within the white canvas)
-    phase("Focus canvas")
+    # Focus the window
+    phase("Find canvas via UIA")
     await call("windows", operation="focus", handle=hwnd)
     time.sleep(0.5)
-    # Canvas is centered in the window, below the ribbon (~140px) and above status bar
-    # Use window center as origin for all drawing
-    canvas_left = left + width // 2
-    canvas_top = top + 400
-    cx = canvas_left
-    cy = canvas_top
+
+    # Agentic canvas discovery: list elements, find the canvas by size
+    r = await call("elements", operation="list", window_handle=hwnd, max_depth=2)
+    canvas_rect = None
+    if r.status == "success" and r.data:
+        for elem in r.data.get("elements", []):
+            rect = elem.get("rect") or {}
+            ew = rect.get("width", 0)
+            eh = rect.get("height", 0)
+            # Canvas is the largest rectangular area (white drawing surface)
+            if ew > 400 and eh > 300:
+                canvas_rect = rect
+                print(f"  Found canvas: ({rect.get('left')},{rect.get('top')}) {ew}x{eh}")
+                break
+
+    if not canvas_rect:
+        # Fallback: use window center
+        print("  Canvas not found via UIA, using window center")
+        canvas_rect = {"left": left + 100, "top": top + 200, "width": width - 200, "height": 600}
+
+    cx = canvas_rect["left"] + canvas_rect["width"] // 2
+    cy = canvas_rect["top"] + canvas_rect["height"] // 2
     canvas_ox = cx
     canvas_oy = cy
     # Click the canvas to ensure it's active
+    phase("Click canvas center")
     await call("mouse", operation="click", x=cx, y=cy)
     print(f"  Canvas center at ({cx}, {cy})")
     time.sleep(0.3)
