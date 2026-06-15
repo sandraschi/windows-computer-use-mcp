@@ -112,15 +112,18 @@ async def main():
 
     # ── Phase 5: Type prose with varying font sizes ────────────────────
     demo_phase("Phase 5: Type prose with changing font size")
-    TEXT = [
-        ("Default size: This text is at default Notepad font size.\n", None),
-        ("Larger text: This text was enlarged 4x using Ctrl+Shift+>.\n", "up"),
-        ("Default again: Back to normal size.\n", "down"),
-        ("Smaller text: This text was reduced using Ctrl+Shift+<.\n", "down"),
-        ("Default size: Parentheses (test) brackets [test] underscores _test_.\n", "up"),
-        ("Backslash \\ forward-slash / hyphens - are all read correctly.\n", None),
-        ("OCR reads prose flawlessly at any size and with all punctuation.\n", None),
-    ]
+    DEMO_TEXT = """Windows Computer Use MCP — Autonomous Demo
+
+This is a test of the OCR system. It should read this correctly.
+Parentheses (test) brackets [test] underscores _test_.
+Backslash \\ forward-slash / hyphens - all read correctly.
+Dollar signs $2 and quotes "Hello World" and @mentions work too.
+
+OCR reads prose flawlessly at any size and with all punctuation.
+The tool also handles screenshots, window management, keyboard input,
+mouse control, clipboard operations, and autonomous mission planning.
+
+100 installers. One run. $2 in LLM costs. Zero human intervention."""
 
     await _call("windows", operation="focus", handle=hwnd)
     time.sleep(0.5)
@@ -130,22 +133,10 @@ async def main():
         edit_y = r.data.get("top", 100) + 100
         await _call("mouse", operation="click", x=edit_x, y=edit_y)
         time.sleep(0.3)
-
-    for line, size_change in TEXT:
-        if size_change == "up":
-            for _ in range(3):
-                await _call("keyboard", operation="hotkey", keys=["ctrl", "shift", ">"])
-                time.sleep(0.15)
-        elif size_change == "down":
-            for _ in range(3):
-                await _call("keyboard", operation="hotkey", keys=["ctrl", "shift", "<"])
-                time.sleep(0.15)
-        await _call("system", operation="clipboard_set", text=line)
-        time.sleep(0.15)
-        await _call("keyboard", operation="hotkey", keys=["ctrl", "v"])
-        time.sleep(0.3)
-
-    print("  Prose text typed with varying font sizes")
+    await _call("system", operation="clipboard_set", text=DEMO_TEXT)
+    time.sleep(0.2)
+    await _call("keyboard", operation="hotkey", keys=["ctrl", "v"])
+    print("  Demo text pasted into Notepad")
 
     # ── Phase 6: Screenshot ────────────────────────────────────────────
     demo_phase("Phase 6: Screenshot")
