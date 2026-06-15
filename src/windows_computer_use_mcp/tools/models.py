@@ -248,7 +248,8 @@ class SystemOperationRequest(BaseModel):
     """Request model for system-level operations."""
 
     operation: Literal[
-        "status", "help", "wait", "info", "wait_for_window", "clipboard_get", "clipboard_set", "processes", "start_app"
+        "status", "help", "wait", "info", "wait_for_window", "clipboard_get", "clipboard_set",
+        "processes", "start_app", "telemetry"
     ] = Field(..., description="The system operation to perform.")
 
     seconds: float | None = Field(None, description="Seconds to wait.", ge=0)

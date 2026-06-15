@@ -153,6 +153,16 @@ If 'wait_for_window' times out, verify the 'title' exists or increase 'timeout'.
                     data={"waited_seconds": seconds, "system_metadata": system_metadata},
                 )
 
+            elif operation == "telemetry":
+                from windows_computer_use_mcp.telemetry import get_failure_patterns, get_stats
+                stats = get_stats()
+                failures = get_failure_patterns(limit=20)
+                return ToolResult(
+                    status="success",
+                    message=f"Telemetry: {stats.get('total_actions', 0)} actions logged.",
+                    data={"stats": stats, "recent_failures": failures},
+                )
+
             elif operation == "info":
                 stats = collect_host_metrics()
                 return ToolResult(

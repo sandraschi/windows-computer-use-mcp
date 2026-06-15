@@ -23,6 +23,7 @@ except ImportError:
 from windows_computer_use_mcp.app import app
 from windows_computer_use_mcp.dispatch import BACKGROUND_UNAVAILABLE, click_element, resolve_dispatch
 from windows_computer_use_mcp.snapshot_store import get_snapshot_store
+from windows_computer_use_mcp.telemetry import get_best_strategy, log_action
 from windows_computer_use_mcp.tools.models import ElementOperationRequest, ToolResult
 from windows_computer_use_mcp.trajectory import log_trajectory
 from windows_computer_use_mcp.win32_mouse import (
@@ -35,6 +36,54 @@ from windows_computer_use_mcp.win32_mouse import (
 )
 
 logger = logging.getLogger(__name__)
+
+_ADAPTIVE_CASCADE = [
+    {"label": "by_title", "strategy": "title"},
+    {"label": "by_auto_id", "strategy": "auto_id"},
+    {"label": "by_control_id", "strategy": "control_id"},
+    {"label": "by_class_and_type", "strategy": "class+type"},
+    {"label": "by_ocr_region", "strategy": "ocr"},
+]
+
+
+def _detect_app(window_handle: int) -> str | None:
+    """Try to identify the app name from a window handle."""
+    try:
+        import psutil
+        window = Desktop(backend="uia").window(handle=window_handle)
+        pid = window.process_id()
+        proc = psutil.Process(pid)
+        return proc.name()
+    except Exception:
+        return None
+
+
+def _ocr_find_element(desktop, window, window_handle: int, hint_selector: dict) -> Any | None:
+    """Scan the window region via OCR, looking for text matching hint_selector title."""
+    title_hint = (hint_selector.get("title") or "").lower()
+    if not title_hint:
+        return None
+    try:
+        from windows_computer_use_mcp.assert_engine import assert_text_in_image
+        ok, _ = assert_text_in_image(
+            image_path=None,
+            expected_text=title_hint,
+            exact_match=False,
+            window_handle=window_handle,
+        )
+        if not ok:
+            return None
+        children = window.children()
+        for child in children:
+            try:
+                txt = child.window_text()
+                if title_hint in txt.lower():
+                    return child
+            except Exception:
+                continue
+        return None
+    except Exception:
+        return None
 
 
 def _verify_action_result(
@@ -457,7 +506,7 @@ A ToolResult object containing standardized outcome, message, and element data.
                 except Exception as e:
                     return ToolResult(status="error", message=f"Coordinate operation failed: {e}")
 
-            # === SELECTOR-BASED OPERATIONS ===
+            # === ADAPTIVE SELECTOR-BASED OPERATIONS ===
             if not selector:
                 return ToolResult(
                     status="error",
@@ -465,18 +514,65 @@ A ToolResult object containing standardized outcome, message, and element data.
                     recovery_tip="Provide an identifier for the element or specific coordinates.",
                 )
 
+            window = desktop.window(handle=window_handle)
+            strategy_used = None
+            element = None
+            cascade_errors = []
+
+            for cascade_step in _ADAPTIVE_CASCADE:
+                cascade_selector = {}
+                strategy = cascade_step["strategy"]
+
+                if strategy == "title" and selector.get("title"):
+                    cascade_selector = dict(selector)
+                elif strategy == "auto_id" and selector.get("auto_id"):
+                    cascade_selector = {"auto_id": selector["auto_id"]}
+                    if selector.get("control_type"):
+                        cascade_selector["control_type"] = selector["control_type"]
+                elif strategy == "control_id" and selector.get("control_id"):
+                    cascade_selector = {"control_id": selector["control_id"]}
+                elif strategy == "class+type" and (selector.get("class_name") or selector.get("control_type")):
+                    pair = {}
+                    if selector.get("class_name"):
+                        pair["class_name"] = selector["class_name"]
+                    if selector.get("control_type"):
+                        pair["control_type"] = selector["control_type"]
+                    if pair:
+                        cascade_selector = pair
+                elif strategy == "ocr":
+                    cascade_selector = {}
+                else:
+                    continue
+
+                try:
+                    if cascade_selector:
+                        candidate = window.child_window(**cascade_selector)
+                        if candidate.exists(timeout=2.0):
+                            element = candidate
+                            strategy_used = strategy
+                            break
+                    else:
+                        candidates_found = self._ocr_find_element(desktop, window, window_handle, selector)
+                        if candidates_found:
+                            element = candidates_found
+                            strategy_used = "ocr"
+                            break
+                except Exception as e:
+                    cascade_errors.append(f"{strategy}: {e!s}")
+                    continue
+
+            if element is None:
+                return ToolResult(
+                    status="error",
+                    message=f"Element not found via adaptive cascade. Tried: {', '.join(s['label'] for s in _ADAPTIVE_CASCADE)}",
+                    data={"cascade_errors": cascade_errors},
+                    recovery_tip="Use 'list' to browse the element tree or 'get_window_state' for snapshot-based targeting.",
+                )
+
+            app_name = _detect_app(window_handle)
+            t0 = time.time()
+
             try:
-                window = desktop.window(handle=window_handle)
-                element = window.child_window(**selector)
-
-                # Check existence with timeout
-                if not element.exists(timeout=request.timeout):
-                    return ToolResult(
-                        status="error",
-                        message=f"Element not found using criteria: {selector}",
-                        recovery_tip="Increase 'timeout' or verify the selectors using the 'list' operation.",
-                    )
-
                 if operation == "exists":
                     return ToolResult(status="success", message="Element exists.", data={"exists": True})
 
@@ -491,6 +587,11 @@ A ToolResult object containing standardized outcome, message, and element data.
                     elif operation == "right_click":
                         element.click(button="right")
                     verify_info = _verify_action_result(operation, request, window_handle, desktop)
+                    duration = (time.time() - t0) * 1000
+                    log_action("elements", operation, target=request.title or next(iter(selector.values()), ""),
+                               strategy_used=strategy_used, success=verify_info is None,
+                               duration_ms=duration, error=verify_info.get("detail") if verify_info else None,
+                               selector=selector, app=app_name)
                     if verify_info:
                         return ToolResult(
                             status="blocked",
@@ -525,6 +626,11 @@ A ToolResult object containing standardized outcome, message, and element data.
                         element.type_keys(request.text, with_spaces=True)
                         method = "type_keys"
                     verify_info = _verify_action_result(operation, request, window_handle, desktop)
+                    duration = (time.time() - t0) * 1000
+                    log_action("elements", operation, target=request.title or "",
+                               strategy_used=strategy_used, success=verify_info is None,
+                               duration_ms=duration, error=verify_info.get("detail") if verify_info else None,
+                               selector=selector, app=app_name)
                     if verify_info:
                         return ToolResult(
                             status="blocked",
