@@ -78,7 +78,7 @@ async def main():
     # Canvas is centered in the window, below the ribbon (~140px) and above status bar
     # Use window center as origin for all drawing
     canvas_left = left + width // 2
-    canvas_top = top + 250
+    canvas_top = top + 400
     cx = canvas_left
     cy = canvas_top
     canvas_ox = cx
