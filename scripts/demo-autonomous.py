@@ -55,6 +55,20 @@ async def main():
     print("  The repo showcasing itself.")
     print("")
 
+    # ── Phase 0: Kill stale Notepad ────────────────────────────────────
+    demo_phase("Phase 0: Kill stale Notepad instances")
+    import psutil
+    killed = 0
+    for proc in psutil.process_iter(["name"]):
+        try:
+            if proc.info["name"] and proc.info["name"].lower() == "notepad.exe":
+                proc.kill()
+                killed += 1
+        except Exception:
+            pass
+    print(f"  Killed {killed} stale Notepad(s)" if killed else "  No stale Notepad found")
+    time.sleep(1)
+
     # ── Phase 1: Discover the desktop ──────────────────────────────────
     demo_phase("Phase 1: Discover running apps")
     r = await _call("smart", operation="list_apps")
@@ -104,22 +118,16 @@ async def main():
         print(f"  OCR read {len(lines)} lines. First line: '{lines[0]}'")
     time.sleep(1)
 
-    # ── Phase 7: Save the file ─────────────────────────────────────────
-    demo_phase("Phase 7: Save (Ctrl+S)")
-    await _call("keyboard", operation="hotkey", keys=["ctrl", "s"])
-    time.sleep(1)
-    # Type filename in Save dialog
-    await _call("dialog", operation="submit_path", path="demo-autonomous.txt")
-    print("  Saved as demo-autonomous.txt")
-    time.sleep(1)
-
-    # ── Phase 8: Close Notepad ─────────────────────────────────────────
-    demo_phase("Phase 8: Close Notepad")
+    # ── Phase 7: Close Notepad (don't save) ───────────────────────────
+    demo_phase("Phase 7: Close Notepad")
     await _call("keyboard", operation="hotkey", keys=["alt", "f4"])
+    time.sleep(1)
+    # "Don't Save" is the default focused button — press Enter
+    await _call("keyboard", operation="press", key="enter")
     print("  Notepad closed")
     time.sleep(1)
 
-    # ── Phase 9: Telemetry summary ─────────────────────────────────────
+    # ── Phase 8: Telemetry summary ─────────────────────────────────────
     demo_phase("Phase 9: Telemetry stats")
     r = await _call("system", operation="telemetry")
     stats = r.data.get("stats", {})
