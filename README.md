@@ -100,6 +100,13 @@ Fleet standards: [mcp-central-docs](https://github.com/sandraschi/mcp-central-do
 
 ---
 
+## Contributors
+
+- Sandra Schipal — architecture, design, dogfooding, fleet standards
+- [opencode](https://github.com/anomalco/opencode) agent (DeepSeek V4) — Phase 1-6 implementation from architectural plan: autonomous mission engine, adaptive location, macros, smart discovery, self-healing, watchers, telemetry, Tesseract installer, Playwright e2e, CUA-NSIS certification, help page, sub-README docs
+
+---
+
 ## License
 
 MIT — Copyright (c) 2026 Sandra Schipal.
