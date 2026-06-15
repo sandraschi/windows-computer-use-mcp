@@ -83,7 +83,7 @@ async def main():
     print(f"  Notepad started (PID: {r.data.get('process_id', '?')})")
     time.sleep(2)
 
-    # ── Phase 3: Find the window ───────────────────────────────────────
+    # ── Phase 3: Find, maximize, and create new blank document ──────────
     demo_phase("Phase 3: Find and maximize Notepad window")
     r = await _call("windows", operation="find", title="Notepad")
     if r.status == "success":
@@ -91,6 +91,12 @@ async def main():
         print(f"  Found Notepad (handle={hwnd})")
         await _call("windows", operation="maximize", handle=hwnd)
         print("  Maximized")
+        # File > New to ensure a fresh blank document (Windows restores sessions)
+        await _call("keyboard", operation="hotkey", keys=["alt", "f"])
+        time.sleep(0.3)
+        await _call("keyboard", operation="press", key="n")
+        time.sleep(0.5)
+        print("  New blank document created")
     else:
         print(f"  Window find: {r.message}")
         hwnd = None
