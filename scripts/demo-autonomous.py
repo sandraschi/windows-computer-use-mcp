@@ -171,8 +171,8 @@ The tool handles screenshots, window management, and keyboard input.
     print("  Notepad closed")
     time.sleep(1)
 
-    # ── Phase 9: Formatting demo (bold/italic/strikethrough) ────────
-    demo_phase("Phase 9: Text formatting")
+    # ── Phase 9: Bold and italic via line selection ───────────────
+    demo_phase("Phase 9: Bold + Italic")
     subprocess.Popen("notepad.exe", shell=True)
     time.sleep(2)
     r = await _call("windows", operation="find", title="Notepad")
@@ -180,34 +180,25 @@ The tool handles screenshots, window management, and keyboard input.
         nh = r.data["windows"][0]["handle"]
         await _call("windows", operation="maximize", handle=nh)
         time.sleep(1)
-        # Type three lines
         await _call("keyboard", operation="type", text="bold", interval=0.03)
         await _call("keyboard", operation="press", key="enter")
         await _call("keyboard", operation="type", text="italic", interval=0.03)
-        await _call("keyboard", operation="press", key="enter")
-        await _call("keyboard", operation="type", text="strikethrough", interval=0.03)
         time.sleep(0.3)
-        # Line 3: Home+Shift+End selects line, Ctrl+Shift+X = strikethrough
-        await _call("keyboard", operation="hotkey", keys=["home"])
-        await _call("keyboard", operation="hotkey", keys=["shift", "end"])
-        await _call("keyboard", operation="hotkey", keys=["ctrl", "shift", "x"])
-        time.sleep(0.2)
-        # Line 2: Up, Home+Shift+End, Ctrl+I = italic
-        await _call("keyboard", operation="press", key="up")
+        # Line 2: Home+Shift+End selects "italic", Ctrl+I
         await _call("keyboard", operation="hotkey", keys=["home"])
         await _call("keyboard", operation="hotkey", keys=["shift", "end"])
         await _call("keyboard", operation="hotkey", keys=["ctrl", "i"])
         time.sleep(0.2)
-        # Line 1: Up, Home+Shift+End, Ctrl+B = bold
+        # Line 1: Up, Home+Shift+End selects "bold", Ctrl+B
         await _call("keyboard", operation="press", key="up")
         await _call("keyboard", operation="hotkey", keys=["home"])
         await _call("keyboard", operation="hotkey", keys=["shift", "end"])
         await _call("keyboard", operation="hotkey", keys=["ctrl", "b"])
-        time.sleep(1)
+        time.sleep(0.5)
     await _call("keyboard", operation="hotkey", keys=["alt", "f4"])
     time.sleep(0.3)
     await _call("keyboard", operation="press", key="n")
-    print("  Formatting demo complete")
+    print("  Bold and italic applied")
     time.sleep(1)
 
     # ── Phase 10: Telemetry summary ─────────────────────────────────
