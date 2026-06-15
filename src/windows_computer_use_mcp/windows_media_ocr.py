@@ -1,31 +1,61 @@
-"""Windows Media OCR provider — placeholder for future integration.
+"""Windows Media OCR provider — uses built-in Windows.Media.Ocr API via PyWinRT.
 
-Windows.Media.Ocr is available on every Windows 10/11 system, but calling
-it from Python requires WinRT async interop. Current approaches:
-- PowerShell 5.1: engine is available (verified) but async GetResults() fails
-- csc.exe compilation: requires .NET SDK with WinRT references
-- pythonnet: WinRT type import fails with current version
-
-Tesseract remains the default OCR provider for now.
-Windows Media OCR integration is tracked as a future enhancement.
+Available on every Windows 10/11 system. Zero external dependencies beyond
+the winrt-* packages installed from PyPI.
 """
 
 from __future__ import annotations
 
+import asyncio
 import logging
+import sys
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
+_AVAILABLE: bool | None = None
+
 
 def is_available() -> bool:
-    """Windows Media OCR is detected on this system but not yet callable from Python."""
-    return False
+    """Check if Windows Media OCR is available (Windows 10/11 only)."""
+    global _AVAILABLE
+    if _AVAILABLE is not None:
+        return _AVAILABLE
+    if sys.platform != "win32":
+        _AVAILABLE = False
+        return False
+    try:
+        from winrt.windows.media.ocr import OcrEngine
+        engine = OcrEngine.try_create_from_user_profile_languages()
+        _AVAILABLE = engine is not None
+    except Exception as e:
+        logger.debug("Windows Media OCR not available: %s", e)
+        _AVAILABLE = False
+    return _AVAILABLE
 
 
 def extract_text(image_path: str | Path) -> str:
-    """Not implemented — Windows Media OCR requires WinRT async interop."""
-    raise RuntimeError(
-        "Windows Media OCR is not yet integrated. "
-        "Use Tesseract (default) or set WINDOWS_COMPUTER_USE_MCP_OCR_PROVIDER=tesseract."
-    )
+    """Run Windows Media OCR on an image file and return detected text.
+
+    Uses PyWinRT async API via asyncio internally.
+    """
+    from winrt.windows.media.ocr import OcrEngine
+    from winrt.windows.globalization import Language
+    from winrt.windows.storage import StorageFile
+    from winrt.windows.graphics.imaging import BitmapDecoder
+
+    engine = OcrEngine.try_create_from_language(Language("en"))
+    if engine is None:
+        engine = OcrEngine.try_create_from_user_profile_languages()
+    if engine is None:
+        raise RuntimeError("No OCR engine available")
+
+    async def _run() -> str:
+        file = await StorageFile.get_file_from_path_async(str(Path(image_path).resolve()))
+        stream = await file.open_read_async()
+        decoder = await BitmapDecoder.create_async(stream)
+        bmp = await decoder.get_software_bitmap_async()
+        result = await engine.recognize_async(bmp)
+        return "\n".join(line.text for line in result.lines)
+
+    return asyncio.run(_run())

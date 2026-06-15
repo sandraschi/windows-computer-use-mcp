@@ -192,10 +192,21 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
                 # Convert to grayscale for better OCR
                 image = image.convert("L")
 
-                # OCR provider (currently only Tesseract supported)
-                text = pytesseract.image_to_string(image, lang=language, config=ocr_config)
-
-                    # Get confidence if possible
+                # Choose OCR provider
+                provider = (request.ocr_provider or "").lower()
+                if provider == "windowsmedia":
+                    from windows_computer_use_mcp.windows_media_ocr import extract_text as wm_ocr
+                    temp_path = f"_ocr_temp_{int(time.time())}.png"
+                    try:
+                        image.save(temp_path)
+                        text = wm_ocr(temp_path)
+                    finally:
+                        try: os.remove(temp_path)
+                        except: pass
+                    avg_confidence = -1
+                else:
+                    # Tesseract (default)
+                    text = pytesseract.image_to_string(image, lang=language, config=ocr_config)
                     try:
                         data = pytesseract.image_to_data(
                             image, lang=language, config=ocr_config, output_type=pytesseract.Output.DICT

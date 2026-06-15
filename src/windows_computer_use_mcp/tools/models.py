@@ -222,6 +222,9 @@ class VisualOperationRequest(BaseModel):
 
     language: str = Field("eng", description="Tesseract language code.")
     ocr_config: str = Field("--psm 6", description="Tesseract config flags.")
+    ocr_provider: str | None = Field(
+        None, description="OCR provider: 'tesseract' (default), 'windowsmedia' (WinRT built-in)."
+    )
     threshold: float = Field(0.8, description="Matching confidence threshold (0-1).", ge=0, le=1)
 
     control_id: str | None = Field(None, description="Element ID for highlighting.")

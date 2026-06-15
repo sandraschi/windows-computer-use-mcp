@@ -83,18 +83,21 @@ OCR screenshots and results are saved to `ocr_scans/ocr_result_<timestamp>.txt` 
 | **PaddleOCR** | Apache 2.0 | Good | Fast | Chinese-focused but multi-language |
 | **Surya OCR** | MIT | Very Good | Moderate | Modern architecture, good for dense text |
 
-### Windows Media OCR (WIP)
+### Windows Media OCR
 
-Windows 10/11 includes a built-in OCR engine via `Windows.Media.Ocr` — the same engine used by Snipping Tool and Game Bar. It's detected as available on this system, but calling it from Python requires WinRT async interop which has proven difficult:
+Windows 10/11 includes a built-in OCR engine via `Windows.Media.Ocr` — the same engine used by Snipping Tool and Game Bar. Available on every Windows 10/11 system with zero additional install.
 
-| Approach | Status |
-|----------|--------|
-| PowerShell 5.1 `GetResults()` | Engine available, but async operations fail (COM object doesn't expose `GetResults`) |
-| C# inline compilation (`csc.exe`) | Requires .NET SDK with WinRT reference assemblies |
-| `pythonnet` (installed) | WinRT type import fails with current version |
-| `winrt` PyPI package | Only available up to Python 3.11 (no 3.12 wheel) |
+**Integrated via `winrt-*` PyPI packages:** `winrt-windows-media-ocr`, `winrt-windows-storage`, `winrt-windows-graphics-imaging`, `winrt-windows-foundation`
 
-**Status:** Not yet integrated. Tesseract remains the default OCR provider. Windows Media OCR will be added once a reliable Python → WinRT async bridge is available. The detection code and PowerShell helper are in the repo for future work.
+Use by passing `ocr_provider="windowsmedia"` to `extract_text`:
+
+```python
+automation_visual(extract_text, window_handle=hwnd, ocr_provider="windowsmedia")
+```
+
+Or set the env var `WINDOWS_COMPUTER_USE_MCP_OCR_PROVIDER=windowsmedia` for all OCR operations.
+
+**Comparison with Tesseract:** Both engines produce nearly identical results on prose text. Windows Media OCR is slightly faster for UI text and requires no language data files. For ASCII art and unusual symbol arrangements, both engines produce similar garbage — it's a fundamental OCR limitation, not engine-specific.
 
 ## Future
 
