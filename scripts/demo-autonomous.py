@@ -83,7 +83,7 @@ async def main():
     print(f"  Notepad started (PID: {r.data.get('process_id', '?')})")
     time.sleep(2)
 
-    # ── Phase 3: Find, maximize, and create new blank document ──────────
+    # ── Phase 3: Find and maximize Notepad window ───────────────────────
     demo_phase("Phase 3: Find and maximize Notepad window")
     r = await _call("windows", operation="find", title="Notepad")
     if r.status == "success":
@@ -91,12 +91,6 @@ async def main():
         print(f"  Found Notepad (handle={hwnd})")
         await _call("windows", operation="maximize", handle=hwnd)
         print("  Maximized")
-        # File > New to ensure a fresh blank document (Windows restores sessions)
-        await _call("keyboard", operation="hotkey", keys=["alt", "f"])
-        time.sleep(0.3)
-        await _call("keyboard", operation="press", key="n")
-        time.sleep(0.5)
-        print("  New blank document created")
     else:
         print(f"  Window find: {r.message}")
         hwnd = None
@@ -113,13 +107,18 @@ async def main():
 "A herd of cows,    "Automated by AI."  "100 installers,
  automated by AI."                        $2 in costs."
 """
-    # Focus Notepad and click into the edit area (class=NotepadTextBox on Win11)
+    # Focus Notepad, click into edit area, clear any residual text, type cows
     await _call("windows", operation="focus", handle=hwnd)
     time.sleep(0.3)
     await _call("elements", operation="click", window_handle=hwnd, class_name="NotepadTextBox")
     time.sleep(0.5)
+    # Select all and delete to clear any previous text
+    await _call("keyboard", operation="hotkey", keys=["ctrl", "a"])
+    time.sleep(0.2)
+    await _call("keyboard", operation="press", key="delete")
+    time.sleep(0.3)
     await _call("keyboard", operation="type", text=COWS, interval=0.02)
-    print("  Cow herd typed into NotepadTextBox")
+    print("  Cow herd typed into Notepad")
     time.sleep(2)
 
     # ── Phase 5: Screenshot ────────────────────────────────────────────
@@ -141,8 +140,8 @@ async def main():
     demo_phase("Phase 7: Close Notepad")
     await _call("keyboard", operation="hotkey", keys=["alt", "f4"])
     time.sleep(1)
-    # "Don't Save" is the default focused button — press Enter
-    await _call("keyboard", operation="press", key="enter")
+    # Don't Save via keyboard (Alt+N works on Win10/11, N is underlined in Don't Save)
+    await _call("keyboard", operation="hotkey", keys=["alt", "n"])
     print("  Notepad closed")
     time.sleep(1)
 
