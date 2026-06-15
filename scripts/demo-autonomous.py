@@ -121,6 +121,14 @@ async def main():
 "A herd of cows,    "Automated by AI."  "100 installers,
  automated by AI."                        $2 in costs."
 """
+    # Increase font size (Ctrl+Shift+<) so OCR can read characters
+    await _call("keyboard", operation="hotkey", keys=["ctrl", "shift", ">"])
+    time.sleep(0.3)
+    await _call("keyboard", operation="hotkey", keys=["ctrl", "shift", ">"])
+    time.sleep(0.3)
+    await _call("keyboard", operation="hotkey", keys=["ctrl", "shift", ">"])
+    time.sleep(0.3)
+
     # Focus Notepad, click center of edit area via coordinates, paste clipboard
     await _call("windows", operation="focus", handle=hwnd)
     time.sleep(0.5)
@@ -142,15 +150,23 @@ async def main():
     print(f"  Screenshot taken")
     time.sleep(1)
 
-    # ── Phase 7: Verify — paste a summary below the cows ──
-    demo_phase("Phase 7: Verification")
-    summary = "\n--- Autonomous demo completed ---\n3 ASCII art cows typed into Notepad\nScreenshot captured\nThis is agentic Windows automation."
-    await _call("system", operation="clipboard_set", text=summary)
+    # ── Phase 7: OCR readback (font enlarged for readability) ──
+    demo_phase("Phase 7: OCR readback")
+    r = await _call("visual", operation="extract_text", window_handle=hwnd,
+        region_left=0, region_top=120, region_right=1900, region_bottom=1050)
+    text = (r.data or {}).get("text", "") if r.data else ""
+    ocr_preview = ""
+    if text:
+        lines = [l.strip() for l in text.strip().split("\n") if l.strip()]
+        ocr_preview = "\n".join(lines[:5])
+        print(f"  OCR read {len(lines)} lines")
+    ocr_output = f"\n--- Verification: OCR readback ---\n{ocr_preview if ocr_preview else '(no text detected)'}"
+    await _call("system", operation="clipboard_set", text=ocr_output)
     time.sleep(0.2)
     await _call("keyboard", operation="hotkey", keys=["ctrl", "v"])
     time.sleep(1)
     await _call("visual", operation="screenshot", window_handle=hwnd)
-    print("  Final screenshot taken")
+    print("  Final screenshot with OCR")
     time.sleep(2)
 
     # ── Phase 8: Close Notepad (don't save) ───────────────────────────
