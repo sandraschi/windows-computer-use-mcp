@@ -87,6 +87,12 @@ build-native: build-sidecar
 cua-nsis-test:
     C:\Windows\py.exe scripts/cua-smoke.py
 
+# ── System tray control ──────────────────────────────────────────────────────
+
+# Launch system tray controller (HITL bypass toggle, approve, web UI, status)
+tray:
+    uv run python scripts/tray-control.py
+
 # ── Demos (examples/*.py + scripts/) ─────────────────────────────────────────
 
 # Run Python example demos in sequence: mouse dance, nine Notepads in a 3x3 grid, typewriter
