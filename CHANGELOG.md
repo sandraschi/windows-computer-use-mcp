@@ -1,37 +1,4 @@
 
-
-## [0.5.5] — 2026-06-14
-
-### Added
-- CUA-NSIS: config-driven smoke test (scripts/cua-nsis-config.json, scripts/cua-smoke.py)
-- CUA-NSIS: nav click-through phase — clicks sidebar links, verifies pages via OCR
-- CUA-NSIS: log analysis phase — reads app logs for errors/warnings after run
-- CUA-NSIS: 11 phases total (3 new: nav click-through, log analysis, feature route)
-- CUA-NSIS: 9-phase smoke test (kill, install, launch, window, screenshot, feature route, diagnostics, WebView bridge OCR, uninstall)
-- CUA-NSIS: WebView bridge proof via OCR — catches CSP/CORS/API_BASE failures
-- CUA-NSIS: just build-native + just cua-nsis-test recipes
-- CUA-NSIS: local certification — all 11 phases pass locally (2026-06-14)
-- Diagnostics: GET /api/v1/diagnostics (backend, system, tools, Tesseract, window)
-- Dashboard: data-testid attributes on all KPIs and bridge status
-- Dashboard: exponential backoff retry (1s→2s→4s→8s→16s) on health check
-- Dashboard: Tauri backend-status event listener for instant refresh
-
-### Changed
-- Diagnostics: disk path now uses SystemDrive (C:\\) instead of "/"
-- cua-smoke.py: fail() split into fatal() + PhaseFailed exception for clean uninstall
-- cua-smoke.py: all hardcoded values moved to cua-nsis-config.json for fleet reuse
-- cua-smoke.py: always attempts uninstall if install succeeded
-
-### Fixed
-- logging.py: PlainTextContent -> PlainTextResponse (template bug)
-- dashboard.tsx: TS errors (unused imports, useRef signature)
-- backend/server.py: ruff lint compliance
-
-### Documentation
-- docs/ASSESSMENT_BY_CURSOR_2026-06-14_CUA_NSIS.md added
-- mcp-central-docs/standards/rules/cua_nsis_smoke_testing.md added
-- Cross-links from playwright_e2e_sota.md and tauri_godot_sota.md
-- mcp-central-docs/standards/FLEET_BUILD_TEST_PIPELINE.md created
 # Changelog
 
 All notable changes to Windows Computer Use will be documented in this file.
@@ -39,10 +6,13 @@ All notable changes to Windows Computer Use will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.6.0] — 2026-06-15
 
 ### Added
 
+- **Repo renamed: `pywinauto-mcp` → `windows-computer-use-mcp`** — GitHub redirects old URL, all docs and cross-refs updated across fleet.
+- **`docs/py-stack.md`** — dedicated Python dependency breakdown doc.
+- **`web_sota/README.md`** — operator UI build/dev guide.
 - **`analyze_winapp` tool** — auto-crawl Windows apps: walk UI tree, SOM annotated screenshot, element map with coordinates/types/names, markdown report. Three operations: `crawl` (full tree), `discover` (shortcut probe), `portfolio` (named state captures).
 - **`CuaHUD` module** — always-on-top "CUA at work" blinking red overlay with emergency stop button. Used by `analyze_winapp` (all operations) and `global_keylogger` (start/stop). Target window auto-refocused before each action to prevent focus stealers.
 - **Crawler webapp page** — new `/crawler` route with three tabs: Start Crawl (target + options form), Reports (history from localStorage), Tree Viewer (collapsible element tree grouped by type + full-screen screenshot modal).
