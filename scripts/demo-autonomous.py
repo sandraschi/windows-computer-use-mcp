@@ -55,8 +55,16 @@ async def main():
     print("  The repo showcasing itself.")
     print("")
 
-    # ── Phase 0: Kill stale Notepad ────────────────────────────────────
-    demo_phase("Phase 0: Kill stale Notepad instances")
+    # ── Phase 0: HITL approval ─────────────────────────────────────────
+    demo_phase("Phase 0: Approve automation")
+    print("  A HITL approval dialog should appear. Click 'Approve' to continue.")
+    from windows_computer_use_mcp.app import approve_automation
+    r = approve_automation(duration_minutes=5)
+    print(f"  HITL approval: {r.get('status', '?')}")
+    time.sleep(1)
+
+    # ── Phase 1: Kill stale Notepad ────────────────────────────────────
+    demo_phase("Phase 1: Kill stale Notepad instances")
     import psutil
     killed = 0
     for proc in psutil.process_iter(["name"]):
@@ -69,22 +77,22 @@ async def main():
     print(f"  Killed {killed} stale Notepad(s)" if killed else "  No stale Notepad found")
     time.sleep(1)
 
-    # ── Phase 1: Discover the desktop ──────────────────────────────────
-    demo_phase("Phase 1: Discover running apps")
+    # ── Phase 2: Discover the desktop ──────────────────────────────────
+    demo_phase("Phase 2: Discover running apps")
     r = await _call("smart", operation="list_apps")
     print(f"  Found {len(r.data.get('apps', []))} running apps:")
     for app in r.data.get("apps", [])[:5]:
         print(f"    - {app['app']} (handle={app['handle']})")
     time.sleep(1)
 
-    # ── Phase 2: Open Notepad ──────────────────────────────────────────
-    demo_phase("Phase 2: Open Notepad")
+    # ── Phase 3: Open Notepad ──────────────────────────────────────────
+    demo_phase("Phase 3: Open Notepad")
     r = await _call("system", operation="start_app", app_path="notepad.exe")
     print(f"  Notepad started (PID: {r.data.get('process_id', '?')})")
     time.sleep(2)
 
-    # ── Phase 3: Find, maximize, and create new blank document ──────────
-    demo_phase("Phase 3: Find and maximize Notepad window")
+    # ── Phase 4: Find, maximize, and create new blank document ──────────
+    demo_phase("Phase 4: Find and maximize Notepad window")
     r = await _call("windows", operation="find", title="Notepad")
     if r.status == "success":
         hwnd = r.data["windows"][0]["handle"]
@@ -102,8 +110,8 @@ async def main():
         hwnd = None
     time.sleep(1)
 
-    # ── Phase 4: Type text into Notepad ────────────────────────────────
-    demo_phase("Phase 4: Type ASCII art cow herd")
+    # ── Phase 5: Type text into Notepad ────────────────────────────────
+    demo_phase("Phase 5: Type ASCII art cow herd")
     COWS = """         (__)              (__)              (__)
          (oo)              (oo)              (oo)
    /------\\/        /------\\/        /------\\/
@@ -128,14 +136,14 @@ async def main():
     print("  Cow herd pasted into Notepad")
     time.sleep(3)
 
-    # ── Phase 5: Screenshot ────────────────────────────────────────────
-    demo_phase("Phase 5: Screenshot")
+    # ── Phase 6: Screenshot ────────────────────────────────────────────
+    demo_phase("Phase 6: Screenshot")
     r = await _call("visual", operation="screenshot", window_handle=hwnd)
     print(f"  Screenshot: {(r.data or {}).get('path', '?')}")
     time.sleep(1)
 
-    # ── Phase 6: OCR the screenshot ────────────────────────────────────
-    demo_phase("Phase 6: OCR - read what we typed")
+    # ── Phase 7: OCR the screenshot ────────────────────────────────────
+    demo_phase("Phase 7: OCR - read what we typed")
     r = await _call("visual", operation="extract_text", window_handle=hwnd)
     text = (r.data or {}).get("text", "") if r.data else ""
     if text:
@@ -143,8 +151,8 @@ async def main():
         print(f"  OCR read {len(lines)} lines. First line: '{lines[0]}'")
     time.sleep(1)
 
-    # ── Phase 7: Close Notepad (don't save) ───────────────────────────
-    demo_phase("Phase 7: Close Notepad")
+    # ── Phase 8: Close Notepad (don't save) ───────────────────────────
+    demo_phase("Phase 8: Close Notepad")
     await _call("keyboard", operation="hotkey", keys=["alt", "f4"])
     time.sleep(1)
     # Don't Save via keyboard (Alt+N works on Win10/11, N is underlined in Don't Save)
@@ -152,7 +160,7 @@ async def main():
     print("  Notepad closed")
     time.sleep(1)
 
-    # ── Phase 8: Telemetry summary ─────────────────────────────────────
+    # ── Phase 9: Telemetry summary ─────────────────────────────────────
     demo_phase("Phase 9: Telemetry stats")
     r = await _call("system", operation="telemetry")
     stats = r.data.get("stats", {})
