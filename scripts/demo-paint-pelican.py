@@ -65,6 +65,14 @@ async def main():
     await call("windows", operation="focus", handle=hwnd)
     time.sleep(0.5)
 
+    # Ctrl+E to open canvas resize dialog, set to default
+    await call("keyboard", operation="hotkey", keys=["ctrl", "e"])
+    time.sleep(1)
+    await call("keyboard", operation="hotkey", keys=["alt", "d"])  # Default button
+    time.sleep(0.5)
+    await call("keyboard", operation="press", key="enter")  # OK
+    time.sleep(0.5)
+
     cx, cy = 960, 520  # canvas center
     await call("mouse", operation="click", x=cx, y=cy)
     print(f"  Center: {cx},{cy}")
