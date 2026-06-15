@@ -107,19 +107,6 @@ async def main():
 
     S = 2  # scale factor
 
-    # ── Colors: click palette swatches at bottom of Paint window ──
-    # Palette is at the bottom of the window, roughly y = top + window_height - 60
-    palette_y = top + 1000
-    palette_step = 30
-
-    def pick_color(index: int):
-        """Click a color swatch in the palette (0=black, 1=white, 2=red, 3=green, ...)"""
-        x = canvas_ox - 400 + index * palette_step
-        asyncio.run(call("mouse", operation="click", x=x, y=palette_y))
-        time.sleep(0.2)
-
-    # We'll draw with default black first, then add color
-
     # ── Draw bicycle frame (triangle) ──
     phase("Draw bike frame")
     bw_x, bw_y = cx - 60 * S, cy + 30 * S  # back wheel hub
