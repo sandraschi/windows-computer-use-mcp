@@ -183,3 +183,6 @@ mcpb/src/
 # build/  # Keep build directory for CI/CD
 *.dxt    # But ignore loose DXT files
 _dashboard/
+
+# OCR test output
+ocr_scans/

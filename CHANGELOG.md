@@ -29,6 +29,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **OCR verified working** — Tesseract 5.5 tested with prose, braces, brackets, underscores, backslashes: all read correctly. ASCII art layout causes segmentation issues (isolated symbol groups with large gaps), but all individual characters recognized correctly in normal text.
+- Screenshots and OCR results saved to `ocr_scans/ocr_result_<ts>.txt`.
+- Demo increases Notepad font 3x before OCR for better readability.
 - README slimmed to fleet standard: hero + TOC + 4-method quick-start table + sub-readme nav. Includes cross-ref to browser-mcp.
 - `docs/TOOLS.md` rewritten with all 22 tools, phase annotations, and examples.
 - `docs/README.md` hub linked to py-stack.md and composing-with-playwright.md.

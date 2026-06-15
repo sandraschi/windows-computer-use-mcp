@@ -23,7 +23,7 @@ Every `py-` module in this project and what it does.
 | Package | What it does here |
 |---------|-------------------|
 | **opencv-python-headless** | Screenshot capture, template matching, camera index probe. Backs `automation_visual` (`find_image`, `screenshot`) and the `automation_face` biometric preview pipeline. |
-| **pytesseract** | Tesseract OCR wrapper for `automation_visual` `extract_text`. Requires Tesseract 5.x installed on the host. Auto-install via `just install-tesseract` or NSIS installer checkbox. |
+| **pytesseract** | Tesseract OCR wrapper for `automation_visual` `extract_text`. Requires Tesseract 5.x installed on the host. Auto-install via `just install-tesseract` or NSIS installer checkbox. **Known limitation:** reads prose, punctuation, and all symbol characters correctly in normal text flow. ASCII art with widely separated character groups may produce segmentation errors (isolated groups confuse page layout analysis). For best results, ensure text is at least 10pt (default Notepad size may need enlargement via Ctrl+Shift+>). OCR results and screenshots are saved to `ocr_scans/` for review. |
 
 ## Optional: Face Recognition
 
