@@ -202,7 +202,7 @@ class KeyboardOperationRequest(BaseModel):
 class VisualOperationRequest(BaseModel):
     """Request model for visual/OCR operations."""
 
-    operation: Literal["screenshot", "extract_text", "find_image", "highlight"] = Field(
+    operation: Literal["screenshot", "extract_text", "find_image", "highlight", "record", "record_to_gif"] = Field(
         ..., description="The visual operation to perform."
     )
 
@@ -231,6 +231,10 @@ class VisualOperationRequest(BaseModel):
     color: str = Field("red", description="Highlight color name.")
     thickness: int = Field(2, description="Highlight border thickness.", ge=1)
     highlight_duration: float = Field(3.0, description="Duration to show highlight in seconds.", ge=0)
+
+    # Recording options
+    duration: float = Field(10.0, description="Recording duration in seconds (for record/record_to_gif).", ge=1, le=300)
+    fps: int = Field(10, description="Frames per second for recording.", ge=1, le=60)
 
 
 class FaceOperationRequest(BaseModel):

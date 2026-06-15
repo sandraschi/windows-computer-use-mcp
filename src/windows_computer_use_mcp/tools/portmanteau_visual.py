@@ -387,11 +387,63 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
                     },
                 )
 
+            # === RECORD / RECORD_TO_GIF (ffmpeg-based screen capture) ===
+            elif operation in ("record", "record_to_gif"):
+                import io, subprocess, shutil
+                rec_duration = request.duration
+                rec_fps = request.fps
+                out_path = request.output_path or os.path.join(
+                    os.getcwd(), f"screenshot_{operation}_{int(time.time())}.mp4" if operation == "record" else f"screenshot_{operation}_{int(time.time())}.gif"
+                )
+                total_frames = int(rec_duration * rec_fps)
+                interval = rec_duration / max(total_frames, 1)
+
+                ffmpeg_path = shutil.which("ffmpeg") or r"C:\Users\sandr\scoop\shims\ffmpeg.exe"
+                if ffmpeg_path is None:
+                    raise RuntimeError("ffmpeg not found. Install with: scoop install ffmpeg")
+
+                if operation == "record":
+                    cmd = [
+                        ffmpeg_path, "-y", "-f", "image2pipe", "-framerate", str(rec_fps),
+                        "-i", "-", "-c:v", "libx264", "-pix_fmt", "yuv420p",
+                        str(out_path)
+                    ]
+                else:
+                    cmd = [
+                        ffmpeg_path, "-y", "-f", "image2pipe", "-framerate", str(rec_fps),
+                        "-i", "-", "-vf", "fps=10,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse",
+                        str(out_path)
+                    ]
+
+                proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stderr=subprocess.DEVNULL)
+                try:
+                    for _ in range(total_frames):
+                        if window_handle:
+                            import win32gui
+                            rect = win32gui.GetWindowRect(window_handle)
+                            frame = ImageGrab.grab(bbox=rect)
+                        else:
+                            frame = ImageGrab.grab()
+                        buf = io.BytesIO()
+                        frame.save(buf, format="PNG")
+                        proc.stdin.write(buf.getvalue())
+                        time.sleep(interval)
+                finally:
+                    proc.stdin.close()
+                    proc.wait()
+
+                size_mb = round(os.path.getsize(out_path) / (1024 * 1024), 1) if os.path.exists(out_path) else 0
+                return ToolResult(
+                    status="success",
+                    message=f"Recording saved: {out_path} ({size_mb} MB, {rec_duration}s, {rec_fps}fps)",
+                    data={"path": str(out_path), "duration": rec_duration, "fps": rec_fps, "frames": total_frames, "size_mb": size_mb},
+                )
+
             else:
                 return ToolResult(
                     status="error",
                     message=f"Unknown operation: {operation}",
-                    recovery_tip="Supported operations are: screenshot, extract_text, find_image, highlight.",
+                    recovery_tip="Supported operations are: screenshot, extract_text, find_image, highlight, record, record_to_gif.",
                 )
 
         except Exception as e:
