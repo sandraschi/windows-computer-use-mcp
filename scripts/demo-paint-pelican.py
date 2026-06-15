@@ -111,10 +111,10 @@ async def main():
     # Palette is at the bottom of the Paint window. Swatches are ~28x28px.
     pal_y = top + 1010
     pal_x = left + 12  # first swatch (black)
-    def pick(n):
+    async def pick(n):
         """Click the nth color swatch. 0=black, 1=white, 2=red, 3=green,
            4=blue, 5=yellow, 6=orange, 7=purple, 8=brown, 9=grey"""
-        asyncio.run(call("mouse", operation="click", x=pal_x + n * 30, y=pal_y))
+        await call("mouse", operation="click", x=pal_x + n * 30, y=pal_y)
         time.sleep(0.15)
 
     # ── Draw bicycle frame (triangle, black) ──
@@ -162,7 +162,7 @@ async def main():
 
     # ── Draw pelican body (black outline) ──
     phase("Draw pelican body")
-    pick(0)  # black
+    await pick(0)  # black
     bx, by = cx - 20 * S, cy - 45 * S
     pts = 16
     rw, rh = 30 * S, 20 * S
@@ -192,17 +192,17 @@ async def main():
 
     # ── Draw beak (yellow upper, orange pouch) ──
     phase("Draw beak")
-    pick(5)  # yellow for upper beak
+    await pick(5)  # yellow for upper beak
     await call("mouse", operation="drag", x=hx + hr, y=hy, x2=hx + 45 * S, y2=hy - 3 * S)
     time.sleep(0.1)
     await call("mouse", operation="drag", x=hx + 45 * S, y=hy - 3 * S, x2=hx + 45 * S, y2=hy + 8 * S)
     time.sleep(0.1)
     await call("mouse", operation="drag", x=hx + 45 * S, y=hy + 8 * S, x2=hx + 15 * S, y2=hy + 10 * S)
     time.sleep(0.1)
-    pick(6)  # orange for pouch
+    await pick(6)  # orange for pouch
     await call("mouse", operation="drag", x=hx + 15 * S, y=hy + 10 * S, x2=hx + hr, y2=hy + 3 * S)
     time.sleep(0.1)
-    pick(0)  # back to black for remaining
+    await pick(0)  # back to black for remaining
 
     # ── Draw eye ──
     phase("Draw eye")
