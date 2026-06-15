@@ -155,7 +155,7 @@ async def main():
         print(f"  OCR read {len(lines)} lines")
     original_lines = COWS.strip().split("\n")
     original_short = "\n".join(original_lines[:6])
-    ocr_output = f"\n--- Original (clipboard paste) ---\n{original_short}\n\n--- OCR readback ---\n{ocr_preview if ocr_preview else '(no text detected)'}"
+    ocr_output = f"\n--- Original text (correct) ---\n{original_short}\n\n--- OCR readback (Tesseract, best effort) ---\n{ocr_preview if ocr_preview else '(no text detected)'}"
     await _call("system", operation="clipboard_set", text=ocr_output)
     time.sleep(0.2)
     await _call("keyboard", operation="hotkey", keys=["ctrl", "v"])
