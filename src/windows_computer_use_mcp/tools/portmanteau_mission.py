@@ -9,6 +9,7 @@ executes each with retry + verification, and returns pass/fail per step.
 import logging
 import time
 import uuid
+from pathlib import Path
 from typing import Any
 
 from windows_computer_use_mcp.app import app
@@ -28,6 +29,11 @@ from windows_computer_use_mcp.tools.models import MissionOperationRequest, ToolR
 _MISSIONS: dict[str, dict[str, Any]] = {}
 _MAX_CONSECUTIVE_FAILURES = 5
 _WORKFLOW_CONTEXT: dict[str, Any] = {}
+
+
+def _presets_dir() -> Path:
+    """Return the presets directory (project root/presets/)."""
+    return Path(__file__).resolve().parent.parent.parent.parent / "presets"
 
 
 def _check_window_alive(handle: int | None) -> bool:
@@ -124,21 +130,11 @@ def _verify_step_outcome(step: dict[str, Any], tool_result: ToolResult) -> bool:
     return True
 
 
-async def _run_mission(goal: str, ctx: Context | None, mission_id: str) -> ToolResult:
-    """Full autonomous loop: plan → execute each step with verify + retry."""
-    _MISSIONS[mission_id] = {"status": "running", "goal": goal, "steps": [], "started": time.time()}
-
+async def _run_steps(steps: list[dict], ctx: Context | None, mission_id: str, label: str = "") -> ToolResult:
+    """Execute a list of steps with verify + retry. Shared by run_mission and run_preset."""
+    _MISSIONS[mission_id] = {"status": "running", "goal": label, "steps": steps, "started": time.time()}
     if ctx:
-        await ctx.info(f"Starting mission: {goal}")
-        await ctx.report_progress(5, 100)
-
-    steps = await _decompose_goal(goal, ctx)
-
-    if not steps:
-        _MISSIONS[mission_id]["status"] = "failed"
-        return ToolResult(status="error", message=f"Could not decompose goal into steps: {goal}")
-
-    _MISSIONS[mission_id]["plan"] = steps
+        await ctx.info(f"Running {label or 'workflow'} ({len(steps)} steps)")
     results = []
     total = len(steps)
     consecutive_failures = 0
@@ -280,6 +276,15 @@ async def _run_mission(goal: str, ctx: Context | None, mission_id: str) -> ToolR
     )
 
 
+
+async def _run_mission(goal: str, ctx: Context | None, mission_id: str) -> ToolResult:
+    """Decompose goal and execute steps."""
+    steps = await _decompose_goal(goal, ctx)
+    if not steps:
+        return ToolResult(status="error", message=f"Could not decompose goal into steps: {goal}")
+    return await _run_steps(steps, ctx, mission_id, goal)
+
+
 async def _decompose_goal(goal: str, ctx: Context | None) -> list[dict[str, Any]]:
     """Decompose a natural-language goal into a step list.
 
@@ -404,6 +409,24 @@ A ToolResult object with mission progress, step results, and next steps.
             operation = request.operation
             goal = request.goal
             mission_id = request.mission_id or _generate_id()
+
+            if operation == "run_preset":
+                preset_name = request.preset_name or goal
+                presets_dir = _presets_dir()
+                if not preset_name or preset_name == "list":
+                    presets = sorted(p.stem for p in presets_dir.glob("*.json") if p.stem != "list_presets")
+                    return ToolResult(status="success",
+                        message=f"Available presets: {', '.join(presets)}",
+                        data={"presets": presets})
+                preset_path = presets_dir / f"{preset_name}.json"
+                if not preset_path.exists():
+                    return ToolResult(status="error",
+                        message=f"Preset '{preset_name}' not found.",
+                        recovery_tip="Available: " + ", ".join(p.stem for p in presets_dir.glob("*.json") if p.stem != "list_presets"))
+                import json
+                preset = json.loads(preset_path.read_text(encoding="utf-8"))
+                steps = preset.get("steps", [])
+                return await _run_steps(steps, ctx, mission_id, preset.get("name", preset_name))
 
             if operation == "run":
                 return await _run_mission(goal, ctx, mission_id)

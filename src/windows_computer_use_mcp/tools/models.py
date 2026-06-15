@@ -384,8 +384,11 @@ class AssertOperationRequest(BaseModel):
 class MissionOperationRequest(BaseModel):
     """Request model for high-level agentic missions."""
 
-    operation: Literal["run", "plan", "status", "cancel", "record", "replay", "workflow"] = Field(
+    operation: Literal["run", "plan", "status", "cancel", "record", "replay", "workflow", "run_preset"] = Field(
         "run", description="The mission operation to perform. 'run' executes the full autonomous loop."
+    )
+    preset_name: str | None = Field(
+        None, description="For 'run_preset': name of a preset workflow file (without .json)."
     )
     app: str | None = Field(
         None, description="For 'workflow' operation: target application (e.g. 'notepad.exe')."

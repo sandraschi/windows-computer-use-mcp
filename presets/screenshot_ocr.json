@@ -1,0 +1,9 @@
+{
+  "name": "screenshot_ocr",
+  "description": "Take a screenshot of the entire screen and OCR it",
+  "version": "1.0",
+  "steps": [
+    {"tool": "visual", "params": {"operation": "screenshot", "return_base64": false}, "label": "Take screenshot"},
+    {"tool": "visual", "params": {"operation": "extract_text"}, "label": "OCR screenshot"}
+  ]
+}

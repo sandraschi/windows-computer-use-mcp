@@ -39,10 +39,10 @@ def extract_text(image_path: str | Path) -> str:
 
     Uses PyWinRT async API via asyncio internally.
     """
-    from winrt.windows.media.ocr import OcrEngine
     from winrt.windows.globalization import Language
-    from winrt.windows.storage import StorageFile
     from winrt.windows.graphics.imaging import BitmapDecoder
+    from winrt.windows.media.ocr import OcrEngine
+    from winrt.windows.storage import StorageFile
 
     engine = OcrEngine.try_create_from_language(Language("en"))
     if engine is None:

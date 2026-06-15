@@ -179,7 +179,9 @@ OPERATIONS:
             video_path = None
             ffmpeg_proc = None
             if record_video:
-                import io, shutil, subprocess
+                import io
+                import shutil
+                import subprocess
                 ffmpeg_path = shutil.which("ffmpeg") or shutil.which("ffmpeg.exe")
                 if ffmpeg_path:
                     video_path = str(_macros_dir() / f"{macro_id}_replay_{int(time.time())}.mp4")

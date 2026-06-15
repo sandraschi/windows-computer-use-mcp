@@ -1,0 +1,14 @@
+{
+  "name": "notepad_demo",
+  "description": "Open Notepad, type text, screenshot, close",
+  "version": "1.0",
+  "steps": [
+    {"tool": "system", "params": {"operation": "start_app", "app_path": "notepad.exe"}, "label": "Open Notepad"},
+    {"tool": "system", "params": {"operation": "wait", "seconds": 2}, "label": "Wait for Notepad"},
+    {"tool": "system", "params": {"operation": "clipboard_set", "text": "Hello from preset workflow!"}, "label": "Set clipboard text"},
+    {"tool": "keyboard", "params": {"operation": "hotkey", "keys": ["ctrl", "v"]}, "label": "Paste into Notepad"},
+    {"tool": "visual", "params": {"operation": "screenshot"}, "label": "Screenshot"},
+    {"tool": "keyboard", "params": {"operation": "hotkey", "keys": ["alt", "f4"]}, "label": "Close Notepad"},
+    {"tool": "keyboard", "params": {"operation": "press", "key": "n"}, "label": "Don't save"}
+  ]
+}
