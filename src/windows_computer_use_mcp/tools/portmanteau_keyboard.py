@@ -81,11 +81,12 @@ A ToolResult object containing standardized outcome, message, and focus metadata
                         action_detail = f"Hold sequence: {request.keys}"
 
                     return ToolResult(
-                        status="clarification_needed",
-                        message="Human approval required for keyboard automation.",
+                        status="error",
+                        message=f"Blocked by HITL safety setting: keyboard action '{action_detail}' requires human approval. Call approve_automation(duration_minutes=5) first or set WINDOWS_COMPUTER_USE_MCP_BYPASS_HITL=1 for unattended runs.",
                         data={
                             "hitl_prompt": f"Approve keyboard action? [{action_detail}]",
                             "technical_details": request.model_dump(exclude_none=True),
+                            "recovery": "Call approve_automation(5) to grant a 5-minute window.",
                         },
                     )
             except ImportError:

@@ -63,8 +63,8 @@ ToolResult with status, message, and data (events list, counts, etc.).
 
                     if not approval_state.is_approved():
                         return ToolResult(
-                            status="clarification_needed",
-                            message="Human approval required to start global keylogging.",
+                            status="error",
+                            message="Blocked by HITL safety setting: global keylogger requires human approval. Call approve_automation(duration_minutes=5) first or set WINDOWS_COMPUTER_USE_MCP_BYPASS_HITL=1 for unattended runs.",
                             data={
                                 "hitl_prompt": "Approve global keyboard capture (keylogger)?",
                                 "technical_details": request.model_dump(exclude_none=True),

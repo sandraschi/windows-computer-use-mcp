@@ -91,8 +91,8 @@ A ToolResult object containing standardized outcome, message, and movement data.
                             action_detail += f" at ({x}, {y})"
 
                         return ToolResult(
-                            status="clarification_needed",
-                            message="Human approval required for UI automation.",
+                            status="error",
+                            message=f"Blocked by HITL safety setting: {action_detail} requires human approval. Call approve_automation(duration_minutes=5) first or set WINDOWS_COMPUTER_USE_MCP_BYPASS_HITL=1 for unattended runs.",
                             data={
                                 "hitl_prompt": f"Approve mouse action? [{action_detail}]",
                                 "technical_details": request.model_dump(exclude_none=True),
