@@ -102,8 +102,8 @@ async def main():
         hwnd = None
     time.sleep(1)
 
-    # ── Phase 4: Type text ─────────────────────────────────────────────
-    demo_phase("Phase 4: Type text into Notepad")
+    # ── Phase 4: Type text into Notepad ────────────────────────────────
+    demo_phase("Phase 4: Type ASCII art cow herd")
     COWS = '''         (__)              (__)              (__)
          (oo)              (oo)              (oo)
    /------\\/        /------\\/        /------\\/
@@ -112,9 +112,11 @@ async def main():
     ~~   ~~            ~~   ~~            ~~   ~~
 "A herd of cows,    "Automated by AI."  "100 installers,
  automated by AI."                        $2 in costs."'''
-    await _call("elements", operation="set_text", window_handle=hwnd, title="Text Editor",
-          text=COWS, verify=True)
-    print("  Text typed with outcome verification")
+    # Click into the Notepad edit area, then type via keyboard
+    await _call("elements", operation="click", window_handle=hwnd, control_type="Document")
+    time.sleep(0.5)
+    await _call("keyboard", operation="type", text=COWS, interval=0.01)
+    print("  Cow herd typed via keyboard")
     time.sleep(2)
 
     # ── Phase 5: Screenshot ────────────────────────────────────────────
