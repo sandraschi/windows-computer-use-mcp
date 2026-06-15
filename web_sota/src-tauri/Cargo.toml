@@ -1,6 +1,6 @@
 [package]
 name = "windows-computer-use-operator"
-version = "0.6.0"
+version = "0.7.0"
 description = "Tauri desktop shell for windows-computer-use-mcp operator UI"
 edition = "2021"
 
