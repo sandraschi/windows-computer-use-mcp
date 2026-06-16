@@ -12,8 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Windows Media OCR as default** — auto-probes WinRT OCR first, falls back to Tesseract. Zero-install on Windows 10/11. Env var `WINDOWS_COMPUTER_USE_MCP_OCR_PROVIDER=tesseract|windowsmedia|auto`.
 - **Screen recording** — `automation_visual(record, duration=10, fps=10)` captures screen to MP4 via ffmpeg. `record_to_gif` produces animated GIF. Pipes frames directly to ffmpeg, no intermediate files.
+- **Session replay to video** — `automation_macro(replay, record_video=True)` records screen during macro replay via ffmpeg pipe.
+- **Mission presets** — `presets/*.json` files loaded by `automation_mission(run_preset="notepad_demo")`. Uses same retry/verify/self-heal pipeline as goal-based missions.
+- **YAML/JSON portable workflow runner** — `scripts/run-workflow.py` executes any JSON or YAML workflow file using the same `_run_steps` engine. `just run-workflow <file>` recipe.
+- **CUA-NSIS full certification** — 12 phases all pass: kill → install → launch → health → window → screenshot → diagnostics → uninstall → cert. Config in `scripts/cua-nsis-config.json`.
+- **HITL clarity** — blocked actions now return `status="error"` with clear `"Blocked by HITL safety setting"` message instead of ambiguous `"clarification_needed"`.
 - **System tray controller polish** — tool count in status line, recording indicator (red R icon), saved macro list with one-click replay, startup health notification, 5-second polling.
 - **`docs/ROADMAP.md`** — 14-item improvement plan across short/medium/long term, including Kimi K2.7 Code model notes and Chinese open-weight model table.
+- **`docs/ocr.md`** — covers both OCR providers, setup, limitations, competition table, future roadmap.
 - **`winrt-*` extras** — `[windowsmediaocr]` optional dependency group for Windows Media OCR.
 
 ### Changed
@@ -21,6 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - OCR default switched from Tesseract to auto-probe (Windows Media OCR → Tesseract fallback).
 - Demo rewritten: types text character-by-character into Notepad (visible typing), then OCR reads it back and pastes result below. Includes bold/italic formatting demo.
 - Tray app now shows `R` icon during recording, lists saved macros from `~/.windows-computer-use-mcp/macros/`.
+- Mission engine decomposed: `_run_steps()` extracted as shared executor so both goal-based and preset-based missions use the same pipeline.
+- HITL status changed from `"clarification_needed"` to `"error"` — agents were ignoring the soft status. Hard error with recovery instruction is actionable.
 
 ## [0.7.0] — 2026-06-15
 
