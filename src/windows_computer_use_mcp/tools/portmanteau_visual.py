@@ -35,6 +35,7 @@ except ImportError as e:
     logger = logging.getLogger(__name__)
     logger.error(f"Failed to import FastMCP app in portmanteau_visual: {e}")
     app = None
+from windows_computer_use_mcp.display_utils import enum_monitors, get_monitor_by_index
 from windows_computer_use_mcp.tools.models import ToolResult, VisualOperationRequest
 
 # Try to import OCR
@@ -90,15 +91,41 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
             thickness = request.thickness
             # highlight_duration = request.highlight_duration # Currently unused in implementation
 
+            monitors = []
+            try:
+                monitors = [
+                    {"index": m.index, "width": m.width, "height": m.height,
+                     "left": m.left, "top": m.top, "primary": m.is_primary}
+                    for m in enum_monitors()
+                ]
+            except Exception:
+                pass
             visual_metadata = {
                 "timestamp": timestamp,
                 "engine": "opencv_tesseract_pillow",
                 "identity": "pywinauto-mcp-sota-2026",
+                "monitor_count": len(monitors),
+                "monitors": monitors,
             }
 
-            # Build region tuple if provided
+            # Build region tuple — support monitor_index for per-monitor capture
             region = None
-            if all(v is not None for v in [region_left, region_top, region_right, region_bottom]):
+            mi = None
+            if request.monitor_index is not None:
+                try:
+                    mi = get_monitor_by_index(request.monitor_index)
+                except Exception as e:
+                    logger.warning(f"Invalid monitor_index {request.monitor_index}: {e}")
+
+            if mi is not None:
+                if all(v is not None for v in [region_left, region_top, region_right, region_bottom]):
+                    # Region coords relative to monitor origin
+                    region = (region_left + mi.left, region_top + mi.top,
+                              region_right + mi.left, region_bottom + mi.top)
+                else:
+                    # Full monitor capture
+                    region = (mi.left, mi.top, mi.right, mi.bottom)
+            elif all(v is not None for v in [region_left, region_top, region_right, region_bottom]):
                 region = (region_left, region_top, region_right, region_bottom)
 
             # === SCREENSHOT OPERATION ===

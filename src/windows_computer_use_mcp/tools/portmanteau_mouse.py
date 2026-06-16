@@ -12,6 +12,12 @@ import time
 from typing import cast
 
 from windows_computer_use_mcp.app import app
+from windows_computer_use_mcp.display_utils import (
+    enum_monitors,
+    get_monitor_at_point,
+    translate_coords,
+    virtual_screen_size,
+)
 from windows_computer_use_mcp.tools.models import MouseOperationRequest, ToolResult
 from windows_computer_use_mcp.win32_mouse import (
     ButtonName,
@@ -23,7 +29,6 @@ from windows_computer_use_mcp.win32_mouse import (
     move_rel,
     move_to,
     right_click,
-    screen_size,
     scroll,
     scroll_at,
 )
@@ -63,17 +68,32 @@ A ToolResult object containing standardized outcome, message, and movement data.
             operation = request.operation
             timestamp = time.time()
 
-            sw, sh = screen_size()
+            vsw, vsh = virtual_screen_size()
+            monitors = enum_monitors()
             metadata = {
-                "screen_resolution": f"{sw}x{sh}",
+                "virtual_screen": f"{vsw}x{vsh}",
+                "monitor_count": len(monitors),
+                "monitors": [
+                    {"index": m.index, "width": m.width, "height": m.height,
+                     "left": m.left, "top": m.top, "primary": m.is_primary,
+                     "dpi": m.dpi_x, "scale": m.scale_factor}
+                    for m in monitors
+                ],
                 "timestamp": timestamp,
                 "input_backend": "win32_mouse",
             }
 
             x = request.x
             y = request.y
+            # Translate coords if monitor_index is set
+            raw_x, raw_y = x, y
+            if x is not None and y is not None and request.monitor_index is not None:
+                x, y = translate_coords(int(x), int(y), request.monitor_index)
             target_x = request.target_x or request.x2
             target_y = request.target_y or request.y2
+            raw_tx, raw_ty = target_x, target_y
+            if target_x is not None and target_y is not None and request.monitor_index is not None:
+                target_x, target_y = translate_coords(int(target_x), int(target_y), request.monitor_index)
             amount = (
                 request.amount if request.amount != 1 else (request.clicks if request.clicks != 1 else request.amount)
             )
@@ -115,17 +135,28 @@ A ToolResult object containing standardized outcome, message, and movement data.
 
             if operation == "position":
                 pos_x, pos_y = get_cursor_pos()
+                monitor = get_monitor_at_point(pos_x, pos_y)
                 return ToolResult(
                     status="success",
-                    message=f"Cursor at ({pos_x}, {pos_y})",
-                    data={"x": pos_x, "y": pos_y, "metadata": metadata},
+                    message=f"Cursor at ({pos_x}, {pos_y}) on monitor {monitor.index}",
+                    data={
+                        "x": pos_x, "y": pos_y,
+                        "monitor_index": monitor.index,
+                        "monitor_name": monitor.name,
+                        "metadata": metadata,
+                    },
                 )
 
             elif operation == "move":
                 if x is None or y is None:
                     return ToolResult(status="error", message="Coordinates x, y are required for 'move'.")
                 move_to(int(x), int(y), duration=request.duration)
-                return ToolResult(status="success", message=f"Moved to ({x}, {y})", data={"x": x, "y": y})
+                mon = get_monitor_at_point(int(x), int(y))
+                return ToolResult(
+                    status="success",
+                    message=f"Moved to ({x}, {y}) on monitor {mon.index}",
+                    data={"x": x, "y": y, "monitor_index": mon.index, "monitor_name": mon.name},
+                )
 
             elif operation == "move_relative":
                 if x is None or y is None:

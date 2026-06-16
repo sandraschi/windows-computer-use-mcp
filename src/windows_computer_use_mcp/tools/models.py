@@ -51,6 +51,12 @@ class WindowOperationRequest(BaseModel):
     width: int | None = Field(None, description="Target width for 'position' operation.")
     height: int | None = Field(None, description="Target height for 'position' operation.")
 
+    monitor_index: int | None = Field(
+        None, description="0-based monitor index for coordinate translation. "
+        "When set, x/y are treated as relative to this monitor's origin. "
+        "Use with 'position' to place a window on a specific monitor."
+    )
+
 
 class ElementOperationRequest(BaseModel):
     """Request model for element-level automation operations."""
@@ -85,6 +91,9 @@ class ElementOperationRequest(BaseModel):
     x: int | None = Field(None, description="Relative or absolute X coordinate.")
     y: int | None = Field(None, description="Relative or absolute Y coordinate.")
     absolute: bool = Field(False, description="Whether coordinates are screen-absolute.")
+    monitor_index: int | None = Field(
+        None, description="0-based monitor index for 'absolute=True' coordinate translation."
+    )
 
     # Action parameters
     text: str | None = Field(None, description="Text to enter for 'set_text'.")
@@ -139,6 +148,10 @@ class MouseOperationRequest(BaseModel):
 
     x: int | None = Field(None, description="X coordinate or relative X offset.")
     y: int | None = Field(None, description="Y coordinate or relative Y offset.")
+    monitor_index: int | None = Field(
+        None, description="0-based monitor index. When set, x/y are treated as relative "
+        "to this monitor's origin. Pass None (default) for absolute virtual screen coordinates."
+    )
 
     target_x: int | None = Field(None, description="Target X for 'drag'.")
     target_y: int | None = Field(None, description="Target Y for 'drag'.")
@@ -207,6 +220,11 @@ class VisualOperationRequest(BaseModel):
     )
 
     window_handle: int | None = Field(None, description="HWND of target window.")
+
+    monitor_index: int | None = Field(
+        None, description="0-based monitor index. When set without region, captures the full "
+        "monitor. When set with region, region coordinates are relative to this monitor's origin."
+    )
 
     region_left: int | None = Field(None, description="X1 coordinate of region.")
     region_top: int | None = Field(None, description="Y1 coordinate of region.")

@@ -15,6 +15,11 @@ from pywinauto import Desktop
 from pywinauto.findwindows import WindowNotFoundError
 
 from windows_computer_use_mcp.app import app
+from windows_computer_use_mcp.display_utils import (
+    get_monitor_at_point,
+    enum_monitors,
+    translate_coords,
+)
 from windows_computer_use_mcp.tools.models import ToolResult, WindowOperationRequest
 
 logger = logging.getLogger(__name__)
@@ -81,6 +86,15 @@ def _get_window_info(window) -> dict[str, Any]:
                 "width": rect.width(),
                 "height": rect.height(),
             }
+            # Add monitor info based on window center
+            cx = (rect.left + rect.right) // 2
+            cy = (rect.top + rect.bottom) // 2
+            try:
+                mon = get_monitor_at_point(cx, cy)
+                info["monitor_index"] = mon.index
+                info["monitor_name"] = mon.name
+            except Exception:
+                pass
         except Exception:
             pass
 
@@ -276,16 +290,24 @@ A ToolResult object containing standardized outcome, message, and window metadat
 
             # === POSITION OPERATION ===
             elif operation == "position":
-                if request.x is None or request.y is None or request.width is None or request.height is None:
+                wx = request.x
+                wy = request.y
+                if wx is not None and wy is not None and request.monitor_index is not None:
+                    wx, wy = translate_coords(wx, wy, request.monitor_index)
+                if wx is None or wy is None or request.width is None or request.height is None:
                     return ToolResult(
                         status="error",
                         message="Spatial coordinates (x, y) and dimensions (width, height) are required for 'position'.",
                     )
-                window.move_window(x=request.x, y=request.y, width=request.width, height=request.height)
+                window.move_window(x=wx, y=wy, width=request.width, height=request.height)
+                mon = get_monitor_at_point(wx, wy)
                 return ToolResult(
                     status="success",
-                    message=f"Window {handle} moved and resized.",
-                    data={"x": request.x, "y": request.y, "width": request.width, "height": request.height},
+                    message=f"Window {handle} moved to monitor {mon.index} at ({wx}, {wy}).",
+                    data={
+                        "x": wx, "y": wy, "width": request.width, "height": request.height,
+                        "monitor_index": mon.index, "monitor_name": mon.name,
+                    },
                 )
 
             # === SIMPLE METADATA OPERATIONS ===
@@ -295,13 +317,25 @@ A ToolResult object containing standardized outcome, message, and window metadat
 
             elif operation == "rect":
                 r = window.rectangle()
+                cx = (r.left + r.right) // 2
+                cy = (r.top + r.bottom) // 2
+                mon = get_monitor_at_point(cx, cy)
                 return ToolResult(
                     status="success",
-                    message="Rect retrieved.",
-                    data={"left": r.left, "top": r.top, "right": r.right, "bottom": r.bottom},
+                    message=f"Rect on monitor {mon.index}.",
+                    data={
+                        "left": r.left, "top": r.top,
+                        "right": r.right, "bottom": r.bottom,
+                        "width": r.width(), "height": r.height(),
+                        "monitor_index": mon.index, "monitor_name": mon.name,
+                    },
                 )
 
             elif operation == "state":
+                r = window.rectangle()
+                cx = (r.left + r.right) // 2
+                cy = (r.top + r.bottom) // 2
+                mon = get_monitor_at_point(cx, cy)
                 return ToolResult(
                     status="success",
                     message="State retrieved.",
@@ -311,6 +345,8 @@ A ToolResult object containing standardized outcome, message, and window metadat
                         "has_focus": window.has_focus(),
                         "is_minimized": window.is_minimized(),
                         "is_maximized": window.is_maximized(),
+                        "monitor_index": mon.index,
+                        "monitor_name": mon.name,
                     },
                 )
 
