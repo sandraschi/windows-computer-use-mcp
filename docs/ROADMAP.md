@@ -36,46 +36,49 @@ The system tray controller exists (`scripts/tray-control.py`) but is bare. Add:
 ### 5. Multi-monitor coordinate support
 Window management across multiple monitors. Currently coordinates assume primary display. Add display-aware coordinate translation.
 
-- [ ] Virtual screen bounds detection
-- [ ] Per-monitor DPI scaling
-- [ ] `automation_mouse(move_to_monitor, index=2)`
+- [x] Virtual screen bounds detection
+- [x] Per-monitor DPI scaling
+- [x] `automation_mouse(position)` returns which monitor cursor is on
+- [x] `monitor_index` on mouse/visual/window tools
 
 ### 6. App-specific automation profiles
 Structured profiles for common applications defining element selectors, window states, recovery sequences, and semantic shortcuts. Extends `automation_shortcut`.
 
-- [ ] Profile format: YAML with selectors, states, expected behaviors
-- [ ] Built-in profiles: Notepad, Paint, VS Code, installer dialogs
-- [ ] Auto-detect app and load profile
+- [x] Profile format: YAML with selectors, states, expected behaviors
+- [x] Built-in profiles: Notepad, Paint
+- [x] Auto-detect app and load profile
 
 ### 7. Mission presets
 Pre-built workflows for common tasks as JSON files. Loadable via `automation_mission(run_preset="install_app")`.
 
-- [ ] Preset format with parameter substitution
-- [ ] Registry: `~/.windows-computer-use-mcp/presets/`
-- [ ] Initial presets: "install NSIS app", "export PDF from Notepad", "screenshot + OCR"
+- [x] Preset format with parameter substitution
+- [x] Registry: `~/.windows-computer-use-mcp/presets/`
+- [x] Initial presets: "screenshot + OCR" (screenshot_demo.json)
 
 ### 8. YAML/JSON portable workflow runner
 Define multi-step automations as portable config files. No Python needed to define a workflow.
 
-- [ ] `just run-workflow path/to/workflow.yaml`
-- [ ] Step format: {tool, params, verify, retry}
-- [ ] Cross-repo compatible (same format usable by fleet)
+- [x] `just run-workflow path/to/workflow.yaml`
+- [x] Step format: {tool, params, verify, retry}
+- [x] Cross-repo compatible (same format usable by fleet)
 
 ## Long-term
 
 ### 9. Computer vision for element finding
-When UIA fails (e.g., custom controls, games, embedded web views), use lightweight object detection (YOLO, template matching) to find buttons and controls by appearance.
+When UIA fails (e.g., custom controls, games, embedded web views), use lightweight object detection to find buttons and controls by appearance.
 
-- [ ] Template matching improvement (multi-scale, rotation-invariant)
-- [ ] Optional YOLO model for common UI elements (buttons, text fields, checkboxes)
-- [ ] Fallback: when UIA selectors return nothing, try vision
+- [x] Multi-scale template matching across scale range 0.5-2.0
+- [x] Rotation-invariant ORB feature matching
+- [x] Screen region description (contour detection) for agent vision loops
+- [ ] YOLO model for common UI elements (planned)
 
 ### 10. Voice control integration
 Integrate with `speech-mcp` to allow voice commands: "click Save", "type hello world", "screenshot". The tray app becomes a voice-controlled automation assistant.
 
-- [ ] Speech-to-text via speech-mcp
-- [ ] Natural language → tool call mapping
-- [ ] Voice initiator in tray app
+- [x] Speech-to-text via speech-mcp API
+- [x] Natural language → tool call mapping (+ parse_command module)
+- [x] Background VoiceListener for tray app integration
+- [ ] Voice initiator button in tray app (planned)
 
 ### 11. Remote desktop automation
 Drive automation on a remote machine via RDP/VNC integration. Two approaches:
@@ -90,10 +93,10 @@ Drive automation on a remote machine via RDP/VNC integration. Two approaches:
 ### 12. Self-improving telemetry
 The telemetry SQLite store already logs every action. Extend it to:
 
-- [ ] Auto-detect failure patterns (specific app + operation + error)
-- [ ] Generate GitHub issue drafts from failure clusters
-- [ ] Suggest config changes (e.g., "Notepad's NotepadTextBox click fails 80% — try coordinate fallback")
-- [ ] Weekly improvement report
+- [x] Auto-detect failure patterns (specific app + operation + error)
+- [x] Generate GitHub issue drafts from failure clusters
+- [x] Suggest config changes based on error patterns
+- [x] Weekly improvement report
 
 ### 13. Docker/sandbox execution mode
 Run automation inside a Windows Sandbox or Docker container instead of on the host. Pairs with `virtualization-mcp`.
