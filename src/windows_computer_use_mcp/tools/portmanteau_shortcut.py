@@ -6,6 +6,7 @@ import logging
 import time
 
 from windows_computer_use_mcp import shortcut_engine
+from windows_computer_use_mcp import profiles as app_profiles
 
 try:
     from windows_computer_use_mcp.app import app
@@ -66,6 +67,52 @@ Call automation_windows(focus) first. Set windows_computer_use_mcp_KEYBOARD=win3
                     return ToolResult(status="error", message="describe requires app and action.")
                 data = shortcut_engine.describe_shortcut(app_name, request.action)
                 return ToolResult(status="success", message="Shortcut metadata.", data={**data, "timestamp": ts})
+
+            if op == "profile_list":
+                return ToolResult(
+                    status="success",
+                    message="Profiles loaded.",
+                    data={"profiles": app_profiles.list_profiles(), "timestamp": ts},
+                )
+
+            if op == "profile_detect":
+                detected = app_profiles.detect_app(
+                    window_title=request.window_title or "",
+                    window_class=request.window_class,
+                    process_name=request.process_name,
+                )
+                if detected:
+                    return ToolResult(
+                        status="success",
+                        message=f"Detected profile: {detected['name']}",
+                        data={
+                            "profile_name": detected["name"],
+                            "display_name": detected.get("display_name", detected["name"]),
+                            "shortcut_count": len(detected.get("shortcuts", {})),
+                            "element_count": len(detected.get("elements", {})),
+                        },
+                    )
+                return ToolResult(
+                    status="success",
+                    message="No matching profile found.",
+                    data={"profile_name": None},
+                )
+
+            if op == "profile_shortcut":
+                if not request.profile_name or not request.action:
+                    return ToolResult(status="error", message="profile_shortcut requires profile_name and action.")
+                hotkey = app_profiles.get_profile_shortcut(request.profile_name, request.action)
+                if hotkey:
+                    return ToolResult(
+                        status="success",
+                        message=f"Shortcut {request.action} = {hotkey}",
+                        data={"app": request.profile_name, "action": request.action, "hotkey": hotkey},
+                    )
+                return ToolResult(
+                    status="error",
+                    message=f"Shortcut '{request.action}' not found in profile '{request.profile_name}'.",
+                    recovery_tip=f"Use operation=list, app={request.profile_name} to see available shortcuts.",
+                )
 
             if op == "send":
                 if not app_name or not request.action:

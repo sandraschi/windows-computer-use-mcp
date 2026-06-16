@@ -1,0 +1,51 @@
+name: paint
+display_name: Paint
+description: "Windows Paint — basic image editor"
+version: "1.0"
+
+detect:
+  window_class: " MSPaintApp"
+  title_pattern: " - Paint$"
+  process_names: ["mspaint.exe"]
+
+launch:
+  command: "mspaint.exe"
+  wait_for_window: 8.0
+
+shortcuts:
+  save:        { hotkey: "ctrl+s" }
+  save_as:     { hotkey: "ctrl+shift+s" }
+  open:        { hotkey: "ctrl+o" }
+  print:       { hotkey: "ctrl+p" }
+  new:         { hotkey: "ctrl+n" }
+  undo:        { hotkey: "ctrl+z" }
+  redo:        { hotkey: "ctrl+y" }
+  copy:        { hotkey: "ctrl+c" }
+  paste:       { hotkey: "ctrl+v" }
+  crop:        { hotkey: "ctrl+shift+x" }
+  select_all:  { hotkey: "ctrl+a" }
+  zoom_in:     { hotkey: "ctrl+plus" }
+  zoom_out:    { hotkey: "ctrl+minus" }
+  fullscreen:  { hotkey: "f11" }
+
+elements:
+  canvas:
+    control_type: "Image"
+    class_name: "MSPaintView"
+  status_bar:
+    control_type: "StatusBar"
+  color_picker:
+    control_type: "ToolBar"
+    name: "Colors"
+  ribbon:
+    control_type: "Ribbon"
+
+recovery:
+  crashed:
+    - action: launch
+
+verification:
+  canvas_present:
+    op: exists
+    element: canvas
+    timeout: 3

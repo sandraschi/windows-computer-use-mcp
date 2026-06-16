@@ -1,0 +1,58 @@
+name: notepad
+display_name: Notepad
+description: "Windows Notepad — basic text editor"
+version: "1.0"
+
+detect:
+  window_class: "Notepad"
+  title_pattern: " - Notepad$"
+  process_names: ["notepad.exe"]
+
+launch:
+  command: "notepad.exe"
+  wait_for_window: 5.0
+
+shortcuts:
+  open:        { hotkey: "ctrl+o" }
+  save:        { hotkey: "ctrl+s" }
+  save_as:     { hotkey: "ctrl+shift+s" }
+  print:       { hotkey: "ctrl+p" }
+  new:         { hotkey: "ctrl+n" }
+  bold:        { hotkey: "ctrl+b" }
+  italic:      { hotkey: "ctrl+i" }
+  underline:   { hotkey: "ctrl+u" }
+  zoom_in:     { hotkey: "ctrl+plus" }
+  zoom_out:    { hotkey: "ctrl+minus" }
+  select_all:  { hotkey: "ctrl+a" }
+  find:        { hotkey: "ctrl+f" }
+  replace:     { hotkey: "ctrl+h" }
+  word_wrap:   { hotkey: "ctrl+shift+w" }
+  about:       { hotkey: "alt+f, a" }
+  exit:        { hotkey: "alt+f4" }
+
+elements:
+  text_editor:
+    control_type: "Document"
+    class_name: "Edit"
+  status_bar:
+    control_type: "StatusBar"
+    class_name: "msctls_statusbar32"
+  find_dialog:
+    control_type: "Window"
+    title: "Find"
+  replace_dialog:
+    control_type: "Window"
+    title: "Replace"
+
+recovery:
+  not_responding:
+    - action: close_window
+    - action: launch
+  crashed:
+    - action: launch
+
+verification:
+  text_editor_present:
+    op: exists
+    element: text_editor
+    timeout: 3

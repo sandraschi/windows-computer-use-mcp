@@ -330,13 +330,29 @@ class TaskOperationRequest(BaseModel):
 class ShortcutOperationRequest(BaseModel):
     """Request model for semantic app shortcuts."""
 
-    operation: Literal["send", "list", "describe"] = Field(..., description="Shortcut operation.")
+    operation: Literal["send", "list", "describe", "profile_list", "profile_detect", "profile_shortcut"] = Field(
+        ..., description="Shortcut operation."
+    )
 
-    app: str | None = Field(None, description="Application id (vroidstudio, vroid, vroid_studio).")
-    action: str | None = Field(None, description="Semantic action (export_vrm, new, face_editor, ...).")
+    app: str | None = Field(None, description="Application id (vroidstudio, notepad, paint, or profile name).")
+    action: str | None = Field(None, description="Semantic action (export_vrm, save, bold, ...).")
     window_handle: int | None = Field(None, description="HWND to focus before send (win32 backend).")
     verify_stable: bool | None = Field(None, description="Wait for UI stable after send; default from registry.")
     pause: float = Field(0.05, description="Pause after key send.", ge=0)
+
+    # Profile operations
+    profile_name: str | None = Field(
+        None, description="Profile name for profile_shortcut operation."
+    )
+    window_title: str | None = Field(
+        None, description="Window title for profile_detect operation."
+    )
+    window_class: str | None = Field(
+        None, description="Window class for profile_detect operation."
+    )
+    process_name: str | None = Field(
+        None, description="Process name for profile_detect operation."
+    )
 
 
 class DialogOperationRequest(BaseModel):

@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Multi-monitor coordinate support** — `display_utils.py` provides monitor enumeration, per-monitor DPI, coordinate translation. `monitor_index` field on `automation_mouse`, `automation_visual`, and `automation_windows` resolves coordinates relative to any display. Window listing/rect/state all return which monitor the window is on.
+- **App-specific automation profiles** — YAML-based profiles define window detection, semantic shortcuts, element selectors, and launch commands for apps. Built-in profiles for Notepad and Paint. New `automation_shortcut` operations: `profile_list`, `profile_detect`, `profile_shortcut`.
 - **Windows Media OCR as default** — auto-probes WinRT OCR first, falls back to Tesseract. Zero-install on Windows 10/11. Env var `WINDOWS_COMPUTER_USE_MCP_OCR_PROVIDER=tesseract|windowsmedia|auto`.
 - **Screen recording** — `automation_visual(record, duration=10, fps=10)` captures screen to MP4 via ffmpeg. `record_to_gif` produces animated GIF. Pipes frames directly to ffmpeg, no intermediate files.
 - **Session replay to video** — `automation_macro(replay, record_video=True)` records screen during macro replay via ffmpeg pipe.
