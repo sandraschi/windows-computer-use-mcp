@@ -348,6 +348,69 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
                     else None,
                 )
 
+            # === MULTI-SCALE FIND IMAGE ===
+            elif operation == "find_image_multi_scale":
+                if not template_path:
+                    return ToolResult(status="error", message="template_path is required.")
+                if not os.path.exists(template_path):
+                    return ToolResult(status="error", message=f"Template not found: {template_path}")
+
+                try:
+                    from windows_computer_use_mcp.computer_vision import find_template_multi_scale
+
+                    scale_min = 0.5
+                    scale_max = 2.0
+                    matches = find_template_multi_scale(
+                        template_path, region=region, window_handle=window_handle,
+                        threshold=threshold, scale_min=scale_min, scale_max=scale_max,
+                    )
+                    return ToolResult(
+                        status="success",
+                        message=f"Found {len(matches)} matches (multi-scale).",
+                        data={"found": len(matches) > 0, "matches": matches[:10],
+                              "match_count": len(matches), "timestamp": timestamp,
+                              "visual_metadata": visual_metadata},
+                    )
+                except Exception as e:
+                    return ToolResult(status="error", message=f"Multi-scale matching failed: {e}")
+
+            # === FEATURE MATCH FIND IMAGE ===
+            elif operation == "find_image_feature_match":
+                if not template_path:
+                    return ToolResult(status="error", message="template_path is required.")
+                if not os.path.exists(template_path):
+                    return ToolResult(status="error", message=f"Template not found: {template_path}")
+
+                try:
+                    from windows_computer_use_mcp.computer_vision import find_template_feature_match
+
+                    matches = find_template_feature_match(
+                        template_path, region=region, window_handle=window_handle,
+                        min_matches=8,
+                    )
+                    return ToolResult(
+                        status="success",
+                        message=f"Found {len(matches)} feature matches.",
+                        data={"found": len(matches) > 0, "matches": matches,
+                              "timestamp": timestamp, "visual_metadata": visual_metadata},
+                    )
+                except Exception as e:
+                    return ToolResult(status="error", message=f"Feature matching failed: {e}")
+
+            # === DESCRIBE REGION ===
+            elif operation == "describe_region":
+                try:
+                    from windows_computer_use_mcp.computer_vision import describe_region
+
+                    desc = describe_region(region=region)
+                    return ToolResult(
+                        status="success",
+                        message=f"Described region: {desc['width']}x{desc['height']}, {desc['object_count']} objects.",
+                        data={**desc, "timestamp": timestamp, "visual_metadata": visual_metadata},
+                    )
+                except Exception as e:
+                    return ToolResult(status="error", message=f"Region description failed: {e}")
+
             # === HIGHLIGHT OPERATION ===
             elif operation == "highlight":
                 if window_handle is None or control_id is None:

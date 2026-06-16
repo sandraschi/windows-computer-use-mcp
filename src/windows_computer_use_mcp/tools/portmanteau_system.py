@@ -163,6 +163,69 @@ If 'wait_for_window' times out, verify the 'title' exists or increase 'timeout'.
                     data={"stats": stats, "recent_failures": failures},
                 )
 
+            elif operation == "analyze_failures":
+                from windows_computer_use_mcp.telemetry import analyze_failures
+
+                result = analyze_failures(days=request.timeout or 7)
+                cluster_count = result.get("cluster_count", 0)
+                return ToolResult(
+                    status="success",
+                    message=f"Analyzed {cluster_count} failure clusters.",
+                    data=result,
+                )
+
+            elif operation == "issue_draft":
+                from windows_computer_use_mcp.telemetry import generate_issue_draft
+
+                draft = generate_issue_draft(days=int(request.timeout or 7))
+                if not draft.get("title"):
+                    return ToolResult(status="success", message="No failures to report.", data=draft)
+                return ToolResult(
+                    status="success",
+                    message=f"Issue draft generated: {draft['title'][:80]}",
+                    data=draft,
+                )
+
+            elif operation == "weekly_report":
+                from windows_computer_use_mcp.telemetry import weekly_report
+
+                report = weekly_report()
+                return ToolResult(
+                    status="success",
+                    message=f"Weekly report: {report['total_actions']} actions, {report['fail_rate_pct']}% failure rate.",
+                    data=report,
+                )
+
+            elif operation == "voice_listen":
+                from windows_computer_use_mcp.voice_control import VoiceListener, is_available
+
+                if not is_available():
+                    return ToolResult(
+                        status="error", message="speech-mcp not reachable at 127.0.0.1:10909.",
+                        recovery_tip="Start speech-mcp first or check SPEECH_MCP_URL.",
+                    )
+                listener = VoiceListener()
+                ok = listener.start(duration=int(request.timeout or 5))
+                if ok:
+                    import threading
+                    time.sleep(0.5)
+                    return ToolResult(
+                        status="success",
+                        message="Voice listener started. Will transcribe for up to 5s.",
+                        data={"listening": True, "duration": request.timeout or 5},
+                    )
+                return ToolResult(status="error", message="Voice listener failed to start.")
+
+            elif operation == "voice_status":
+                from windows_computer_use_mcp.voice_control import is_available
+
+                return ToolResult(
+                    status="success",
+                    message="Voice control status.",
+                    data={"speech_mcp_available": is_available(),
+                          "enabled": os.environ.get("WINDOWS_COMPUTER_USE_MCP_VOICE", "0") in ("1", "true")},
+                )
+
             elif operation == "info":
                 stats = collect_host_metrics()
                 return ToolResult(

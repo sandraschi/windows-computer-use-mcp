@@ -215,7 +215,11 @@ class KeyboardOperationRequest(BaseModel):
 class VisualOperationRequest(BaseModel):
     """Request model for visual/OCR operations."""
 
-    operation: Literal["screenshot", "extract_text", "find_image", "highlight", "record", "record_to_gif"] = Field(
+    operation: Literal[
+        "screenshot", "extract_text", "find_image", "highlight",
+        "record", "record_to_gif",
+        "find_image_multi_scale", "find_image_feature_match", "describe_region",
+    ] = Field(
         ..., description="The visual operation to perform."
     )
 
@@ -274,7 +278,9 @@ class SystemOperationRequest(BaseModel):
 
     operation: Literal[
         "status", "help", "wait", "info", "wait_for_window", "clipboard_get", "clipboard_set",
-        "processes", "start_app", "telemetry"
+        "processes", "start_app", "telemetry",
+        "analyze_failures", "issue_draft", "weekly_report",
+        "voice_listen", "voice_status",
     ] = Field(..., description="The system operation to perform.")
 
     seconds: float | None = Field(None, description="Seconds to wait.", ge=0)

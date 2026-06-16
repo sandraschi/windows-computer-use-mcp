@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import sqlite3
 import threading
 import time
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -192,3 +194,150 @@ def get_best_strategy(tool: str, operation: str) -> str | None:
     except Exception:
         pass
     return None
+
+
+# ---------------------------------------------------------------------------
+# Self-improving telemetry — failure analysis, issue drafts, weekly reports
+# ---------------------------------------------------------------------------
+
+
+def analyze_failures(days: int = 7) -> dict[str, Any]:
+    """Cluster failures by (tool, operation, error) and suggest improvements.
+
+    Returns:
+        Dict with clusters (common error patterns), suggestions (config changes),
+        and top_apps (apps with most failures).
+    """
+    try:
+        conn = _get_conn()
+        cutoff = time.time() - days * 86400
+
+        rows = conn.execute(
+            """SELECT tool, operation, error, strategy_used, COUNT(*) as cnt
+               FROM actions WHERE ts > ? AND success = 0 AND error IS NOT NULL
+               GROUP BY tool, operation, error
+               ORDER BY cnt DESC LIMIT 30""",
+            (cutoff,),
+        ).fetchall()
+
+        clusters = []
+        for tool, op, err, strategy, cnt in rows:
+            suggestion = _suggest_improvement(tool, op, err, strategy)
+            clusters.append({
+                "tool": tool,
+                "operation": op,
+                "error": err[:200] if err else "",
+                "count": cnt,
+                "strategy_used": strategy,
+                "suggestion": suggestion,
+            })
+
+        # App-level failure stats
+        app_fails = conn.execute(
+            """SELECT app, COUNT(*) as cnt FROM actions
+               WHERE ts > ? AND success = 0 AND app IS NOT NULL
+               GROUP BY app ORDER BY cnt DESC LIMIT 10""",
+            (cutoff,),
+        ).fetchall()
+
+        return {
+            "days": days,
+            "cluster_count": len(clusters),
+            "clusters": clusters,
+            "top_apps": [{"app": r[0], "fail_count": r[1]} for r in app_fails],
+            "analysis_ts": datetime.now().isoformat(),
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def _suggest_improvement(tool: str, operation: str, error: str, strategy: str | None) -> str | None:
+    """Generate a human-readable improvement suggestion from a failure pattern."""
+    error_lower = (error or "").lower()
+
+    if "elementnotfound" in error_lower or "windownotfound" in error_lower:
+        return "Consider using automation_visual(describe_region) to verify the UI state first, or increase timeout."
+    if "timeout" in error_lower:
+        return "Increase timeout or call automation_windows(wait_window) before this operation."
+    if "access is denied" in error_lower or "permission" in error_lower:
+        return "Run the MCP server as Administrator, or use a different input dispatch mode."
+    if "coordinate" in error_lower or "out of range" in error_lower:
+        return "Check multi-monitor layout with automation_mouse(position) — set monitor_index if using a secondary display."
+    if "focus" in error_lower or "foreground" in error_lower:
+        return "Call automation_windows(focus, handle=...) before the operation, or set WINDOWS_COMPUTER_USE_MCP_DISPATCH=foreground."
+
+    if strategy == "ocr" and "found" in error_lower:
+        return "OCR region may be wrong — try a larger region or switch OCR provider with WINDOWS_COMPUTER_USE_MCP_OCR_PROVIDER env."
+
+    if tool == "automation_elements" and operation in ("click", "set_text"):
+        return "Try automation_smart(click) or automation_smart(set_text) which uses intent-based fallback."
+    if tool == "automation_mission":
+        return "Break the mission into smaller steps or verify preconditions with automation_assert first."
+    return None
+
+
+def generate_issue_draft(days: int = 7, max_clusters: int = 5) -> dict[str, str | list[dict]]:
+    """Generate a GitHub issue draft from top failure clusters.
+
+    Returns:
+        Dict with title (str), body (str), and clusters used.
+    """
+    result = analyze_failures(days=days)
+    clusters = result.get("clusters", [])[:max_clusters]
+
+    if not clusters:
+        return {"title": "", "body": "", "clusters": []}
+
+    title = f"Telemetry: {clusters[0]['tool'].replace('automation_','')}/{clusters[0]['operation']} failing ({clusters[0]['count']}x in {days}d)"
+    body_lines = [
+        "## Automated Failure Report",
+        f"\nGenerated from {days}-day telemetry window.",
+        f"\n### Summary\n- {result['cluster_count']} distinct failure clusters",
+        f"- Top apps: {', '.join(a['app'] for a in result.get('top_apps', [])[:3])}",
+        "\n### Top Failure Clusters\n",
+    ]
+    for c in clusters:
+        body_lines.append(f"#### `{c['tool']}/{c['operation']}` — {c['count']}x")
+        body_lines.append(f"- Error: `{c['error'][:150]}`")
+        body_lines.append(f"- Strategy: {c['strategy_used'] or 'default'}")
+        if c.get("suggestion"):
+            body_lines.append(f"- Suggestion: {c['suggestion']}")
+        body_lines.append("")
+
+    return {"title": title, "body": "\n".join(body_lines), "clusters": clusters}
+
+
+def weekly_report() -> dict[str, Any]:
+    """Generate a weekly improvement report.
+
+    Returns:
+        Dict with period, summary stats, top improvements, and suggestions.
+    """
+    days = 7
+    stats = get_stats(days=days)
+    failures = analyze_failures(days=days)
+    issue = generate_issue_draft(days=days)
+
+    total = stats.get("total_actions", 0)
+    total_fails = sum(c["count"] for c in failures.get("clusters", []))
+    fail_rate = round(total_fails / max(total, 1) * 100, 1)
+
+    by_tool = stats.get("by_tool", {})
+    worst_tools = sorted(
+        [{"tool": k, "fail": v["fail"], "total": v["total"]} for k, v in by_tool.items()],
+        key=lambda x: x["fail"], reverse=True,
+    )[:5]
+
+    return {
+        "period": f"Last {days} days",
+        "report_ts": datetime.now().isoformat(),
+        "total_actions": total,
+        "total_failures": total_fails,
+        "fail_rate_pct": fail_rate,
+        "worst_performers": worst_tools,
+        "failure_clusters": failures.get("clusters", [])[:10],
+        "issue_draft": issue,
+        "suggestions": list(set(
+            c["suggestion"] for c in failures.get("clusters", []) if c.get("suggestion")
+        )),
+    }
