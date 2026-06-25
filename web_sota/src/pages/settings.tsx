@@ -1,9 +1,6 @@
-import { Activity, Cpu, Database, MessageSquare, Save, Sliders } from "lucide-react";
-import { useEffect, useState } from "react";
 import { McpClientPanel } from "@/components/McpClientPanel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useMcpSetup } from "@/hooks/useMcpSetup";
 import {
 	Card,
 	CardContent,
@@ -13,6 +10,17 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useMcpSetup } from "@/hooks/useMcpSetup";
+import { apiPath } from "@/lib/api";
+import {
+	Activity,
+	Cpu,
+	Database,
+	MessageSquare,
+	Save,
+	Sliders,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface LlmProvider {
 	id: string;
@@ -29,16 +37,16 @@ interface ProvidersResponse {
 export function Settings() {
 	const mcp = useMcpSetup();
 	const [providers, setProviders] = useState<LlmProvider[]>([]);
-	const [selectedProvider, setSelectedProvider] = useState(() =>
-		localStorage.getItem("pywinauto-llm-provider") || "ollama"
+	const [selectedProvider, setSelectedProvider] = useState(
+		() => localStorage.getItem("pywinauto-llm-provider") || "ollama",
 	);
-	const [selectedModel, setSelectedModel] = useState(() =>
-		localStorage.getItem("pywinauto-llm-model") || ""
+	const [selectedModel, setSelectedModel] = useState(
+		() => localStorage.getItem("pywinauto-llm-model") || "",
 	);
 	const [llmSaved, setLlmSaved] = useState(false);
 
 	useEffect(() => {
-		fetch("/api/llm/providers")
+		fetch(apiPath("/api/llm/providers"))
 			.then((r) => r.json() as Promise<ProvidersResponse>)
 			.then((data) => setProviders(data.providers))
 			.catch(() => setProviders([]));

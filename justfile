@@ -1,4 +1,5 @@
-﻿set windows-shell := ["pwsh.exe", "-NoLogo", "-Command"]
+set windows-shell := ["pwsh.exe", "-NoLogo", "-Command"]
+import 'scripts/just/fleet.just'
 
 # ── Dashboard ─────────────────────────────────────────────────────────────────
 
@@ -200,4 +201,3 @@ clean:
     if (Test-Path ".pytest_cache") { Remove-Item -Recurse -Force .pytest_cache }
     if (Test-Path "src/windows_computer_use_mcp.egg-info") { Remove-Item -Recurse -Force src/windows_computer_use_mcp.egg-info }
     Get-ChildItem -Recurse -Filter "__pycache__" | Remove-Item -Recurse -Force
-

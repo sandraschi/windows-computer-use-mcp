@@ -1,27 +1,90 @@
 "use client";
 
+import { APPS_CATALOG } from "@/common/apps-catalog";
+import { apiPath } from "@/lib/api";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ExternalLink, HelpCircle, LayoutGrid } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { APPS_CATALOG } from "@/common/apps-catalog";
 
 export function Topbar() {
+	const [backendOk, setBackendOk] = useState<boolean | null>(null);
+
+	const checkHealth = useCallback(async () => {
+		try {
+			const r = await fetch(apiPath("/api/v1/health"));
+			if (!r.ok) throw new Error(`HTTP ${r.status}`);
+			const j = await r.json().catch(() => ({}));
+			setBackendOk((j as { status?: string }).status === "ok");
+		} catch {
+			setBackendOk(false);
+		}
+	}, []);
+
+	useEffect(() => {
+		checkHealth();
+		const interval = setInterval(checkHealth, 10_000);
+
+		let unlisten: (() => void) | undefined;
+		import("@tauri-apps/api/event")
+			.then(({ listen }) => {
+				listen<string>("backend-status", (event) => {
+					if (event.payload === "ready") {
+						checkHealth();
+					} else if (event.payload.startsWith("error:")) {
+						setBackendOk(false);
+					}
+				}).then((off) => {
+					unlisten = off;
+				});
+			})
+			.catch(() => {});
+
+		return () => {
+			clearInterval(interval);
+			if (unlisten) unlisten();
+		};
+	}, [checkHealth]);
+
 	return (
 		<header className="flex h-14 items-center justify-between border-b border-slate-800 bg-slate-950/50 px-6 backdrop-blur-xl">
 			<div className="flex items-center gap-4">
 				<h1 className="text-sm font-medium text-slate-400">
-					<span className="text-slate-100">windows-computer-use-mcp</span> · dev UI
+					<span className="text-slate-100">windows-computer-use-mcp</span> · dev
+					UI
 				</h1>
 			</div>
 
 			<div className="flex items-center gap-2">
 				{/* System Status Indicator */}
-				<div className="mr-4 flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-1 text-xs text-emerald-500 border border-emerald-500/20">
+				<div
+					className={`mr-4 flex items-center gap-2 rounded-full px-3 py-1 text-xs border ${
+						backendOk === null
+							? "bg-slate-500/10 text-slate-500 border-slate-500/20"
+							: backendOk
+								? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+								: "bg-red-500/10 text-red-500 border-red-500/20"
+					}`}
+				>
 					<span className="relative flex h-2 w-2">
-						<span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-						<span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+						{backendOk && (
+							<span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+						)}
+						<span
+							className={`relative inline-flex h-2 w-2 rounded-full ${
+								backendOk === null
+									? "bg-slate-500"
+									: backendOk
+										? "bg-emerald-500"
+										: "bg-red-500"
+							}`}
+						/>
 					</span>
-					System Online
+					{backendOk === null
+						? "Connecting..."
+						: backendOk
+							? "System Online"
+							: "Offline"}
 				</div>
 
 				{/* Global Apps Navigation */}

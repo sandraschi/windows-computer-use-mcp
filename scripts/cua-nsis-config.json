@@ -1,23 +1,14 @@
 {
-  "product_name": "Windows Computer Use",
-  "install_dir": "%LOCALAPPDATA%\\Windows Computer Use",
-  "operator_exe": "windows-computer-use-operator.exe",
-  "backend_process_names": ["windows-computer-use-operator", "windows-computer-use-backend"],
-  "backend_port": 10789,
-  "health_path": "/api/v1/health",
-  "diagnostics_path": "/api/v1/diagnostics",
-  "feature_smoke_path": "/api/v1/system/info",
-  "window_title_re": "Windows Computer Use",
-  "nsis_glob": "web_sota/src-tauri/target/release/bundle/nsis/Windows Computer Use_*_x64-setup.exe",
-  "bridge_ok_text": "REST bridge reachable",
-  "uninstall_registry_filter": "*Windows Computer Use*",
-  "nav_routes": [
-    ["Dashboard", "Dashboard"],
-    ["Logging", "Logging"],
-    ["Settings", "Settings"],
-    ["Help", "Help"]
-  ],
-  "sidebar_click_x": 30,
-  "sidebar_first_y": 90,
-  "sidebar_step_y": 55
+    "product_name": "Pywinauto MCP",
+    "install_dir": "%LOCALAPPDATA%\\Pywinauto MCP",
+    "operator_exe": "pywinauto-mcp-native.exe",
+    "backend_process_names": ["pywinauto-mcp-native", "pywinauto-mcp-backend"],
+    "backend_port": 10700,
+    "health_path": "/api/v1/health",
+    "diagnostics_path": "/api/v1/diagnostics",
+    "feature_smoke_path": "/api/v1/system/info",
+    "window_title_re": "Pywinauto MCP",
+    "nsis_glob": "native/target/release/bundle/nsis/Pywinauto MCP_*_x64-setup.exe",
+    "bridge_ok_text": "REST bridge reachable",
+    "uninstall_registry_filter": "*Pywinauto MCP*"
 }

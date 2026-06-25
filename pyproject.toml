@@ -28,7 +28,7 @@ classifiers = [
 
 dependencies = [
     # Core MCP framework - FastMCP 3.2.0 (Agentic Sampling)
-    "fastmcp>=3.2.0,<4",
+    "fastmcp>=3.4.0,<4",
     "fastapi>=0.95.0",
     "uvicorn[standard]>=0.22.0",
     "python-dotenv>=1.0.0",
@@ -57,6 +57,7 @@ dependencies = [
     "aiofiles>=23.1.0",
     "orjson>=3.8.0",
     "prefab-ui>=0.14.0",
+    "charset-normalizer>=3.4.5",
 ]
 
 [project.urls]
@@ -205,3 +206,8 @@ ignore = [
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
+
+[dependency-groups]
+dev = [
+    "pyinstaller>=6.20.0",
+]

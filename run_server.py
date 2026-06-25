@@ -1,28 +1,29 @@
-"""PyInstaller entrypoint for windows-computer-use-mcp HTTP sidecar (Tauri externalBin)."""
+"""PyInstaller entry point -- dual transport.
 
-from __future__ import annotations
-
+Detects MCP_PORT env var (set by Tauri backend.rs) and switches to HTTP mode.
+When no env vars are set, runs stdio mode (Claude Desktop).
+"""
 import os
 import sys
-from pathlib import Path
 
-if getattr(sys, "frozen", False):
-    base = Path(sys._MEIPASS)
-    sys.path.insert(0, str(base / "src"))
-else:
-    sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
+sys.path.insert(0, "src")
 
-os.environ.setdefault("MCP_TRANSPORT", "http")
+# Tell opentelemetry which context implementation to use before any import
+# triggers it. Without this, PyInstaller's frozen environment cannot discover
+# the contextvars context via entry points, causing StopIteration.
+os.environ.setdefault("OTEL_PYTHON_CONTEXT", "contextvars_context")
 
-if __name__ == "__main__":
-    import uvicorn
+# Eager-import stdlib C extensions that are lazy-imported by other modules
+# and missed by PyInstaller's static analysis.
+import _datetime  # noqa: F401
+import _strptime  # noqa: F401
 
-    host = os.environ.get("WINDOWS_COMPUTER_USE_MCP_HOST", "127.0.0.1")
-    port = int(os.environ.get("WINDOWS_COMPUTER_USE_MCP_PORT", os.environ.get("MCP_PORT", "10789")))
-    log_level = os.environ.get("WINDOWS_COMPUTER_USE_MCP_LOG_LEVEL", "info")
-    uvicorn.run(
-        "windows_computer_use_mcp.server:app",
-        host=host,
-        port=port,
-        log_level=log_level,
-    )
+import cachetools  # noqa: F401
+
+from windows_computer_use_mcp.main import main
+
+port = os.environ.get("MCP_PORT") or os.environ.get("PORT")
+if port:
+    host = os.environ.get("MCP_HOST", "127.0.0.1")
+    sys.argv = ["run_server.py", "--mode", "http", "--host", host, "--port", str(port)]
+main()

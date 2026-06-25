@@ -1,9 +1,9 @@
-import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTaskRunner } from "@/hooks/useTaskRunner";
 import { useWindowFind } from "@/hooks/useWindowFind";
 import { callMcpTool } from "@/lib/mcpTools";
+import { useCallback, useState } from "react";
 import { AppStatusStrip, EvidencePanel, StepRunner } from "./shared";
 
 const NOTEPAD_TEMPLATES = [

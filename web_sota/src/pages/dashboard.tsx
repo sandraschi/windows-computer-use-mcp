@@ -1,3 +1,6 @@
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { apiPath } from "@/lib/api";
 import {
 	Activity,
 	Box,
@@ -6,11 +9,9 @@ import {
 	HardDrive,
 	LayoutDashboard,
 	Network,
+	RefreshCw,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { apiPath } from "@/lib/api";
 
 type HostInfo = {
 	cpu_percent: number;
@@ -41,8 +42,19 @@ export function Dashboard() {
 	const [host, setHost] = useState<HostInfo | null>(null);
 	const [hostFetchedAt, setHostFetchedAt] = useState<string>("");
 	const [hostError, setHostError] = useState<string>("");
+	const [restarting, setRestarting] = useState(false);
 	const retryRef = useRef(0);
 	const retryTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+	const restartBackend = useCallback(async () => {
+		setRestarting(true);
+		try {
+			const { invoke } = await import("@tauri-apps/api/core");
+			await invoke("start_backend");
+		} catch {
+			// not in Tauri -- HTTP poll will update
+		}
+	}, []);
 
 	const refresh = useCallback(() => {
 		fetch(apiPath("/api/v1/health"))
@@ -92,14 +104,17 @@ export function Dashboard() {
 
 	useEffect(() => {
 		refresh();
-		const isTauri = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+		const isTauri =
+			typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 		let unlistenTauri: () => void;
 		if (isTauri) {
 			import("@tauri-apps/api/event").then(({ listen }) => {
 				listen<string>("backend-status", () => {
 					retryRef.current = 0;
 					refresh();
-				}).then((off) => { unlistenTauri = off; });
+				}).then((off) => {
+					unlistenTauri = off;
+				});
 			});
 		}
 		const id = window.setInterval(refresh, 45000);
@@ -111,13 +126,13 @@ export function Dashboard() {
 	}, [refresh]);
 
 	return (
-		<div className="space-y-6">
+		<div className="space-y-6" data-testid="dashboard">
 			<div className="flex flex-wrap items-center justify-between gap-3">
 				<div data-testid="dashboard-header">
 					<h2 className="text-2xl font-bold tracking-tight text-white">
 						Automation Dashboard
 					</h2>
-					<p className="text-slate-400">
+					<p className="text-slate-400 flex flex-wrap items-center gap-2">
 						Live host metrics from{" "}
 						<code className="text-slate-300">GET /api/v1/system/info</code>{" "}
 						(same data as MCP{" "}
@@ -125,8 +140,17 @@ export function Dashboard() {
 							automation_system(&quot;info&quot;)
 						</code>
 						). Backend:{" "}
+						<span
+							data-testid="backend-dot"
+							className={`inline-block w-2 h-2 rounded-full ${bridge === "ok" ? "bg-emerald-500" : bridge === "loading" ? "bg-slate-500" : "bg-red-500"} animate-pulse`}
+						/>
 						{bridge === "loading" && (
-							<span className="text-slate-500" data-testid="bridge-status-loading">checking…</span>
+							<span
+								className="text-slate-500"
+								data-testid="bridge-status-loading"
+							>
+								checking…
+							</span>
 						)}
 						{bridge === "ok" && (
 							<Badge
@@ -138,17 +162,36 @@ export function Dashboard() {
 							</Badge>
 						)}
 						{bridge === "error" && (
-							<Badge
-								variant="outline"
-								className="border-amber-500/40 text-amber-400"
-								data-testid="bridge-status-error"
-							>
-								unreachable — {bridgeDetail}
-							</Badge>
+							<>
+								<Badge
+									variant="outline"
+									className="border-amber-500/40 text-amber-400"
+									data-testid="bridge-status-error"
+								>
+									unreachable — {bridgeDetail}
+								</Badge>
+								<button
+									type="button"
+									onClick={() => {
+										setRestarting(true);
+										restartBackend().finally(() => setRestarting(false));
+									}}
+									disabled={restarting}
+									className="inline-flex items-center gap-1 rounded border border-slate-700 bg-slate-900 px-2 py-0.5 text-xs text-slate-300 hover:bg-slate-800 disabled:opacity-50"
+								>
+									<RefreshCw
+										className={`h-3 w-3 ${restarting ? "animate-spin" : ""}`}
+									/>
+									{restarting ? "Restarting…" : "Restart Backend"}
+								</button>
+							</>
 						)}
 					</p>
 					{hostFetchedAt && (
-						<p className="text-xs text-slate-500 mt-1" data-testid="host-fetched-at">
+						<p
+							className="text-xs text-slate-500 mt-1"
+							data-testid="host-fetched-at"
+						>
 							Last host snapshot: {hostFetchedAt}
 						</p>
 					)}
@@ -161,7 +204,10 @@ export function Dashboard() {
 			</div>
 
 			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-				<Card className="border-slate-800 bg-slate-950/50" data-testid="kpi-cpu">
+				<Card
+					className="border-slate-800 bg-slate-950/50"
+					data-testid="kpi-cpu"
+				>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 						<CardTitle className="text-sm font-medium text-slate-200">
 							CPU
@@ -169,14 +215,20 @@ export function Dashboard() {
 						<Cpu className="h-4 w-4 text-emerald-500" />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold text-white" data-testid="cpu-value">
+						<div
+							className="text-2xl font-bold text-white"
+							data-testid="cpu-value"
+						>
 							{host ? `${host.cpu_percent.toFixed(1)}%` : "—"}
 						</div>
 						<p className="text-xs text-slate-400">1s sample (psutil)</p>
 					</CardContent>
 				</Card>
 
-				<Card className="border-slate-800 bg-slate-950/50" data-testid="kpi-memory">
+				<Card
+					className="border-slate-800 bg-slate-950/50"
+					data-testid="kpi-memory"
+				>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 						<CardTitle className="text-sm font-medium text-slate-200">
 							Memory
@@ -184,7 +236,10 @@ export function Dashboard() {
 						<Activity className="h-4 w-4 text-blue-500" />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold text-white" data-testid="memory-value">
+						<div
+							className="text-2xl font-bold text-white"
+							data-testid="memory-value"
+						>
 							{host ? `${host.memory_percent.toFixed(1)}%` : "—"}
 						</div>
 						<p className="text-xs text-slate-400">
@@ -195,7 +250,10 @@ export function Dashboard() {
 					</CardContent>
 				</Card>
 
-				<Card className="border-slate-800 bg-slate-950/50" data-testid="kpi-disk">
+				<Card
+					className="border-slate-800 bg-slate-950/50"
+					data-testid="kpi-disk"
+				>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 						<CardTitle className="text-sm font-medium text-slate-200">
 							Disk
@@ -203,7 +261,10 @@ export function Dashboard() {
 						<HardDrive className="h-4 w-4 text-purple-500" />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold text-white" data-testid="disk-value">
+						<div
+							className="text-2xl font-bold text-white"
+							data-testid="disk-value"
+						>
 							{host ? `${host.disk_percent.toFixed(1)}%` : "—"}
 						</div>
 						<p className="text-xs text-slate-400">
@@ -214,7 +275,10 @@ export function Dashboard() {
 					</CardContent>
 				</Card>
 
-				<Card className="border-slate-800 bg-slate-950/50" data-testid="kpi-network">
+				<Card
+					className="border-slate-800 bg-slate-950/50"
+					data-testid="kpi-network"
+				>
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 						<CardTitle className="text-sm font-medium text-slate-200">
 							Network
@@ -222,7 +286,10 @@ export function Dashboard() {
 						<Network className="h-4 w-4 text-amber-500" />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold text-white" data-testid="network-value">
+						<div
+							className="text-2xl font-bold text-white"
+							data-testid="network-value"
+						>
 							{host
 								? `${host.network_bytes_sent_mb} / ${host.network_bytes_recv_mb}`
 								: "—"}

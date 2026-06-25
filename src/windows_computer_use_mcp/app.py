@@ -3,7 +3,7 @@
 This module creates the FastMCP app instance to avoid circular imports
 between main.py and the tools modules.
 
-FastMCP 3.2.0 compliant (Agentic Sampling).
+FastMCP 3.4+ compliant (Agentic Sampling).
 """
 
 import logging
@@ -12,44 +12,28 @@ import time
 
 logger = logging.getLogger(__name__)
 
-# Import FastMCP and create the app instance
 try:
     from fastmcp import FastMCP
-    from fastmcp.server import create_proxy
 
     logger.info("Successfully imported FastMCP")
 
     def _package_version() -> str:
         try:
             from importlib.metadata import version
-
             return version("pywinauto-mcp")
         except Exception:
             return "0.0.0"
 
-    # Create the FastMCP app instance with SOTA 3.2.0 features
     app = FastMCP(
         name="windows-computer-use-mcp",
         version=_package_version(),
     )
 
-    logger.info("FastMCP 3.2.0 app instance created successfully")
-
-    _bridge_proxies: list[str] = []
-    bridge_urls = os.getenv("MCP_BRIDGE_URLS", "")
-    if bridge_urls:
-        for url in bridge_urls.split(","):
-            url = url.strip()
-            if url:
-                try:
-                    app.add_provider(create_proxy(url))
-                    _bridge_proxies.append(url)
-                except Exception:
-                    pass
+    logger.info("FastMCP 3.4+ app instance created successfully")
 
 except ImportError as e:
     logger.critical(f"Failed to import FastMCP: {e}")
-    logger.critical("Please install FastMCP 3.2.0+ using: pip install fastmcp>=3.2.0")
+    logger.critical("Please install FastMCP 3.4+ using: pip install fastmcp>=3.4.0")
     app = None
 except Exception as e:
     logger.critical(f"Error creating FastMCP app: {e}", exc_info=True)

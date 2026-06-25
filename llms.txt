@@ -44,5 +44,6 @@ All long-running operations (`analyze_winapp`, `global_keylogger`) show a "CUA a
 
 ## Metadata
 
-- Package: windows-computer-use-mcp 0.5.x
+- Package: windows-computer-use-mcp 0.7.x
+- Framework: FastMCP 3.4+ (dual transport: stdio + HTTP)
 - License: MIT

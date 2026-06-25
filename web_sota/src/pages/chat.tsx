@@ -1,5 +1,3 @@
-import { Bot, Loader2, RefreshCw, Send, Sparkles, User } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { PERSONAS, type Persona } from "@/chat/personas";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -7,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { apiPath } from "@/lib/api";
+import { Bot, Loader2, RefreshCw, Send, Sparkles, User } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type ChatTurn = { role: "user" | "assistant"; content: string };
 

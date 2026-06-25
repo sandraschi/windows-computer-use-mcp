@@ -1,6 +1,6 @@
-import { useCallback, useState } from "react";
 import { callMcpTool } from "@/lib/mcpTools";
 import { toolData } from "@/lib/toolResult";
+import { useCallback, useState } from "react";
 
 export type WindowFindResult = {
 	handle: number | null;

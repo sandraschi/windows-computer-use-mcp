@@ -1,5 +1,3 @@
-import { CheckCircle2, Circle, Loader2, Plug } from "lucide-react";
-import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +8,8 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import type { McpRegistrationStatus } from "@/hooks/useMcpSetup";
+import { CheckCircle2, Circle, Loader2, Plug } from "lucide-react";
+import { useState } from "react";
 
 type McpClientPanelProps = {
 	backendReady: boolean;
@@ -34,7 +34,9 @@ function StatusRow({
 		<div className="flex items-start justify-between gap-3 rounded-md border border-slate-800 bg-slate-950/50 p-3">
 			<div>
 				<p className="text-sm font-medium text-slate-200">{label}</p>
-				{detail ? <p className="text-xs text-slate-500 break-all">{detail}</p> : null}
+				{detail ? (
+					<p className="text-xs text-slate-500 break-all">{detail}</p>
+				) : null}
 			</div>
 			{ok ? (
 				<CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400" />
@@ -84,7 +86,10 @@ export function McpClientPanel({
 						{backendReady ? "Backend ready" : "Backend starting…"}
 					</Badge>
 					{status ? (
-						<Badge variant="outline" className="border-slate-700 text-slate-300">
+						<Badge
+							variant="outline"
+							className="border-slate-700 text-slate-300"
+						>
 							{status.mcpUrl}
 						</Badge>
 					) : null}

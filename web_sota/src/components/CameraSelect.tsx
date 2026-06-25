@@ -1,7 +1,7 @@
-import { Loader2, RefreshCw, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import type { CameraDevice } from "@/hooks/useCameras";
+import { Loader2, RefreshCw, Video } from "lucide-react";
 
 type Props = {
 	cameras: CameraDevice[];

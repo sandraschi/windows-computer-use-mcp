@@ -12,14 +12,13 @@ $WindowStyle = if ($Headless) { 'Hidden' } else { 'Normal' }
 # web_sota: Vite frontend + uvicorn backend (see README)
 $WebPort = 10788
 $BackendPort = 10789
+$ProjectRoot = Split-Path -Parent $PSScriptRoot
 $FleetStartPath = Join-Path $ProjectRoot "scripts\FleetStartMode.ps1"
 if (-not (Test-Path -LiteralPath $FleetStartPath)) {
     Write-Host "ERROR: Missing vendored launcher helper: $FleetStartPath" -ForegroundColor Red
     exit 1
 }
 . $FleetStartPath
-
-$ProjectRoot = Split-Path -Parent $PSScriptRoot
 
 # 1. Kill any process squatting on the ports
 Write-Host "Checking for port squatters on $WebPort and $BackendPort..." -ForegroundColor Yellow

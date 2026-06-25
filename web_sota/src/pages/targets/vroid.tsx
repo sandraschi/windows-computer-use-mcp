@@ -1,4 +1,3 @@
-import { useCallback, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,6 +6,7 @@ import { useWindowFind } from "@/hooks/useWindowFind";
 import { apiPath } from "@/lib/api";
 import { callMcpTool } from "@/lib/mcpTools";
 import { toolData } from "@/lib/toolResult";
+import { useCallback, useEffect, useState } from "react";
 import { AppStatusStrip, EvidencePanel, StepRunner } from "./shared";
 
 const VROID_STABLE_REGION = {

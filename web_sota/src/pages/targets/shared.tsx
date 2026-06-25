@@ -1,11 +1,11 @@
-import { CheckCircle2, Loader2, XCircle } from "lucide-react";
-import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { TaskState } from "@/hooks/useTaskRunner";
 import type { WindowFindResult } from "@/hooks/useWindowFind";
 import { apiPath } from "@/lib/api";
+import { CheckCircle2, Loader2, XCircle } from "lucide-react";
+import { useState } from "react";
 
 type AppStatusStripProps = {
 	window: WindowFindResult;

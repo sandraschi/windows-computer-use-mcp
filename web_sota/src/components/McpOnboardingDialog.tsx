@@ -1,7 +1,7 @@
-import { X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { McpClientPanel } from "@/components/McpClientPanel";
+import { Button } from "@/components/ui/button";
 import type { McpRegistrationStatus } from "@/hooks/useMcpSetup";
+import { X } from "lucide-react";
 
 type McpOnboardingDialogProps = {
 	open: boolean;

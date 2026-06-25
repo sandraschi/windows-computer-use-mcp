@@ -1,6 +1,6 @@
+import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
 
 type Props = {
 	/** Selects Nth `videoinput` from the browser (may differ from OpenCV index on the server). */

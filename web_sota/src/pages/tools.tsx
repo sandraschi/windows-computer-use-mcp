@@ -1,5 +1,3 @@
-import { Play, Search, Terminal, Wrench } from "lucide-react";
-import { useEffect, useState } from "react";
 import { CameraSelect } from "@/components/CameraSelect";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,6 +17,8 @@ import {
 	writeStoredCameraIndex,
 } from "@/hooks/useCameras";
 import { apiPath } from "@/lib/api";
+import { Play, Search, Terminal, Wrench } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface ToolParameter {
 	name: string;

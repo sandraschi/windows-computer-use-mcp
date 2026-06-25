@@ -80,14 +80,13 @@ except Exception as e:
 def get_registered_tools() -> list[str]:
     """Helper function to get registered tools as a list."""
     try:
-        # FastMCP 2.13+ tool access
-        if hasattr(app, "_tool_manager") and hasattr(app._tool_manager, "tools"):
-            return list(app._tool_manager.tools.keys())
-        elif hasattr(app, "_tools"):
-            return list(app._tools.keys())
-        else:
-            logger.warning("Could not determine how to list tools from FastMCP app")
-            return []
+        import asyncio
+        if hasattr(app, "_list_tools"):
+            tools = asyncio.run(app._list_tools())
+            if tools:
+                return sorted(t.name for t in tools)
+        logger.warning("Could not determine how to list tools from FastMCP app")
+        return []
     except Exception as e:
         logger.error(f"Error getting registered tools: {e}")
         return []
@@ -104,7 +103,7 @@ def main() -> None:
         logger.info("=" * 60)
         logger.info("PyWinAuto MCP - Portmanteau Edition v0.4.2")
         logger.info("=" * 60)
-        logger.info("FastMCP version: 2.13.1")
+        logger.info("FastMCP version: 3.4+")
         logger.info(f"OCR available: {OCR_AVAILABLE}")
 
         # List registered tools

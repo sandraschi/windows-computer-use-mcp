@@ -4,16 +4,17 @@
     "sandraschi"
   ],
   "name": "windows-computer-use-mcp",
-  "description": "Windows computer use agent (CUA-MCP): native UI automation via portmanteau MCP tools — windows, elements, mouse, keyboard, visual, assert, dialog, shortcut, task. High privilege — read docs/SAFETY.md; pair with virtualization-mcp for Sandbox/VM. HITL, kill switch, rate limits. FastMCP 3.2+.",
+  "description": "Windows computer use agent (CUA-MCP): native UI automation via portmanteau MCP tools -- windows, elements, mouse, keyboard, visual, assert, dialog, shortcut, task. High privilege -- read docs/SAFETY.md; pair with virtualization-mcp for Sandbox/VM. HITL, kill switch, rate limits. FastMCP 3.4+.",
   "type": "mcp_server",
   "status": "production",
-  "framework": "FastMCP 3.1+",
-  "version": "0.5.4",
-  "last_sota_sync": "2026-06-09",
+  "framework": "FastMCP 3.4+",
+  "version": "0.7.0",
+  "last_sota_sync": "2026-06-25",
   "sota_version": "13.0",
-  "tools": 8,
+  "tools": 18,
   "transport": [
-    "stdio"
+    "stdio",
+    "http"
   ],
   "keywords": [
     "windows",

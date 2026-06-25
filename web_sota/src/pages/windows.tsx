@@ -1,6 +1,6 @@
-import { ExternalLink, Monitor, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ExternalLink, Monitor, XCircle } from "lucide-react";
 
 export function Windows() {
 	const windows = [

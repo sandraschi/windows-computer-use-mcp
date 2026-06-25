@@ -1,11 +1,3 @@
-import {
-	Activity,
-	ListOrdered,
-	ScanFace,
-	ShieldCheck,
-	Trash2,
-} from "lucide-react";
-import { useEffect, useState } from "react";
 import { CameraPreview } from "@/components/CameraPreview";
 import { CameraSelect } from "@/components/CameraSelect";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +12,14 @@ import {
 } from "@/hooks/useCameras";
 import { apiPath } from "@/lib/api";
 import { callMcpTool } from "@/lib/mcpTools";
+import {
+	Activity,
+	ListOrdered,
+	ScanFace,
+	ShieldCheck,
+	Trash2,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
 type SafetyPayload = {
 	status?: string;
@@ -137,8 +137,8 @@ export function Biometrics() {
 				<p className="text-slate-400">
 					Opt-in feature only —{" "}
 					<code className="text-slate-500">automation_face</code> is not
-					registered unless you enable it (see Help / docs/SAFETY.md §5).
-					Camera selection matches the REST/OpenCV list for{" "}
+					registered unless you enable it (see Help / docs/SAFETY.md §5). Camera
+					selection matches the REST/OpenCV list for{" "}
 					<code className="text-slate-500">camera_index</code>. The live preview
 					uses the browser&apos;s{" "}
 					<strong className="text-slate-300">video device order</strong>— if

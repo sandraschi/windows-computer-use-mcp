@@ -1,8 +1,8 @@
-import { Shield, ShieldCheck, ShieldOff, Timer } from "lucide-react";
-import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useHitl } from "@/hooks/useHitl";
+import { Shield, ShieldCheck, ShieldOff, Timer } from "lucide-react";
+import { useEffect, useState } from "react";
 import { CustomTarget } from "./targets/custom";
 import { KiCadTarget } from "./targets/kicad";
 import { LibreOfficeTarget } from "./targets/libreoffice";
