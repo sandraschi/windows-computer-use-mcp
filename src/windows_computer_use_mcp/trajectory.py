@@ -9,6 +9,8 @@ from pathlib import Path
 from typing import Any
 
 ENV_TRAJECTORY_LOG = "windows_computer_use_mcp_TRAJECTORY_LOG"
+
+
 def _trajectory_dir() -> Path:
     base = os.getenv("LOCALAPPDATA") or os.getenv("USERPROFILE") or str(Path.home())
     return Path(base) / "windows-computer-use-mcp" / "trajectories"

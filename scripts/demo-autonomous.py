@@ -6,8 +6,8 @@ Record the screen with OBS / Windows Game Bar for a shareable video.
 """
 
 import asyncio
+import subprocess
 import time
-from typing import Any
 
 from windows_computer_use_mcp.tools.models import ToolResult
 
@@ -16,6 +16,7 @@ async def _call(tool: str, **params) -> ToolResult:
     """Call an MCP tool by name, handling both sync and async tools."""
     import importlib
     import inspect
+
     mod = importlib.import_module(f"windows_computer_use_mcp.tools.portmanteau_{tool}")
     fn = None
     for name in dir(mod):
@@ -59,6 +60,7 @@ async def main():
     demo_phase("Phase 0: Approve automation")
     print("  A HITL approval dialog should appear. Click 'Approve' to continue.")
     from windows_computer_use_mcp.app import approve_automation
+
     r = approve_automation(duration_minutes=5)
     print(f"  HITL approval: {r.get('status', '?')}")
     time.sleep(1)
@@ -66,6 +68,7 @@ async def main():
     # ── Phase 1: Kill stale Notepad ────────────────────────────────────
     demo_phase("Phase 1: Kill stale Notepad instances")
     import psutil
+
     killed = 0
     for proc in psutil.process_iter(["name"]):
         try:
@@ -135,19 +138,28 @@ The tool handles screenshots, window management, and keyboard input.
     # ── Phase 6: Screenshot ────────────────────────────────────────────
     demo_phase("Phase 6: Screenshot")
     ts = int(time.time())
-    r = await _call("visual", operation="screenshot", window_handle=hwnd, output_path=f"ocr_scans/screenshot_text_{ts}.png")
+    r = await _call(
+        "visual", operation="screenshot", window_handle=hwnd, output_path=f"ocr_scans/screenshot_text_{ts}.png"
+    )
     print(f"  Screenshot: ocr_scans/screenshot_text_{ts}.png")
     time.sleep(1)
 
     # ── Phase 7: OCR readback ──
     demo_phase("Phase 7: OCR readback")
-    r = await _call("visual", operation="extract_text", window_handle=hwnd,
-        region_left=0, region_top=120, region_right=1900, region_bottom=850,
-        ocr_provider="windowsmedia")
+    r = await _call(
+        "visual",
+        operation="extract_text",
+        window_handle=hwnd,
+        region_left=0,
+        region_top=120,
+        region_right=1900,
+        region_bottom=850,
+        ocr_provider="windowsmedia",
+    )
     text = (r.data or {}).get("text", "") if r.data else ""
     ocr_preview = ""
     if text:
-        lines = [l.strip() for l in text.strip().split("\n") if l.strip()]
+        lines = [line.strip() for line in text.strip().split("\n") if line.strip()]
         ocr_preview = "\n".join(lines[:5])
         print(f"  OCR read {len(lines)} lines")
     with open(f"ocr_scans/ocr_result_{ts}.txt", "w", encoding="utf-8") as f:
@@ -158,7 +170,9 @@ The tool handles screenshots, window management, and keyboard input.
     time.sleep(0.2)
     await _call("keyboard", operation="hotkey", keys=["ctrl", "v"])
     time.sleep(1)
-    r = await _call("visual", operation="screenshot", window_handle=hwnd, output_path=f"ocr_scans/screenshot_final_{ts}.png")
+    r = await _call(
+        "visual", operation="screenshot", window_handle=hwnd, output_path=f"ocr_scans/screenshot_final_{ts}.png"
+    )
     print(f"  Final: ocr_scans/screenshot_final_{ts}.png")
     time.sleep(2)
 

@@ -19,10 +19,9 @@ Profile format (YAML):
 from __future__ import annotations
 
 import logging
-import os
 import re
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +35,8 @@ def _load_yaml(path: Path) -> dict[str, Any] | None:
     """Load a YAML profile file, returning None on failure."""
     try:
         import yaml
-        with open(path, "r", encoding="utf-8") as f:
+
+        with open(path, encoding="utf-8") as f:
             return yaml.safe_load(f)
     except Exception as e:
         logger.warning("Failed to load profile %s: %s", path, e)
@@ -78,19 +78,22 @@ def list_profiles() -> list[dict[str, Any]]:
         _cached_profiles = _discover_profiles()
     result = []
     for name, data in _cached_profiles.items():
-        result.append({
-            "name": name,
-            "display_name": data.get("display_name", name),
-            "description": data.get("description", ""),
-            "version": data.get("version", "0.1"),
-            "shortcut_count": len(data.get("shortcuts", {})),
-            "element_count": len(data.get("elements", {})),
-        })
+        result.append(
+            {
+                "name": name,
+                "display_name": data.get("display_name", name),
+                "description": data.get("description", ""),
+                "version": data.get("version", "0.1"),
+                "shortcut_count": len(data.get("shortcuts", {})),
+                "element_count": len(data.get("elements", {})),
+            }
+        )
     return sorted(result, key=lambda p: p["name"])
 
 
-def detect_app(window_title: str, window_class: str | None = None,
-               process_name: str | None = None) -> Optional[dict[str, Any]]:
+def detect_app(
+    window_title: str, window_class: str | None = None, process_name: str | None = None
+) -> dict[str, Any] | None:
     """Auto-detect which profile matches a given window.
 
     Args:
@@ -105,7 +108,7 @@ def detect_app(window_title: str, window_class: str | None = None,
     if not _cached_profiles:
         _cached_profiles = _discover_profiles()
 
-    for name, data in _cached_profiles.items():
+    for _name, data in _cached_profiles.items():
         detect = data.get("detect", {})
 
         # Match process name

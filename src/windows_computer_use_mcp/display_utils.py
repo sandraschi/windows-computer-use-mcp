@@ -9,8 +9,7 @@ from __future__ import annotations
 import ctypes
 import logging
 import sys
-from dataclasses import dataclass, field
-from typing import List
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
@@ -57,12 +56,20 @@ def _dump_monitors() -> None:
     for m in monitors:
         logger.info(
             "Monitor %d: %s %dx%d @ (%d,%d) DPI=%dx%d scale=%.1f primary=%s",
-            m.index, m.name, m.width, m.height,
-            m.left, m.top, m.dpi_x, m.dpi_y, m.scale_factor, m.is_primary,
+            m.index,
+            m.name,
+            m.width,
+            m.height,
+            m.left,
+            m.top,
+            m.dpi_x,
+            m.dpi_y,
+            m.scale_factor,
+            m.is_primary,
         )
 
 
-def enum_monitors() -> List[MonitorInfo]:
+def enum_monitors() -> list[MonitorInfo]:
     """Enumerate all monitors via EnumDisplayMonitors.
 
     Returns:
@@ -79,8 +86,12 @@ def enum_monitors() -> List[MonitorInfo]:
 
         mi = MonitorInfo(
             index=0,
-            left=left, top=top, right=right, bottom=bottom,
-            width=right - left, height=bottom - top,
+            left=left,
+            top=top,
+            right=right,
+            bottom=bottom,
+            width=right - left,
+            height=bottom - top,
             is_primary=is_primary,
             name=info["szDevice"] or "",
         )
@@ -112,7 +123,8 @@ def enum_monitors() -> List[MonitorInfo]:
     )
 
     _user32.EnumDisplayMonitors(
-        None, None,
+        None,
+        None,
         cb(_enum_proc),
         0,
     )
@@ -125,9 +137,14 @@ def enum_monitors() -> List[MonitorInfo]:
 
 def _get_monitor_info(hmonitor: int) -> dict:
     """Get MONITORINFOEX for a monitor handle."""
+
     class RECT(ctypes.Structure):
-        _fields_ = [("left", ctypes.c_long), ("top", ctypes.c_long),
-                    ("right", ctypes.c_long), ("bottom", ctypes.c_long)]
+        _fields_ = [
+            ("left", ctypes.c_long),
+            ("top", ctypes.c_long),
+            ("right", ctypes.c_long),
+            ("bottom", ctypes.c_long),
+        ]
 
     class MONITORINFOEX(ctypes.Structure):
         _fields_ = [
@@ -181,8 +198,7 @@ def get_monitor_by_index(index: int) -> MonitorInfo:
     monitors = enum_monitors()
     if index < 0 or index >= len(monitors):
         raise IndexError(
-            f"Monitor index {index} out of range. "
-            f"Found {len(monitors)} monitor(s): {[m.name for m in monitors]}"
+            f"Monitor index {index} out of range. Found {len(monitors)} monitor(s): {[m.name for m in monitors]}"
         )
     return monitors[index]
 
@@ -199,7 +215,8 @@ def get_monitor_at_point(x: int, y: int) -> MonitorInfo:
     """
     _require_windows()
     hmonitor = _user32.MonitorFromPoint(
-        ctypes.wintypes.POINT(x, y), 2  # MONITOR_DEFAULTTONEAREST
+        ctypes.wintypes.POINT(x, y),
+        2,  # MONITOR_DEFAULTTONEAREST
     )
     if not hmonitor:
         return get_primary_monitor()

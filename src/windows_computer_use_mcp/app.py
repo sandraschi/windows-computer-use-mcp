@@ -20,9 +20,15 @@ try:
     def _package_version() -> str:
         try:
             from importlib.metadata import version
-            return version("pywinauto-mcp")
+
+            return version("windows-computer-use-mcp")
         except Exception:
-            return "0.0.0"
+            try:
+                from windows_computer_use_mcp import __version__
+
+                return __version__
+            except Exception:
+                return "0.0.0"
 
     app = FastMCP(
         name="windows-computer-use-mcp",

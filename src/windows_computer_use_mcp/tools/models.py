@@ -52,9 +52,10 @@ class WindowOperationRequest(BaseModel):
     height: int | None = Field(None, description="Target height for 'position' operation.")
 
     monitor_index: int | None = Field(
-        None, description="0-based monitor index for coordinate translation. "
+        None,
+        description="0-based monitor index for coordinate translation. "
         "When set, x/y are treated as relative to this monitor's origin. "
-        "Use with 'position' to place a window on a specific monitor."
+        "Use with 'position' to place a window on a specific monitor.",
     )
 
 
@@ -103,12 +104,8 @@ class ElementOperationRequest(BaseModel):
     duration: float = Field(0.0, description="Duration for 'hover' or movement delay.")
 
     # Cua-style snapshot targeting
-    snapshot_id: str | None = Field(
-        None, description="Snapshot from get_window_state; use with element_index."
-    )
-    element_index: int | None = Field(
-        None, description="Index from snapshot elements[].element_index."
-    )
+    snapshot_id: str | None = Field(None, description="Snapshot from get_window_state; use with element_index.")
+    element_index: int | None = Field(None, description="Index from snapshot elements[].element_index.")
     dispatch: Literal["foreground", "background"] | None = Field(
         None,
         description="Input dispatch mode; default from windows_computer_use_mcp_DISPATCH (foreground).",
@@ -149,8 +146,9 @@ class MouseOperationRequest(BaseModel):
     x: int | None = Field(None, description="X coordinate or relative X offset.")
     y: int | None = Field(None, description="Y coordinate or relative Y offset.")
     monitor_index: int | None = Field(
-        None, description="0-based monitor index. When set, x/y are treated as relative "
-        "to this monitor's origin. Pass None (default) for absolute virtual screen coordinates."
+        None,
+        description="0-based monitor index. When set, x/y are treated as relative "
+        "to this monitor's origin. Pass None (default) for absolute virtual screen coordinates.",
     )
 
     target_x: int | None = Field(None, description="Target X for 'drag'.")
@@ -216,18 +214,23 @@ class VisualOperationRequest(BaseModel):
     """Request model for visual/OCR operations."""
 
     operation: Literal[
-        "screenshot", "extract_text", "find_image", "highlight",
-        "record", "record_to_gif",
-        "find_image_multi_scale", "find_image_feature_match", "describe_region",
-    ] = Field(
-        ..., description="The visual operation to perform."
-    )
+        "screenshot",
+        "extract_text",
+        "find_image",
+        "highlight",
+        "record",
+        "record_to_gif",
+        "find_image_multi_scale",
+        "find_image_feature_match",
+        "describe_region",
+    ] = Field(..., description="The visual operation to perform.")
 
     window_handle: int | None = Field(None, description="HWND of target window.")
 
     monitor_index: int | None = Field(
-        None, description="0-based monitor index. When set without region, captures the full "
-        "monitor. When set with region, region coordinates are relative to this monitor's origin."
+        None,
+        description="0-based monitor index. When set without region, captures the full "
+        "monitor. When set with region, region coordinates are relative to this monitor's origin.",
     )
 
     region_left: int | None = Field(None, description="X1 coordinate of region.")
@@ -277,10 +280,21 @@ class SystemOperationRequest(BaseModel):
     """Request model for system-level operations."""
 
     operation: Literal[
-        "status", "help", "wait", "info", "wait_for_window", "clipboard_get", "clipboard_set",
-        "processes", "start_app", "telemetry",
-        "analyze_failures", "issue_draft", "weekly_report",
-        "voice_listen", "voice_status",
+        "status",
+        "help",
+        "wait",
+        "info",
+        "wait_for_window",
+        "clipboard_get",
+        "clipboard_set",
+        "processes",
+        "start_app",
+        "telemetry",
+        "analyze_failures",
+        "issue_draft",
+        "weekly_report",
+        "voice_listen",
+        "voice_status",
     ] = Field(..., description="The system operation to perform.")
 
     seconds: float | None = Field(None, description="Seconds to wait.", ge=0)
@@ -347,26 +361,16 @@ class ShortcutOperationRequest(BaseModel):
     pause: float = Field(0.05, description="Pause after key send.", ge=0)
 
     # Profile operations
-    profile_name: str | None = Field(
-        None, description="Profile name for profile_shortcut operation."
-    )
-    window_title: str | None = Field(
-        None, description="Window title for profile_detect operation."
-    )
-    window_class: str | None = Field(
-        None, description="Window class for profile_detect operation."
-    )
-    process_name: str | None = Field(
-        None, description="Process name for profile_detect operation."
-    )
+    profile_name: str | None = Field(None, description="Profile name for profile_shortcut operation.")
+    window_title: str | None = Field(None, description="Window title for profile_detect operation.")
+    window_class: str | None = Field(None, description="Window class for profile_detect operation.")
+    process_name: str | None = Field(None, description="Process name for profile_detect operation.")
 
 
 class DialogOperationRequest(BaseModel):
     """Request model for file dialog path entry."""
 
-    operation: Literal["set_path", "confirm", "submit_path"] = Field(
-        ..., description="Dialog operation."
-    )
+    operation: Literal["set_path", "confirm", "submit_path"] = Field(..., description="Dialog operation.")
 
     path: str | None = Field(None, description="File path for set_path / submit_path.")
     use_clipboard: bool = Field(True, description="Paste via clipboard (recommended for long paths).")
@@ -430,15 +434,11 @@ class MissionOperationRequest(BaseModel):
     preset_name: str | None = Field(
         None, description="For 'run_preset': name of a preset workflow file (without .json)."
     )
-    app: str | None = Field(
-        None, description="For 'workflow' operation: target application (e.g. 'notepad.exe')."
-    )
+    app: str | None = Field(None, description="For 'workflow' operation: target application (e.g. 'notepad.exe').")
     actions: list[dict] | None = Field(
         None, description="For 'workflow' operation: list of action dicts like [{'tool': 'elements', 'params': {...}}]."
     )
-    timeout: float | None = Field(
-        None, description="Max seconds for the workflow to complete.", ge=1
-    )
+    timeout: float | None = Field(None, description="Max seconds for the workflow to complete.", ge=1)
     goal: str = Field("", description="The high-level objective to achieve (required for plan).")
     strategy: Literal["element", "visual"] = Field(
         "element", description="Whether to prefer UIA elements or visual cues."

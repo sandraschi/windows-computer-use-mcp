@@ -44,6 +44,7 @@ def _with_hud(window_handle: int | None, window_title: str | None, fn):
         if hwnd is None and window_title:
             try:
                 import pygetwindow as gw
+
                 wins = gw.getWindowsWithTitle(window_title)
                 if wins:
                     hwnd = wins[0]._hWnd
@@ -74,9 +75,7 @@ def _ensure_focus(hwnd: int):
         logger.debug("ensure_focus: %s", exc)
 
 
-def _screenshot_to_path(
-    window_handle: int, output_dir: Path, label: str
-) -> str | None:
+def _screenshot_to_path(window_handle: int, output_dir: Path, label: str) -> str | None:
     """Capture a window screenshot to a file, return path or None."""
     try:
         from PIL import ImageGrab
@@ -93,9 +92,7 @@ def _screenshot_to_path(
         return None
 
 
-def _crawl_operation(
-    hwnd: int, hud
-) -> dict[str, Any]:
+def _crawl_operation(hwnd: int, hud) -> dict[str, Any]:
     """Crawl UI tree and produce element map + screenshots."""
     from windows_computer_use_mcp.desktop_state.capture import DesktopStateCapture
     from windows_computer_use_mcp.win32_window import get_window_bbox
@@ -162,8 +159,8 @@ def _crawl_operation(
         b = e.get("bounds", {})
         report_lines.append(
             f"| {i} | {e['type']} | {e['name'][:60]} | "
-            f"{b.get('x','')} | {b.get('y','')} | {b.get('width','')} | "
-            f"{b.get('height','')} | {e['enabled']} | {e['visible']} |"
+            f"{b.get('x', '')} | {b.get('y', '')} | {b.get('width', '')} | "
+            f"{b.get('height', '')} | {e['enabled']} | {e['visible']} |"
         )
 
     report_text = "\n".join(report_lines)
@@ -184,9 +181,7 @@ def _crawl_operation(
     }
 
 
-def _discover_operation(
-    hwnd: int, hud
-) -> dict[str, Any]:
+def _discover_operation(hwnd: int, hud) -> dict[str, Any]:
     """Probe common keyboard shortcuts, capture state before/after each."""
     import pywinauto.keyboard as kb
 
@@ -223,7 +218,7 @@ def _discover_operation(
             kb.send_keys(key)
             time.sleep(0.5)
             _ensure_focus(hwnd)
-            path = _screenshot_to_path(hwnd, out, f"discover_{key.replace('+','_')}")
+            path = _screenshot_to_path(hwnd, out, f"discover_{key.replace('+', '_')}")
             results.append({"shortcut": label, "key": key, "screenshot": path})
 
             if key == "alt":
@@ -250,9 +245,7 @@ def _discover_operation(
         "|---|----------|------------|",
     ]
     for i, r in enumerate(results):
-        report_lines.append(
-            f"| {i} | {r['shortcut']} | {r.get('screenshot', 'N/A')} |"
-        )
+        report_lines.append(f"| {i} | {r['shortcut']} | {r.get('screenshot', 'N/A')} |")
 
     report_text = "\n".join(report_lines)
     report_path = out / "discovery_report.md"
@@ -268,15 +261,13 @@ def _discover_operation(
     }
 
 
-def _portfolio_operation(
-    hwnd: int, hud
-) -> dict[str, Any]:
+def _portfolio_operation(hwnd: int, hud) -> dict[str, Any]:
     """Capture multiple app states by name (uses hud for focus + estop)."""
     out = Path.cwd() / "winapp_analysis"
     out.mkdir(exist_ok=True)
 
     captures = []
-    for state in (hud.states or ["main"]):
+    for state in hud.states or ["main"]:
         if hud.estopped():
             return {"success": False, "error": "Portfolio cancelled by user"}
         _ensure_focus(hwnd)
@@ -338,6 +329,7 @@ def analyze_winapp(
         if hwnd is None and window_title:
             try:
                 import pygetwindow as gw
+
                 wins = gw.getWindowsWithTitle(window_title)
                 if wins:
                     hwnd = wins[0]._hWnd

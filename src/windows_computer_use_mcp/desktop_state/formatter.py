@@ -52,9 +52,7 @@ class DesktopStateFormatter:
             bounds = elem["bounds"]
             name = elem.get("name", elem.get("ocr_text", ""))
             label = elem.get("element_index", elem.get("id", "?"))
-            lines.append(
-                f'[{label}] {elem["type"]} "{name}" at ({bounds["x"]},{bounds["y"]}) - App: {elem["app"]}'
-            )
+            lines.append(f'[{label}] {elem["type"]} "{name}" at ({bounds["x"]},{bounds["y"]}) - App: {elem["app"]}')
 
         lines.append("\n")
 

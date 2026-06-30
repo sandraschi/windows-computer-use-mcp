@@ -21,13 +21,13 @@ jobs:
           enable-cache: true
 
       - name: Sync dependencies
-        run: uv sync --frozen
+        run: uv sync --group dev
 
       - name: Ruff check
-        run: uv run ruff check src tests
+        run: uv run ruff check .
 
       - name: Pytest
-        run: uv run pytest tests -q --tb=short -m "not e2e and not slow"
+        run: uv run --group dev pytest -x --tb=short -k "not slow"
 
       - name: Import smoke
         run: uv run python -c "from windows_computer_use_mcp.app import app; print('ok')"

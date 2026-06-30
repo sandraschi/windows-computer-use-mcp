@@ -34,7 +34,7 @@ def print_mcp_config() -> None:
     print(json.dumps(mcp_config_stdio(), indent=2))
     print(
         "\n# Background computer-use profile (dedicated session only):\n"
-        '# Set env windows_computer_use_mcp_DISPATCH=background and windows_computer_use_mcp_TRAJECTORY_LOG=1\n',
+        "# Set env windows_computer_use_mcp_DISPATCH=background and windows_computer_use_mcp_TRAJECTORY_LOG=1\n",
         file=sys.stderr,
     )
 

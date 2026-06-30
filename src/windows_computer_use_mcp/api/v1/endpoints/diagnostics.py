@@ -74,9 +74,12 @@ async def get_diagnostics() -> dict[str, Any]:
     if not tesseract_available:
         try:
             import subprocess
+
             result = subprocess.run(
                 [r"C:\Program Files\Tesseract-OCR\tesseract.exe", "--version"],
-                capture_output=True, text=True, timeout=5,
+                capture_output=True,
+                text=True,
+                timeout=5,
             )
             tesseract_available = result.returncode == 0
         except Exception:

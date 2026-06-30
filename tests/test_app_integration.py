@@ -16,7 +16,7 @@ class TestAppInitialization:
     def test_app_version(self):
         """Test that app has correct version from pyproject.toml."""
         # Note: In our current industrialized version, app.version is 0.4.2
-        assert app.version == "0.4.2"
+        assert app.version == "0.7.0"
 
     def test_ocr_availability_flag(self):
         """Test OCR availability flag."""

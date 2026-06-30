@@ -22,9 +22,12 @@ _WATCHERS: dict[str, dict[str, Any]] = {}
 _WATCHER_LOCK = threading.Lock()
 
 
-def _watcher_thread(watcher_id: str, condition: str, target: str, interval: float, timeout: float, window_handle: int | None):
+def _watcher_thread(
+    watcher_id: str, condition: str, target: str, interval: float, timeout: float, window_handle: int | None
+):
     """Background thread that polls for a condition and stops when met."""
     from pywinauto import Desktop
+
     start = time.time()
     desktop = Desktop(backend="uia")
 
@@ -150,8 +153,17 @@ OPERATIONS:
                 return ToolResult(status="error", message="condition and target are required.")
             wid = watcher_id or f"watch_{uuid.uuid4().hex[:8]}"
             with _WATCHER_LOCK:
-                _WATCHERS[wid] = {"status": "running", "condition": condition, "target": target, "started": time.time(), "interval": interval, "timeout": timeout}
-            t = threading.Thread(target=_watcher_thread, args=(wid, condition, target, interval, timeout, window_handle), daemon=True)
+                _WATCHERS[wid] = {
+                    "status": "running",
+                    "condition": condition,
+                    "target": target,
+                    "started": time.time(),
+                    "interval": interval,
+                    "timeout": timeout,
+                }
+            t = threading.Thread(
+                target=_watcher_thread, args=(wid, condition, target, interval, timeout, window_handle), daemon=True
+            )
             t.start()
             return ToolResult(
                 status="success",
@@ -183,7 +195,15 @@ OPERATIONS:
 
         if operation == "list":
             with _WATCHER_LOCK:
-                active = {k: {"status": v["status"], "condition": v["condition"], "target": v["target"], "started": v.get("started")} for k, v in _WATCHERS.items()}
+                active = {
+                    k: {
+                        "status": v["status"],
+                        "condition": v["condition"],
+                        "target": v["target"],
+                        "started": v.get("started"),
+                    }
+                    for k, v in _WATCHERS.items()
+                }
             return ToolResult(
                 status="success",
                 message=f"{len(active)} watchers.",

@@ -145,12 +145,14 @@ OPERATIONS:
             macros = []
             for f in files:
                 steps = [json.loads(line) for line in f.read_text(encoding="utf-8").splitlines() if line.strip()]
-                macros.append({
-                    "name": f.stem,
-                    "steps": len(steps),
-                    "size_bytes": f.stat().st_size,
-                    "modified": f.stat().st_mtime,
-                })
+                macros.append(
+                    {
+                        "name": f.stem,
+                        "steps": len(steps),
+                        "size_bytes": f.stat().st_size,
+                        "modified": f.stat().st_mtime,
+                    }
+                )
             return ToolResult(
                 status="success",
                 message=f"{len(macros)} saved macros.",
@@ -182,13 +184,28 @@ OPERATIONS:
                 import io
                 import shutil
                 import subprocess
+
                 ffmpeg_path = shutil.which("ffmpeg") or shutil.which("ffmpeg.exe")
                 if ffmpeg_path:
                     video_path = str(_macros_dir() / f"{macro_id}_replay_{int(time.time())}.mp4")
                     ffmpeg_proc = subprocess.Popen(
-                        [ffmpeg_path, "-y", "-f", "image2pipe", "-framerate", "5", "-i", "-",
-                         "-c:v", "libx264", "-pix_fmt", "yuv420p", video_path],
-                        stdin=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                        [
+                            ffmpeg_path,
+                            "-y",
+                            "-f",
+                            "image2pipe",
+                            "-framerate",
+                            "5",
+                            "-i",
+                            "-",
+                            "-c:v",
+                            "libx264",
+                            "-pix_fmt",
+                            "yuv420p",
+                            video_path,
+                        ],
+                        stdin=subprocess.PIPE,
+                        stderr=subprocess.DEVNULL,
                     )
 
             verify = operation == "replay_with_verify"
@@ -199,6 +216,7 @@ OPERATIONS:
                 if ffmpeg_proc and ffmpeg_proc.stdin:
                     try:
                         from PIL import ImageGrab
+
                         buf = io.BytesIO()
                         ImageGrab.grab().save(buf, format="PNG")
                         ffmpeg_proc.stdin.write(buf.getvalue())
@@ -245,7 +263,8 @@ OPERATIONS:
                 data["video"] = video_path
             return ToolResult(
                 status="success" if success_count == len(results) else "blocked",
-                message=f"Replayed {len(results)} steps: {success_count} succeeded." + (f" Video: {video_path}" if video_path else ""),
+                message=f"Replayed {len(results)} steps: {success_count} succeeded."
+                + (f" Video: {video_path}" if video_path else ""),
                 data=data,
             )
 

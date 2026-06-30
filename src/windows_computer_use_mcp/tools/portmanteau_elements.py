@@ -50,6 +50,7 @@ def _detect_app(window_handle: int) -> str | None:
     """Try to identify the app name from a window handle."""
     try:
         import psutil
+
         window = Desktop(backend="uia").window(handle=window_handle)
         pid = window.process_id()
         proc = psutil.Process(pid)
@@ -65,6 +66,7 @@ def _ocr_find_element(desktop, window, window_handle: int, hint_selector: dict) 
         return None
     try:
         from windows_computer_use_mcp.assert_engine import assert_text_in_image
+
         ok, _ = assert_text_in_image(
             image_path=None,
             expected_text=title_hint,
@@ -124,6 +126,7 @@ def _verify_action_result(
 
                 try:
                     from windows_computer_use_mcp.win32_window import get_window_bbox
+
                     get_window_bbox(window_handle)
                 except Exception:
                     pass
@@ -222,9 +225,7 @@ def _get_element_info(element) -> dict[str, Any]:
     return info
 
 
-def _operate_snapshot_element(
-    request: ElementOperationRequest, snap_elem: dict, desktop
-) -> ToolResult:
+def _operate_snapshot_element(request: ElementOperationRequest, snap_elem: dict, desktop) -> ToolResult:
     """Resolve snapshot element_index to a control or coordinate click."""
     operation = request.operation
     window_handle = request.window_handle
@@ -405,9 +406,7 @@ A ToolResult object containing standardized outcome, message, and element data.
                         message="window_handle does not match snapshot window_handle.",
                         recovery_tip=f"Use window_handle={snap.window_handle} for this snapshot.",
                     )
-                snap_elem = get_snapshot_store().resolve_element(
-                    request.snapshot_id, request.element_index
-                )
+                snap_elem = get_snapshot_store().resolve_element(request.snapshot_id, request.element_index)
                 if snap_elem is None:
                     return ToolResult(
                         status="error",
@@ -586,10 +585,17 @@ A ToolResult object containing standardized outcome, message, and element data.
                         element.click(button="right")
                     verify_info = _verify_action_result(operation, request, window_handle, desktop)
                     duration = (time.time() - t0) * 1000
-                    log_action("elements", operation, target=request.title or next(iter(selector.values()), ""),
-                               strategy_used=strategy_used, success=verify_info is None,
-                               duration_ms=duration, error=verify_info.get("detail") if verify_info else None,
-                               selector=selector, app=app_name)
+                    log_action(
+                        "elements",
+                        operation,
+                        target=request.title or next(iter(selector.values()), ""),
+                        strategy_used=strategy_used,
+                        success=verify_info is None,
+                        duration_ms=duration,
+                        error=verify_info.get("detail") if verify_info else None,
+                        selector=selector,
+                        app=app_name,
+                    )
                     if verify_info:
                         return ToolResult(
                             status="blocked",
@@ -625,10 +631,17 @@ A ToolResult object containing standardized outcome, message, and element data.
                         method = "type_keys"
                     verify_info = _verify_action_result(operation, request, window_handle, desktop)
                     duration = (time.time() - t0) * 1000
-                    log_action("elements", operation, target=request.title or "",
-                               strategy_used=strategy_used, success=verify_info is None,
-                               duration_ms=duration, error=verify_info.get("detail") if verify_info else None,
-                               selector=selector, app=app_name)
+                    log_action(
+                        "elements",
+                        operation,
+                        target=request.title or "",
+                        strategy_used=strategy_used,
+                        success=verify_info is None,
+                        duration_ms=duration,
+                        error=verify_info.get("detail") if verify_info else None,
+                        selector=selector,
+                        app=app_name,
+                    )
                     if verify_info:
                         return ToolResult(
                             status="blocked",

@@ -45,7 +45,7 @@ class TestGetDesktopState:
         result = get_desktop_state(req)
 
         verify_result(result)
-        mock_capturer.capture.assert_called_once_with(use_vision=True, use_ocr=False)
+        mock_capturer.capture.assert_called_once_with(use_vision=True, use_ocr=False, capture_mode=None)
 
     @patch("windows_computer_use_mcp.tools.desktop_state.DesktopStateCapture")
     def test_get_desktop_state_with_ocr(self, mock_capture_class, verify_result):
@@ -63,7 +63,7 @@ class TestGetDesktopState:
         result = get_desktop_state(req)
 
         verify_result(result)
-        mock_capturer.capture.assert_called_once_with(use_vision=False, use_ocr=True)
+        mock_capturer.capture.assert_called_once_with(use_vision=False, use_ocr=True, capture_mode=None)
 
     @patch("windows_computer_use_mcp.tools.desktop_state.DesktopStateCapture")
     def test_get_desktop_state_with_custom_depth(self, mock_capture_class, verify_result):

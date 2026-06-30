@@ -21,7 +21,9 @@ class ShortcutDef:
 # Clicks only for sample tile + preset thumbnails — everything else is here.
 VROIDSTUDIO_SHORTCUTS: dict[str, ShortcutDef] = {
     "save": ShortcutDef("save", "ctrl+s", "Save project", category="file"),
-    "save_as": ShortcutDef("save_as", "ctrl+shift+s", "Save As dialog", wait_stable=True, stable_timeout_s=12, category="file"),
+    "save_as": ShortcutDef(
+        "save_as", "ctrl+shift+s", "Save As dialog", wait_stable=True, stable_timeout_s=12, category="file"
+    ),
     "open": ShortcutDef("open", "ctrl+o", "Open project dialog", category="file"),
     "new": ShortcutDef("new", "ctrl+n", "New project", category="file"),
     "undo": ShortcutDef("undo", "ctrl+z", "Undo", wait_stable=False, category="edit"),
@@ -41,7 +43,9 @@ VROIDSTUDIO_SHORTCUTS: dict[str, ShortcutDef] = {
     "dialog_ok": ShortcutDef("dialog_ok", "enter", "Confirm dialog", wait_stable=True, category="dialog"),
     "dialog_cancel": ShortcutDef("dialog_cancel", "escape", "Cancel dialog", wait_stable=True, category="dialog"),
     "dialog_tab_next": ShortcutDef("dialog_tab_next", "tab", "Next field", wait_stable=False, category="dialog"),
-    "dialog_tab_prev": ShortcutDef("dialog_tab_prev", "shift+tab", "Previous field", wait_stable=False, category="dialog"),
+    "dialog_tab_prev": ShortcutDef(
+        "dialog_tab_prev", "shift+tab", "Previous field", wait_stable=False, category="dialog"
+    ),
     "front_view": ShortcutDef("front_view", "1", "Camera front", wait_stable=False, category="camera"),
     "zoom_in": ShortcutDef("zoom_in", "ctrl+;", "Zoom in", wait_stable=False, category="camera"),
     "zoom_out": ShortcutDef("zoom_out", "ctrl+-", "Zoom out", wait_stable=False, category="camera"),

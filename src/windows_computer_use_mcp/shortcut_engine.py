@@ -41,6 +41,7 @@ def send_shortcut(
     pause: float = 0.05,
 ) -> dict[str, Any]:
     """Resolve semantic action and send keys, optionally wait for UI stable."""
+
     def _execute() -> dict[str, Any]:
         spec = get_shortcut(app, action)
         send_meta = _send_keys(spec.keys, hwnd=window_handle, pause=pause)

@@ -1,8 +1,6 @@
 """Tests for automation_dialog and dialog_engine."""
 
-from unittest.mock import MagicMock, patch
-
-import pytest
+from unittest.mock import patch
 
 from windows_computer_use_mcp import dialog_engine
 from windows_computer_use_mcp.tools.models import DialogOperationRequest, ToolResult

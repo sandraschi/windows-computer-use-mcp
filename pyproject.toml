@@ -85,41 +85,12 @@ windowsmediaocr = [
     "winrt-Windows.Globalization>=3.2",
 ]
 
-dev = [
-    # Testing
-    "pytest>=7.4.0",
-    "pytest-cov>=4.1.0",
-    "pytest-asyncio>=0.21.0",
-    "pytest-mock>=3.11.0",
-    "pytest-xdist>=3.3.1",
-    "pytest-html>=4.0.0",
-    "pytest-timeout>=2.1.0",
-    
-    # Code quality
-    "black>=23.7.0",
-    "isort>=5.12.0",
-    "mypy>=1.4.0",
-    "ruff>=0.0.280",
-    "pre-commit>=3.3.0",
-    
-    # Documentation
-    "mkdocs>=1.4.3",
-    "mkdocs-material>=9.1.15",
-    "mkdocstrings[python]>=0.22.0",
-    "mkdocs-autorefs>=0.4.1",
-    
-    # Type stubs
-    "types-psutil>=5.9.0",
-    "types-python-dateutil>=2.8.0",
-    "types-requests>=2.28.0",
-]
-
 desktop = [
     "pyinstaller>=6.0",
 ]
 
 all = [
-    "windows-computer-use-mcp[face,dev,desktop]",
+    "windows-computer-use-mcp[face,desktop]",
 ]
 
 [project.entry-points]
@@ -201,6 +172,7 @@ ignore = [
 "src/windows_computer_use_mcp/security_endpoints.py" = ["E402"]
 "src/windows_computer_use_mcp/tools/portmanteau_face.py" = ["E402"]
 "src/windows_computer_use_mcp/tools/portmanteau_mission.py" = ["E402"]
+"scripts/*" = ["S310", "S603", "S604"]
 "scratch/**" = ["B023"]
 
 [tool.ruff.format]
@@ -209,5 +181,27 @@ indent-style = "space"
 
 [dependency-groups]
 dev = [
+    # Testing
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-mock>=3.11.0",
+    "pytest-xdist>=3.3.1",
+    "pytest-html>=4.0.0",
+    "pytest-timeout>=2.1.0",
+    # Code quality
+    "ruff>=0.9.0",
+    "mypy>=1.4.0",
+    "pre-commit>=3.3.0",
+    # Documentation
+    "mkdocs>=1.4.3",
+    "mkdocs-material>=9.1.15",
+    "mkdocstrings[python]>=0.22.0",
+    "mkdocs-autorefs>=0.4.1",
+    # Type stubs
+    "types-psutil>=5.9.0",
+    "types-python-dateutil>=2.8.0",
+    "types-requests>=2.28.0",
+    # Build
     "pyinstaller>=6.20.0",
 ]

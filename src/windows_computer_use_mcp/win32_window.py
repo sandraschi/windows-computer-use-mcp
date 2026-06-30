@@ -41,10 +41,10 @@ def virtual_screen_bounds() -> tuple[int, int, int, int]:
     only returns the primary monitor.
     """
     _require_win32()
-    vs_left = win32api.GetSystemMetrics(76)   # SM_XVIRTUALSCREEN
-    vs_top = win32api.GetSystemMetrics(77)    # SM_YVIRTUALSCREEN
+    vs_left = win32api.GetSystemMetrics(76)  # SM_XVIRTUALSCREEN
+    vs_top = win32api.GetSystemMetrics(77)  # SM_YVIRTUALSCREEN
     vs_width = win32api.GetSystemMetrics(78)  # SM_CXVIRTUALSCREEN
-    vs_height = win32api.GetSystemMetrics(79) # SM_CYVIRTUALSCREEN
+    vs_height = win32api.GetSystemMetrics(79)  # SM_CYVIRTUALSCREEN
     return vs_left, vs_top, vs_left + vs_width, vs_top + vs_height
 
 

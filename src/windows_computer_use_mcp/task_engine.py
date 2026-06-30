@@ -332,9 +332,7 @@ def run_task(
             try:
                 act_result = _execute_step(session, step, hwnd)
                 after_shot = _capture_screenshot(hwnd, f"s{idx}_after", output_dir or step.get("output_dir"))
-                step_evidence["attempts"].append(
-                    {"attempt": attempt + 1, "success": True, "result": act_result}
-                )
+                step_evidence["attempts"].append({"attempt": attempt + 1, "success": True, "result": act_result})
                 step_evidence["after_screenshot"] = after_shot
                 step_evidence["status"] = "success"
                 if step.get("kind") in _MUTATING_KINDS:

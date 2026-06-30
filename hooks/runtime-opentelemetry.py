@@ -9,6 +9,7 @@ This hook patches importlib.metadata.entry_points BEFORE any opentelemetry
 module imports it (they do `from importlib.metadata import entry_points` at
 module level, capturing the current reference).
 """
+
 import importlib.metadata as _md
 
 _ENTRIES: dict[str, dict[str, str]] = {

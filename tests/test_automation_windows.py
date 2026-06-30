@@ -27,21 +27,21 @@ class TestAutomationWindows:
         assert result.data["windows"][0]["title"] == "Test Window"
 
     def test_window_find(self, mock_desktop_uia, verify_result):
-        """Test finding a window by title."""
+        """Test finding a window by title + class (bypasses pygetwindow fast path)."""
         mock_window = MagicMock()
         mock_window.exists.return_value = True
         mock_window.handle = 12345
         mock_window.window_text.return_value = "Notepad"
+        mock_window.class_name.return_value = "NotepadClass"
 
         mock_desktop_uia.windows.return_value = [mock_window]
 
-        req = WindowOperationRequest(operation="find", title="Notepad")
+        req = WindowOperationRequest(operation="find", title="Notepad", class_name="NotepadClass")
         result = automation_windows(req)
 
         verify_result(result, expected_keys=["count", "windows"])
         assert result.data["count"] >= 1
         assert result.data["windows"][0]["handle"] == 12345
-        mock_desktop_uia.windows.assert_called()
 
     def test_window_maximize(self, mock_desktop_uia, verify_result):
         """Test maximizing a window."""

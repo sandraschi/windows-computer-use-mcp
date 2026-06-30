@@ -16,6 +16,7 @@ from windows_computer_use_mcp.app import app
 
 try:
     from fastmcp import Context
+
     SAMPLING_AVAILABLE = True
 except ImportError:
     SAMPLING_AVAILABLE = False
@@ -42,6 +43,7 @@ def _check_window_alive(handle: int | None) -> bool:
         return True
     try:
         from pywinauto import Desktop
+
         Desktop(backend="uia").window(handle=handle).exists(timeout=0.5)
         return True
     except Exception:
@@ -54,6 +56,7 @@ def _relaunch_app(app_path: str | None) -> bool:
         return False
     try:
         from pywinauto import Application
+
         Application().start(app_path)
         return True
     except Exception as e:
@@ -144,7 +147,8 @@ async def _run_steps(steps: list[dict], ctx: Context | None, mission_id: str, la
         mission_state = _MISSIONS.get(mission_id)
         if mission_state is None or mission_state.get("status") == "cancelled":
             return ToolResult(
-                status="blocked", message="Mission cancelled mid-execution.",
+                status="blocked",
+                message="Mission cancelled mid-execution.",
                 data={"mission_id": mission_id, "completed": i, "total": total},
             )
 
@@ -164,7 +168,15 @@ async def _run_steps(steps: list[dict], ctx: Context | None, mission_id: str, la
             else:
                 logger.warning("Could not re-launch %s — skipping step", app_path)
                 consecutive_failures += 1
-                results.append({"step": i + 1, "label": label, "tool": tool_name, "success": False, "message": "Window dead, relaunch failed"})
+                results.append(
+                    {
+                        "step": i + 1,
+                        "label": label,
+                        "tool": tool_name,
+                        "success": False,
+                        "message": "Window dead, relaunch failed",
+                    }
+                )
                 if consecutive_failures >= _MAX_CONSECUTIVE_FAILURES:
                     break
                 continue
@@ -185,6 +197,7 @@ async def _run_steps(steps: list[dict], ctx: Context | None, mission_id: str, la
         best_strategy = None
         try:
             from windows_computer_use_mcp.telemetry import get_best_strategy
+
             best_strategy = get_best_strategy(tool_name, step_op)
             if best_strategy and tool_name in ("elements",):
                 if best_strategy in ("by_title", "by_auto_id", "by_control_id", "by_class_and_type"):
@@ -218,6 +231,7 @@ async def _run_steps(steps: list[dict], ctx: Context | None, mission_id: str, la
         # Log step outcome to telemetry
         try:
             from windows_computer_use_mcp.telemetry import log_action
+
             log_action(
                 tool=f"mission.{tool_name}",
                 operation=step_op,
@@ -235,7 +249,13 @@ async def _run_steps(steps: list[dict], ctx: Context | None, mission_id: str, la
             consecutive_failures = 0
         else:
             consecutive_failures += 1
-            logger.warning("Mission step %d/%d failed (%d consecutive): %s", i + 1, total, consecutive_failures, retry_result.message)
+            logger.warning(
+                "Mission step %d/%d failed (%d consecutive): %s",
+                i + 1,
+                total,
+                consecutive_failures,
+                retry_result.message,
+            )
 
         if expected and retry_result.success and isinstance(retry_result.data, dict):
             step_result["verified"] = retry_result.data.get("verify")
@@ -272,9 +292,10 @@ async def _run_steps(steps: list[dict], ctx: Context | None, mission_id: str, la
         status="success" if success_count == total else "blocked",
         message=summary,
         data={"mission_id": mission_id, "steps": results, "total": total, "succeeded": success_count},
-        recovery_tip="Use automation_mission(operation='status', mission_id=...) for details." if success_count < total else None,
+        recovery_tip="Use automation_mission(operation='status', mission_id=...) for details."
+        if success_count < total
+        else None,
     )
-
 
 
 async def _run_mission(goal: str, ctx: Context | None, mission_id: str) -> ToolResult:
@@ -331,25 +352,66 @@ def _static_decompose(goal: str) -> list[dict[str, Any]]:
     if "notepad" in g:
         steps = []
         if "open" in g or "launch" in g or "start" in g:
-            steps.append({"tool": "system", "params": {"operation": "start_app", "app_path": "notepad.exe"}, "label": "Open Notepad"})
-            steps.append({"tool": "windows", "params": {"operation": "find", "title": "Notepad"}, "label": "Find Notepad window"})
+            steps.append(
+                {
+                    "tool": "system",
+                    "params": {"operation": "start_app", "app_path": "notepad.exe"},
+                    "label": "Open Notepad",
+                }
+            )
+            steps.append(
+                {"tool": "windows", "params": {"operation": "find", "title": "Notepad"}, "label": "Find Notepad window"}
+            )
         if "type" in g or "write" in g or "text" in g:
-            steps.append({"tool": "elements", "params": {"operation": "set_text", "title": "Text Editor", "text": "Hello from automation mission"}, "label": "Type text"})
+            steps.append(
+                {
+                    "tool": "elements",
+                    "params": {
+                        "operation": "set_text",
+                        "title": "Text Editor",
+                        "text": "Hello from automation mission",
+                    },
+                    "label": "Type text",
+                }
+            )
         if "save" in g:
-            steps.append({"tool": "keyboard", "params": {"operation": "hotkey", "keys": ["ctrl", "s"]}, "label": "Save (Ctrl+S)"})
+            steps.append(
+                {"tool": "keyboard", "params": {"operation": "hotkey", "keys": ["ctrl", "s"]}, "label": "Save (Ctrl+S)"}
+            )
         if "close" in g or "exit" in g:
-            steps.append({"tool": "keyboard", "params": {"operation": "hotkey", "keys": ["alt", "f4"]}, "label": "Close Notepad"})
+            steps.append(
+                {"tool": "keyboard", "params": {"operation": "hotkey", "keys": ["alt", "f4"]}, "label": "Close Notepad"}
+            )
         if not steps:
-            steps.append({"tool": "windows", "params": {"operation": "find", "title": "Notepad"}, "label": "Find Notepad"})
+            steps.append(
+                {"tool": "windows", "params": {"operation": "find", "title": "Notepad"}, "label": "Find Notepad"}
+            )
         return steps
 
     if "install" in g or "setup" in g:
         return [
             {"tool": "system", "params": {"operation": "start_app", "app_path": goal}, "label": "Launch installer"},
-            {"tool": "windows", "params": {"operation": "wait_for_window", "title": "Setup", "timeout": 30}, "label": "Wait for setup window"},
-            {"tool": "elements", "params": {"operation": "click", "title": "Next", "control_type": "Button"}, "label": "Click Next", "expect": "next_dialog"},
-            {"tool": "elements", "params": {"operation": "click", "title": "Install", "control_type": "Button"}, "label": "Click Install"},
-            {"tool": "windows", "params": {"operation": "wait_for_window", "title": "Finish", "timeout": 60}, "label": "Wait for completion"},
+            {
+                "tool": "windows",
+                "params": {"operation": "wait_for_window", "title": "Setup", "timeout": 30},
+                "label": "Wait for setup window",
+            },
+            {
+                "tool": "elements",
+                "params": {"operation": "click", "title": "Next", "control_type": "Button"},
+                "label": "Click Next",
+                "expect": "next_dialog",
+            },
+            {
+                "tool": "elements",
+                "params": {"operation": "click", "title": "Install", "control_type": "Button"},
+                "label": "Click Install",
+            },
+            {
+                "tool": "windows",
+                "params": {"operation": "wait_for_window", "title": "Finish", "timeout": 60},
+                "label": "Wait for completion",
+            },
         ]
 
     if "screenshot" in g or "capture" in g:
@@ -415,15 +477,19 @@ A ToolResult object with mission progress, step results, and next steps.
                 presets_dir = _presets_dir()
                 if not preset_name or preset_name == "list":
                     presets = sorted(p.stem for p in presets_dir.glob("*.json") if p.stem != "list_presets")
-                    return ToolResult(status="success",
-                        message=f"Available presets: {', '.join(presets)}",
-                        data={"presets": presets})
+                    return ToolResult(
+                        status="success", message=f"Available presets: {', '.join(presets)}", data={"presets": presets}
+                    )
                 preset_path = presets_dir / f"{preset_name}.json"
                 if not preset_path.exists():
-                    return ToolResult(status="error",
+                    return ToolResult(
+                        status="error",
                         message=f"Preset '{preset_name}' not found.",
-                        recovery_tip="Available: " + ", ".join(p.stem for p in presets_dir.glob("*.json") if p.stem != "list_presets"))
+                        recovery_tip="Available: "
+                        + ", ".join(p.stem for p in presets_dir.glob("*.json") if p.stem != "list_presets"),
+                    )
                 import json
+
                 preset = json.loads(preset_path.read_text(encoding="utf-8"))
                 steps = preset.get("steps", [])
                 return await _run_steps(steps, ctx, mission_id, preset.get("name", preset_name))
@@ -460,6 +526,7 @@ A ToolResult object with mission progress, step results, and next steps.
                 if mission_id in _MISSIONS:
                     _MISSIONS[mission_id]["status"] = "cancelled"
                 from windows_computer_use_mcp.mission_store import clear_mission
+
                 clear_mission(mission_id)
                 return ToolResult(
                     status="success",
@@ -475,6 +542,7 @@ A ToolResult object with mission progress, step results, and next steps.
                 if app_name:
                     try:
                         from pywinauto import Application
+
                         Application().start(app_name)
                         if ctx:
                             await ctx.info(f"Started {app_name}")
@@ -486,7 +554,9 @@ A ToolResult object with mission progress, step results, and next steps.
                 deadline = time.time() + max_time
                 for i, action in enumerate(actions):
                     if time.time() > deadline:
-                        results.append({"step": i + 1, "label": action.get("label"), "success": False, "error": "timeout"})
+                        results.append(
+                            {"step": i + 1, "label": action.get("label"), "success": False, "error": "timeout"}
+                        )
                         break
                     tool_name = action.get("tool", "")
                     params = action.get("params", {})
@@ -499,14 +569,16 @@ A ToolResult object with mission progress, step results, and next steps.
 
                     policy = RetryPolicy(max_attempts=2, base_delay=1.0)
                     retry_result = policy.execute(_exec, label=label)
-                    results.append({
-                        "step": i + 1,
-                        "label": label,
-                        "tool": tool_name,
-                        "success": retry_result.success,
-                        "attempts": retry_result.attempts,
-                        "message": retry_result.message,
-                    })
+                    results.append(
+                        {
+                            "step": i + 1,
+                            "label": label,
+                            "tool": tool_name,
+                            "success": retry_result.success,
+                            "attempts": retry_result.attempts,
+                            "message": retry_result.message,
+                        }
+                    )
 
                 success_count = sum(1 for r in results if r["success"])
                 return ToolResult(
@@ -517,6 +589,7 @@ A ToolResult object with mission progress, step results, and next steps.
 
             if operation in ("record", "replay"):
                 from windows_computer_use_mcp.mission_store import clear_mission, get_steps, record_step
+
                 if operation == "record":
                     if not request.steps:
                         return ToolResult(status="error", message="record requires steps list.")
@@ -535,10 +608,12 @@ A ToolResult object with mission progress, step results, and next steps.
                     kind = step.get("kind") or step.get("tool")
                     if kind == "hotkey" and step.get("keys"):
                         from windows_computer_use_mcp.keyboard_send import parse_hotkey, send_hotkey
+
                         keys = step["keys"] if isinstance(step["keys"], list) else parse_hotkey(step["keys"])
                         send_hotkey(keys, hwnd=step.get("window_handle"))
                     elif kind == "press" and step.get("key"):
                         from windows_computer_use_mcp.keyboard_send import send_press
+
                         send_press(step["key"], hwnd=step.get("window_handle"))
                     executed.append(step)
                 return ToolResult(

@@ -37,6 +37,7 @@ class ScreenshotAnnotator:
         try:
             if bbox:
                 from windows_computer_use_mcp.win32_window import clamp_bbox
+
                 clamped = clamp_bbox(bbox)
                 screenshot = ImageGrab.grab(bbox=clamped)
             else:

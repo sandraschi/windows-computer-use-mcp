@@ -14,7 +14,7 @@ from typing import Any
 
 import cv2
 import numpy as np
-from PIL import Image, ImageGrab
+from PIL import ImageGrab
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +63,7 @@ def find_template_multi_scale(
         offset_x, offset_y = region[0], region[1]
     elif window_handle:
         import win32gui
+
         rect = win32gui.GetWindowRect(window_handle)
         screen_bgr = cv2.cvtColor(np.array(ImageGrab.grab(bbox=rect)), cv2.COLOR_RGB2BGR)
         offset_x, offset_y = rect[0], rect[1]
@@ -90,14 +91,16 @@ def find_template_multi_scale(
         if max_val >= threshold:
             cx = max_loc[0] + w // 2 + offset_x
             cy = max_loc[1] + h // 2 + offset_y
-            matches.append({
-                "center_x": int(cx),
-                "center_y": int(cy),
-                "confidence": float(max_val),
-                "scale": float(scale),
-                "width": w,
-                "height": h,
-            })
+            matches.append(
+                {
+                    "center_x": int(cx),
+                    "center_y": int(cy),
+                    "confidence": float(max_val),
+                    "scale": float(scale),
+                    "width": w,
+                    "height": h,
+                }
+            )
 
     matches.sort(key=lambda m: m["confidence"], reverse=True)
     return matches
@@ -139,6 +142,7 @@ def find_template_feature_match(
         offset_x, offset_y = region[0], region[1]
     elif window_handle:
         import win32gui
+
         rect = win32gui.GetWindowRect(window_handle)
         screen = cv2.cvtColor(np.array(ImageGrab.grab(bbox=rect)), cv2.COLOR_RGB2GRAY)
         offset_x, offset_y = rect[0], rect[1]
@@ -175,8 +179,15 @@ def find_template_feature_match(
         # No homography, use mean of matched points
         cx = int(np.mean([p[0][0] for p in dst_pts]) + offset_x)
         cy = int(np.mean([p[0][1] for p in dst_pts]) + offset_y)
-        return [{"center_x": cx, "center_y": cy, "confidence": len(good) / max(len(matches_raw), 1),
-                 "method": "orb_mean", "matches": len(good)}]
+        return [
+            {
+                "center_x": cx,
+                "center_y": cy,
+                "confidence": len(good) / max(len(matches_raw), 1),
+                "method": "orb_mean",
+                "matches": len(good),
+            }
+        ]
 
     h, w = img1.shape
     corners = np.float32([[0, 0], [0, h - 1], [w - 1, h - 1], [w - 1, 0]]).reshape(-1, 1, 2)
@@ -185,9 +196,16 @@ def find_template_feature_match(
     cy = int(np.mean([p[0][1] for p in transformed]) + offset_y)
     conf = len(good) / max(len(matches_raw), 1)
 
-    return [{"center_x": cx, "center_y": cy, "confidence": round(conf, 3),
-             "method": "orb_homography", "matches": len(good),
-             "corners": transformed.reshape(-1, 2).tolist()}]
+    return [
+        {
+            "center_x": cx,
+            "center_y": cy,
+            "confidence": round(conf, 3),
+            "method": "orb_homography",
+            "matches": len(good),
+            "corners": transformed.reshape(-1, 2).tolist(),
+        }
+    ]
 
 
 # ---------------------------------------------------------------------------
@@ -237,11 +255,16 @@ def describe_region(
             continue
         aspect = w_ / max(h_, 1)
         obj_type = "button" if 1.5 <= aspect <= 6 else "icon" if aspect < 1.5 and area < 5000 else "region"
-        objects.append({
-            "type": obj_type,
-            "x": x_ + ox, "y": y_ + oy,
-            "width": w_, "height": h_, "area": area,
-        })
+        objects.append(
+            {
+                "type": obj_type,
+                "x": x_ + ox,
+                "y": y_ + oy,
+                "width": w_,
+                "height": h_,
+                "area": area,
+            }
+        )
 
     objects.sort(key=lambda o: o["area"], reverse=True)
     objects = objects[:max_objects]

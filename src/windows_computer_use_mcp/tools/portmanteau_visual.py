@@ -94,8 +94,14 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
             monitors = []
             try:
                 monitors = [
-                    {"index": m.index, "width": m.width, "height": m.height,
-                     "left": m.left, "top": m.top, "primary": m.is_primary}
+                    {
+                        "index": m.index,
+                        "width": m.width,
+                        "height": m.height,
+                        "left": m.left,
+                        "top": m.top,
+                        "primary": m.is_primary,
+                    }
                     for m in enum_monitors()
                 ]
             except Exception:
@@ -120,8 +126,12 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
             if mi is not None:
                 if all(v is not None for v in [region_left, region_top, region_right, region_bottom]):
                     # Region coords relative to monitor origin
-                    region = (region_left + mi.left, region_top + mi.top,
-                              region_right + mi.left, region_bottom + mi.top)
+                    region = (
+                        region_left + mi.left,
+                        region_top + mi.top,
+                        region_right + mi.left,
+                        region_bottom + mi.top,
+                    )
                 else:
                     # Full monitor capture
                     region = (mi.left, mi.top, mi.right, mi.bottom)
@@ -155,6 +165,7 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
                 import io
                 import shutil
                 import subprocess
+
                 img_buffer = io.BytesIO()
                 screenshot.save(img_buffer, format=format_ext.upper())
                 img_bytes = img_buffer.getvalue()
@@ -228,10 +239,12 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
                     use_tesseract = False
                 else:
                     from windows_computer_use_mcp.windows_media_ocr import is_available as wm_avail
+
                     use_tesseract = not wm_avail()
 
                 if not use_tesseract:
                     from windows_computer_use_mcp.windows_media_ocr import extract_text as wm_ocr
+
                     temp_path = f"_ocr_temp_{int(time.time())}.png"
                     try:
                         image.save(temp_path)
@@ -361,15 +374,23 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
                     scale_min = 0.5
                     scale_max = 2.0
                     matches = find_template_multi_scale(
-                        template_path, region=region, window_handle=window_handle,
-                        threshold=threshold, scale_min=scale_min, scale_max=scale_max,
+                        template_path,
+                        region=region,
+                        window_handle=window_handle,
+                        threshold=threshold,
+                        scale_min=scale_min,
+                        scale_max=scale_max,
                     )
                     return ToolResult(
                         status="success",
                         message=f"Found {len(matches)} matches (multi-scale).",
-                        data={"found": len(matches) > 0, "matches": matches[:10],
-                              "match_count": len(matches), "timestamp": timestamp,
-                              "visual_metadata": visual_metadata},
+                        data={
+                            "found": len(matches) > 0,
+                            "matches": matches[:10],
+                            "match_count": len(matches),
+                            "timestamp": timestamp,
+                            "visual_metadata": visual_metadata,
+                        },
                     )
                 except Exception as e:
                     return ToolResult(status="error", message=f"Multi-scale matching failed: {e}")
@@ -385,14 +406,20 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
                     from windows_computer_use_mcp.computer_vision import find_template_feature_match
 
                     matches = find_template_feature_match(
-                        template_path, region=region, window_handle=window_handle,
+                        template_path,
+                        region=region,
+                        window_handle=window_handle,
                         min_matches=8,
                     )
                     return ToolResult(
                         status="success",
                         message=f"Found {len(matches)} feature matches.",
-                        data={"found": len(matches) > 0, "matches": matches,
-                              "timestamp": timestamp, "visual_metadata": visual_metadata},
+                        data={
+                            "found": len(matches) > 0,
+                            "matches": matches,
+                            "timestamp": timestamp,
+                            "visual_metadata": visual_metadata,
+                        },
                     )
                 except Exception as e:
                     return ToolResult(status="error", message=f"Feature matching failed: {e}")
@@ -485,10 +512,14 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
                 import io
                 import shutil
                 import subprocess
+
                 rec_duration = request.duration
                 rec_fps = request.fps
                 out_path = request.output_path or os.path.join(
-                    os.getcwd(), f"screenshot_{operation}_{int(time.time())}.mp4" if operation == "record" else f"screenshot_{operation}_{int(time.time())}.gif"
+                    os.getcwd(),
+                    f"screenshot_{operation}_{int(time.time())}.mp4"
+                    if operation == "record"
+                    else f"screenshot_{operation}_{int(time.time())}.gif",
                 )
                 total_frames = int(rec_duration * rec_fps)
                 interval = rec_duration / max(total_frames, 1)
@@ -499,15 +530,33 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
 
                 if operation == "record":
                     cmd = [
-                        ffmpeg_path, "-y", "-f", "image2pipe", "-framerate", str(rec_fps),
-                        "-i", "-", "-c:v", "libx264", "-pix_fmt", "yuv420p",
-                        str(out_path)
+                        ffmpeg_path,
+                        "-y",
+                        "-f",
+                        "image2pipe",
+                        "-framerate",
+                        str(rec_fps),
+                        "-i",
+                        "-",
+                        "-c:v",
+                        "libx264",
+                        "-pix_fmt",
+                        "yuv420p",
+                        str(out_path),
                     ]
                 else:
                     cmd = [
-                        ffmpeg_path, "-y", "-f", "image2pipe", "-framerate", str(rec_fps),
-                        "-i", "-", "-vf", "fps=10,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse",
-                        str(out_path)
+                        ffmpeg_path,
+                        "-y",
+                        "-f",
+                        "image2pipe",
+                        "-framerate",
+                        str(rec_fps),
+                        "-i",
+                        "-",
+                        "-vf",
+                        "fps=10,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse",
+                        str(out_path),
                     ]
 
                 proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, stderr=subprocess.DEVNULL)
@@ -515,6 +564,7 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
                     for _ in range(total_frames):
                         if window_handle:
                             import win32gui
+
                             rect = win32gui.GetWindowRect(window_handle)
                             frame = ImageGrab.grab(bbox=rect)
                         else:
@@ -531,7 +581,13 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
                 return ToolResult(
                     status="success",
                     message=f"Recording saved: {out_path} ({size_mb} MB, {rec_duration}s, {rec_fps}fps)",
-                    data={"path": str(out_path), "duration": rec_duration, "fps": rec_fps, "frames": total_frames, "size_mb": size_mb},
+                    data={
+                        "path": str(out_path),
+                        "duration": rec_duration,
+                        "fps": rec_fps,
+                        "frames": total_frames,
+                        "size_mb": size_mb,
+                    },
                 )
 
             else:

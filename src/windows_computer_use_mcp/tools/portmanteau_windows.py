@@ -17,7 +17,6 @@ from pywinauto.findwindows import WindowNotFoundError
 from windows_computer_use_mcp.app import app
 from windows_computer_use_mcp.display_utils import (
     get_monitor_at_point,
-    enum_monitors,
     translate_coords,
 )
 from windows_computer_use_mcp.tools.models import ToolResult, WindowOperationRequest
@@ -305,8 +304,12 @@ A ToolResult object containing standardized outcome, message, and window metadat
                     status="success",
                     message=f"Window {handle} moved to monitor {mon.index} at ({wx}, {wy}).",
                     data={
-                        "x": wx, "y": wy, "width": request.width, "height": request.height,
-                        "monitor_index": mon.index, "monitor_name": mon.name,
+                        "x": wx,
+                        "y": wy,
+                        "width": request.width,
+                        "height": request.height,
+                        "monitor_index": mon.index,
+                        "monitor_name": mon.name,
                     },
                 )
 
@@ -324,10 +327,14 @@ A ToolResult object containing standardized outcome, message, and window metadat
                     status="success",
                     message=f"Rect on monitor {mon.index}.",
                     data={
-                        "left": r.left, "top": r.top,
-                        "right": r.right, "bottom": r.bottom,
-                        "width": r.width(), "height": r.height(),
-                        "monitor_index": mon.index, "monitor_name": mon.name,
+                        "left": r.left,
+                        "top": r.top,
+                        "right": r.right,
+                        "bottom": r.bottom,
+                        "width": r.width(),
+                        "height": r.height(),
+                        "monitor_index": mon.index,
+                        "monitor_name": mon.name,
                     },
                 )
 

@@ -44,7 +44,9 @@ def with_retry(
             if attempt >= max_attempts - 1:
                 break
             wait = min(base_delay * (2**attempt), 10.0)
-            logger.warning("%s failed (attempt %d/%d): %s — retry in %.1fs", label, attempt + 1, max_attempts, exc, wait)
+            logger.warning(
+                "%s failed (attempt %d/%d): %s — retry in %.1fs", label, attempt + 1, max_attempts, exc, wait
+            )
             time.sleep(wait)
 
     assert last_exc is not None

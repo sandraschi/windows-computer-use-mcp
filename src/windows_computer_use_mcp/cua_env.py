@@ -24,4 +24,6 @@ def cua_truthy(primary: str, *legacy: str, default: str = "0") -> bool:
 
 def keyboard_backend() -> str:
     """pyautogui (default) or win32."""
-    return (cua_getenv("CUA_MCP_KEYBOARD", "windows_computer_use_mcp_KEYBOARD", default="pyautogui") or "pyautogui").lower()
+    return (
+        cua_getenv("CUA_MCP_KEYBOARD", "windows_computer_use_mcp_KEYBOARD", default="pyautogui") or "pyautogui"
+    ).lower()

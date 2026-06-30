@@ -224,7 +224,7 @@ async def run_server_async(mcp_app, args: argparse.Namespace | None = None, serv
                 except OSError as exc:
                     if retry < 4 and "10048" in str(exc):
                         wait = 60
-                        logger.warning(f"Port {port} still occupied (E10048), retry {retry+1}/5 after {wait}s")
+                        logger.warning(f"Port {port} still occupied (E10048), retry {retry + 1}/5 after {wait}s")
                         await asyncio.sleep(wait)
                         continue
                     raise
@@ -234,7 +234,7 @@ async def run_server_async(mcp_app, args: argparse.Namespace | None = None, serv
             port = config["port"]
             logger.warning("SSE mode is deprecated. Migrate to HTTP Streamable (--http).")
             logger.info(f"Running in SSE mode: http://{host}:{port}")
-            await mcp_app.run_async(transport='sse', host=host, port=port)
+            await mcp_app.run_async(transport="sse", host=host, port=port)
 
     except asyncio.CancelledError:
         logger.info(f"{server_name} task cancelled")

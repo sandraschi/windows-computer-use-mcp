@@ -12,6 +12,7 @@ SUPPORTED OPERATIONS:
 """
 
 import logging
+import os
 import time
 from importlib.metadata import PackageNotFoundError, version
 from typing import Any
@@ -155,6 +156,7 @@ If 'wait_for_window' times out, verify the 'title' exists or increase 'timeout'.
 
             elif operation == "telemetry":
                 from windows_computer_use_mcp.telemetry import get_failure_patterns, get_stats
+
                 stats = get_stats()
                 failures = get_failure_patterns(limit=20)
                 return ToolResult(
@@ -201,13 +203,13 @@ If 'wait_for_window' times out, verify the 'title' exists or increase 'timeout'.
 
                 if not is_available():
                     return ToolResult(
-                        status="error", message="speech-mcp not reachable at 127.0.0.1:10909.",
+                        status="error",
+                        message="speech-mcp not reachable at 127.0.0.1:10909.",
                         recovery_tip="Start speech-mcp first or check SPEECH_MCP_URL.",
                     )
                 listener = VoiceListener()
                 ok = listener.start(duration=int(request.timeout or 5))
                 if ok:
-                    import threading
                     time.sleep(0.5)
                     return ToolResult(
                         status="success",
@@ -222,8 +224,10 @@ If 'wait_for_window' times out, verify the 'title' exists or increase 'timeout'.
                 return ToolResult(
                     status="success",
                     message="Voice control status.",
-                    data={"speech_mcp_available": is_available(),
-                          "enabled": os.environ.get("WINDOWS_COMPUTER_USE_MCP_VOICE", "0") in ("1", "true")},
+                    data={
+                        "speech_mcp_available": is_available(),
+                        "enabled": os.environ.get("WINDOWS_COMPUTER_USE_MCP_VOICE", "0") in ("1", "true"),
+                    },
                 )
 
             elif operation == "info":

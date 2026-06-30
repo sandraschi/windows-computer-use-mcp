@@ -3,6 +3,7 @@
 Detects MCP_PORT env var (set by Tauri backend.rs) and switches to HTTP mode.
 When no env vars are set, runs stdio mode (Claude Desktop).
 """
+
 import os
 import sys
 

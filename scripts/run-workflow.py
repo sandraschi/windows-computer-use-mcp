@@ -6,13 +6,17 @@ Usage:
   uv run python scripts/run-workflow.py presets/notepad_demo.json
 """
 
-import asyncio, json, os, sys, time
+import asyncio
+import json
+import os
+import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 os.environ["WINDOWS_COMPUTER_USE_MCP_BYPASS_HITL"] = "1"
 
-from windows_computer_use_mcp.tools.portmanteau_mission import _call_tool, _run_steps
+from windows_computer_use_mcp.tools.portmanteau_mission import _run_steps
 
 
 def load_workflow(path: str) -> dict:
@@ -20,6 +24,7 @@ def load_workflow(path: str) -> dict:
     raw = p.read_text(encoding="utf-8")
     if p.suffix in (".yaml", ".yml"):
         import yaml
+
         return yaml.safe_load(raw)
     return json.loads(raw)
 

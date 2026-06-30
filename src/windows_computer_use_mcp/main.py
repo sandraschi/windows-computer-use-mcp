@@ -81,6 +81,7 @@ def get_registered_tools() -> list[str]:
     """Helper function to get registered tools as a list."""
     try:
         import asyncio
+
         if hasattr(app, "_list_tools"):
             tools = asyncio.run(app._list_tools())
             if tools:

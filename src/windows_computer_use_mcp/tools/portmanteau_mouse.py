@@ -74,9 +74,16 @@ A ToolResult object containing standardized outcome, message, and movement data.
                 "virtual_screen": f"{vsw}x{vsh}",
                 "monitor_count": len(monitors),
                 "monitors": [
-                    {"index": m.index, "width": m.width, "height": m.height,
-                     "left": m.left, "top": m.top, "primary": m.is_primary,
-                     "dpi": m.dpi_x, "scale": m.scale_factor}
+                    {
+                        "index": m.index,
+                        "width": m.width,
+                        "height": m.height,
+                        "left": m.left,
+                        "top": m.top,
+                        "primary": m.is_primary,
+                        "dpi": m.dpi_x,
+                        "scale": m.scale_factor,
+                    }
                     for m in monitors
                 ],
                 "timestamp": timestamp,
@@ -86,12 +93,10 @@ A ToolResult object containing standardized outcome, message, and movement data.
             x = request.x
             y = request.y
             # Translate coords if monitor_index is set
-            raw_x, raw_y = x, y
             if x is not None and y is not None and request.monitor_index is not None:
                 x, y = translate_coords(int(x), int(y), request.monitor_index)
             target_x = request.target_x or request.x2
             target_y = request.target_y or request.y2
-            raw_tx, raw_ty = target_x, target_y
             if target_x is not None and target_y is not None and request.monitor_index is not None:
                 target_x, target_y = translate_coords(int(target_x), int(target_y), request.monitor_index)
             amount = (
@@ -140,7 +145,8 @@ A ToolResult object containing standardized outcome, message, and movement data.
                     status="success",
                     message=f"Cursor at ({pos_x}, {pos_y}) on monitor {monitor.index}",
                     data={
-                        "x": pos_x, "y": pos_y,
+                        "x": pos_x,
+                        "y": pos_y,
                         "monitor_index": monitor.index,
                         "monitor_name": monitor.name,
                         "metadata": metadata,

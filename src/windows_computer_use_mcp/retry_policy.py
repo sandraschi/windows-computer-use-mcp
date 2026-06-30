@@ -104,7 +104,11 @@ class RetryPolicy:
                     last_error = f"exception: {e!s}"
                     logger.warning(
                         "%s failed (strategy=%s attempt=%d/%d): %s",
-                        label, strategy.value, attempt + 1, self.max_attempts, last_error,
+                        label,
+                        strategy.value,
+                        attempt + 1,
+                        self.max_attempts,
+                        last_error,
                     )
 
                 if attempt < self.max_attempts - 1:

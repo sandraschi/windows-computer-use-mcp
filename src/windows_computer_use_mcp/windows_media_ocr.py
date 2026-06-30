@@ -26,6 +26,7 @@ def is_available() -> bool:
         return False
     try:
         from winrt.windows.media.ocr import OcrEngine
+
         engine = OcrEngine.try_create_from_user_profile_languages()
         _AVAILABLE = engine is not None
     except Exception as e:

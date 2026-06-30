@@ -16,6 +16,7 @@ from windows_computer_use_mcp.tools.models import ToolResult
 
 try:
     from fastmcp import Context
+
     SAMPLING_AVAILABLE = True
 except ImportError:
     SAMPLING_AVAILABLE = False
@@ -27,6 +28,7 @@ logger = logging.getLogger(__name__)
 def _scan_all_windows() -> list[dict]:
     """Return a snapshot of all visible windows with their controls."""
     from pywinauto import Desktop
+
     desktop = Desktop(backend="uia")
     results = []
     for win in desktop.windows():
@@ -50,12 +52,16 @@ def _scan_all_windows() -> list[dict]:
             try:
                 for child in win.children(visible_only=True):
                     try:
-                        children.append({
-                            "title": child.window_text(),
-                            "class_name": child.class_name(),
-                            "control_type": str(child.element_info.control_type) if hasattr(child, "element_info") else None,
-                            "handle": child.handle,
-                        })
+                        children.append(
+                            {
+                                "title": child.window_text(),
+                                "class_name": child.class_name(),
+                                "control_type": str(child.element_info.control_type)
+                                if hasattr(child, "element_info")
+                                else None,
+                                "handle": child.handle,
+                            }
+                        )
                     except Exception:
                         continue
             except Exception:
@@ -89,6 +95,7 @@ def _identify_apps(windows: list[dict]) -> list[dict]:
         title = w.get("title", "").strip()
         pid = w.get("process_id", 0)
         import psutil
+
         proc_name = ""
         try:
             proc_name = (psutil.Process(pid).name() or "").lower()
@@ -99,7 +106,15 @@ def _identify_apps(windows: list[dict]) -> list[dict]:
             if sig["class"] in cls or sig["process"] == proc_name:
                 app_name = name
                 break
-        results.append({"app": app_name, "title": title, "handle": w["handle"], "class_name": cls, "controls": len(w.get("controls", []))})
+        results.append(
+            {
+                "app": app_name,
+                "title": title,
+                "handle": w["handle"],
+                "class_name": cls,
+                "controls": len(w.get("controls", [])),
+            }
+        )
     return results
 
 
@@ -133,7 +148,9 @@ OPERATIONS:
                 apps = [a for a in apps if q in a["app"].lower() or q in a["title"].lower()]
             return ToolResult(
                 status="success",
-                message=f"Found {len(apps)} apps across {len(windows)} windows." if not query else f"Found {len(apps)} apps matching '{query}'.",
+                message=f"Found {len(apps)} apps across {len(windows)} windows."
+                if not query
+                else f"Found {len(apps)} apps matching '{query}'.",
                 data={"apps": apps, "total_windows": len(windows)},
                 recovery_tip="Use list_controls with a handle to drill into a specific window." if apps else None,
             )
@@ -151,6 +168,7 @@ OPERATIONS:
             if window_handle is None:
                 return ToolResult(status="error", message="window_handle is required.")
             from pywinauto import Desktop
+
             desktop = Desktop(backend="uia")
             try:
                 win = desktop.window(handle=window_handle)
@@ -185,6 +203,7 @@ OPERATIONS:
             if not description:
                 return ToolResult(status="error", message="description is required (e.g. 'the Save button').")
             from pywinauto import Desktop
+
             desktop = Desktop(backend="uia")
             all_windows = desktop.windows()
             candidates = []
@@ -204,7 +223,15 @@ OPERATIONS:
                                 ctype = ""
                             desc_lower = description.lower()
                             if txt == desc_lower or txt.startswith(desc_lower) or desc_lower.startswith(txt):
-                                candidates.append({"handle": child.handle, "title": child.window_text(), "control_type": ctype, "window_handle": win_handle, "window_title": win.window_text()})
+                                candidates.append(
+                                    {
+                                        "handle": child.handle,
+                                        "title": child.window_text(),
+                                        "control_type": ctype,
+                                        "window_handle": win_handle,
+                                        "window_title": win.window_text(),
+                                    }
+                                )
                         except Exception:
                             continue
                 except Exception:
@@ -225,7 +252,15 @@ OPERATIONS:
                                     continue
                                 desc_lower = description.lower().replace("button", "").replace("the", "").strip()
                                 if desc_lower in txt or txt in desc_lower:
-                                    candidates.append({"handle": child.handle, "title": child.window_text(), "control_type": ctype, "window_handle": wh, "window_title": win.window_text()})
+                                    candidates.append(
+                                        {
+                                            "handle": child.handle,
+                                            "title": child.window_text(),
+                                            "control_type": ctype,
+                                            "window_handle": wh,
+                                            "window_title": win.window_text(),
+                                        }
+                                    )
                             except Exception:
                                 continue
                     except Exception:
@@ -239,7 +274,13 @@ OPERATIONS:
             if len(candidates) > 1 and SAMPLING_AVAILABLE:
                 try:
                     ctx = Context()
-                    prompt = f"I need to click one of these UI elements. Pick the best match for '{description}':\n" + "\n".join(f"{i}: title='{c['title']}' type='{c['control_type']}' window='{c['window_title']}'" for i, c in enumerate(candidates))
+                    prompt = (
+                        f"I need to click one of these UI elements. Pick the best match for '{description}':\n"
+                        + "\n".join(
+                            f"{i}: title='{c['title']}' type='{c['control_type']}' window='{c['window_title']}'"
+                            for i, c in enumerate(candidates)
+                        )
+                    )
                     response = await ctx.sample(messages=[{"role": "user", "content": prompt}], max_tokens=100)
                     content = ""
                     if isinstance(response, str):
@@ -247,6 +288,7 @@ OPERATIONS:
                     elif isinstance(response, dict):
                         content = response.get("content", str(response))
                     import re
+
                     match = re.search(r"\d+", content)
                     if match:
                         idx = int(match.group())
@@ -260,10 +302,12 @@ OPERATIONS:
             target = candidates[0]
             try:
                 from pywinauto import Desktop as D
+
                 d = D(backend="uia")
                 win = d.window(handle=target["window_handle"])
                 elem = win.child_window(handle=target["handle"])
                 from windows_computer_use_mcp.dispatch import click_element, resolve_dispatch
+
                 meta = click_element(elem, dispatch=resolve_dispatch(None), button=button)
                 return ToolResult(
                     status="success",

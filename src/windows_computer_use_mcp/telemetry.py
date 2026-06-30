@@ -4,11 +4,10 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import sqlite3
 import threading
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -105,9 +104,7 @@ def get_stats(days: int = 7) -> dict[str, Any]:
         conn = _get_conn()
         cutoff = time.time() - days * 86400
 
-        total = conn.execute(
-            "SELECT COUNT(*) FROM actions WHERE ts > ?", (cutoff,)
-        ).fetchone()[0]
+        total = conn.execute("SELECT COUNT(*) FROM actions WHERE ts > ?", (cutoff,)).fetchone()[0]
 
         by_tool = {}
         for row in conn.execute(
@@ -127,12 +124,14 @@ def get_stats(days: int = 7) -> dict[str, Any]:
             "SELECT tool, operation, error, COUNT(*) as cnt FROM actions WHERE ts > ? AND success = 0 AND error IS NOT NULL GROUP BY tool, operation, error ORDER BY cnt DESC LIMIT 10",
             (cutoff,),
         ).fetchall():
-            top_fails.append({
-                "tool": row[0],
-                "operation": row[1],
-                "error": row[2],
-                "count": row[3],
-            })
+            top_fails.append(
+                {
+                    "tool": row[0],
+                    "operation": row[1],
+                    "error": row[2],
+                    "count": row[3],
+                }
+            )
 
         by_strategy = {}
         for row in conn.execute(
@@ -223,14 +222,16 @@ def analyze_failures(days: int = 7) -> dict[str, Any]:
         clusters = []
         for tool, op, err, strategy, cnt in rows:
             suggestion = _suggest_improvement(tool, op, err, strategy)
-            clusters.append({
-                "tool": tool,
-                "operation": op,
-                "error": err[:200] if err else "",
-                "count": cnt,
-                "strategy_used": strategy,
-                "suggestion": suggestion,
-            })
+            clusters.append(
+                {
+                    "tool": tool,
+                    "operation": op,
+                    "error": err[:200] if err else "",
+                    "count": cnt,
+                    "strategy_used": strategy,
+                    "suggestion": suggestion,
+                }
+            )
 
         # App-level failure stats
         app_fails = conn.execute(
@@ -288,7 +289,7 @@ def generate_issue_draft(days: int = 7, max_clusters: int = 5) -> dict[str, str 
     if not clusters:
         return {"title": "", "body": "", "clusters": []}
 
-    title = f"Telemetry: {clusters[0]['tool'].replace('automation_','')}/{clusters[0]['operation']} failing ({clusters[0]['count']}x in {days}d)"
+    title = f"Telemetry: {clusters[0]['tool'].replace('automation_', '')}/{clusters[0]['operation']} failing ({clusters[0]['count']}x in {days}d)"
     body_lines = [
         "## Automated Failure Report",
         f"\nGenerated from {days}-day telemetry window.",
@@ -325,7 +326,8 @@ def weekly_report() -> dict[str, Any]:
     by_tool = stats.get("by_tool", {})
     worst_tools = sorted(
         [{"tool": k, "fail": v["fail"], "total": v["total"]} for k, v in by_tool.items()],
-        key=lambda x: x["fail"], reverse=True,
+        key=lambda x: x["fail"],
+        reverse=True,
     )[:5]
 
     return {
@@ -337,7 +339,5 @@ def weekly_report() -> dict[str, Any]:
         "worst_performers": worst_tools,
         "failure_clusters": failures.get("clusters", [])[:10],
         "issue_draft": issue,
-        "suggestions": list(set(
-            c["suggestion"] for c in failures.get("clusters", []) if c.get("suggestion")
-        )),
+        "suggestions": list(set(c["suggestion"] for c in failures.get("clusters", []) if c.get("suggestion"))),
     }

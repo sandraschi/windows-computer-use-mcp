@@ -6,15 +6,12 @@ commands to automation tool calls. Designed for tray app integration.
 
 from __future__ import annotations
 
-import json
 import logging
 import os
 import re
-import subprocess
-import sys
 import threading
-import time
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -63,6 +60,7 @@ def _call_speech_mcp(action: str, **kwargs) -> dict[str, Any]:
         Response dict.
     """
     import httpx
+
     try:
         resp = httpx.post(
             f"{SPEECH_MCP_URL}/api/v1/{action}",
@@ -79,6 +77,7 @@ def _call_speech_mcp(action: str, **kwargs) -> dict[str, Any]:
 def is_available() -> bool:
     """Check if speech-mcp is reachable."""
     import httpx
+
     try:
         resp = httpx.get(f"{SPEECH_MCP_URL}/api/health", timeout=3)
         return resp.status_code == 200

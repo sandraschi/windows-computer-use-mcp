@@ -4,7 +4,6 @@
 Run alongside the MCP server with: just tray
 """
 
-import io
 import json
 import os
 import subprocess
@@ -51,8 +50,10 @@ def api_post(path: str, data: dict | None = None) -> dict | None:
     try:
         body = json.dumps(data or {}).encode()
         req = urllib.request.Request(
-            f"{BACKEND_URL}{path}", data=body,
-            headers={"Content-Type": "application/json"}, method="POST",
+            f"{BACKEND_URL}{path}",
+            data=body,
+            headers={"Content-Type": "application/json"},
+            method="POST",
         )
         r = urllib.request.urlopen(req, timeout=5)
         return json.loads(r.read())
@@ -85,6 +86,7 @@ def quick_approve(icon: pystray.Icon, _item=None):
 def notify(text: str):
     try:
         from plyer import notification
+
         notification.notify(title="Windows Computer Use", message=text, timeout=3)
     except Exception:
         print(f"[tray] {text}")
@@ -137,15 +139,14 @@ def show_telemetry(icon: pystray.Icon, _item=None):
 
 def run_macro(name: str, icon: pystray.Icon, _item=None):
     actions = {
-        "notepad": lambda: api_post("/api/v1/tools/call", {
-            "tool": "automation_system", "params": {"operation": "start_app", "app_path": "notepad.exe"}
-        }),
-        "screenshot": lambda: api_post("/api/v1/tools/call", {
-            "tool": "automation_visual", "params": {"operation": "screenshot"}
-        }),
-        "demo": lambda: subprocess.Popen(
-            [sys.executable, "-m", "windows_computer_use_mcp.main", "--demo"]
+        "notepad": lambda: api_post(
+            "/api/v1/tools/call",
+            {"tool": "automation_system", "params": {"operation": "start_app", "app_path": "notepad.exe"}},
         ),
+        "screenshot": lambda: api_post(
+            "/api/v1/tools/call", {"tool": "automation_visual", "params": {"operation": "screenshot"}}
+        ),
+        "demo": lambda: subprocess.Popen([sys.executable, "-m", "windows_computer_use_mcp.main", "--demo"]),
     }
     fn = actions.get(name)
     if fn:
@@ -157,22 +158,29 @@ def toggle_recording(icon: pystray.Icon, _item=None):
     global RECORDING
     RECORDING = not RECORDING
     if RECORDING:
-        api_post("/api/v1/tools/call", {
-            "tool": "automation_macro",
-            "params": {"operation": "record"},
-        })
+        api_post(
+            "/api/v1/tools/call",
+            {
+                "tool": "automation_macro",
+                "params": {"operation": "record"},
+            },
+        )
         notify("Recording started — use Ctrl+Shift+R to stop")
     else:
-        r = api_post("/api/v1/tools/call", {
-            "tool": "automation_macro",
-            "params": {"operation": "stop"},
-        })
+        api_post(
+            "/api/v1/tools/call",
+            {
+                "tool": "automation_macro",
+                "params": {"operation": "stop"},
+            },
+        )
         notify("Recording stopped")
     _rebuild(icon)
 
 
 def restart_backend(icon: pystray.Icon, _item=None):
     import psutil
+
     for proc in psutil.process_iter(["pid", "name", "cmdline"]):
         try:
             cmd = " ".join(proc.info.get("cmdline") or [])
@@ -192,6 +200,7 @@ def exit_app(icon: pystray.Icon, _item=None):
 def show_message(title: str, body: str, w: int = 400, h: int = 300):
     try:
         import tkinter as tk
+
         root = tk.Tk()
         root.title(title)
         root.geometry(f"{w}x{h}")
@@ -218,6 +227,7 @@ def _get_tool_count() -> str:
         return f"{count} tools"
     return "?"
 
+
 def _list_saved_macros() -> list[str]:
     """Return list of saved macro names."""
     if not MACRO_DIR.exists():
@@ -238,19 +248,24 @@ def build_menu():
     macro_items = []
     if macros:
         for m in macros:
-            macro_items.append(pystray.MenuItem(
-                f"Replay: {m}",
-                lambda i, name=m: api_post("/api/v1/tools/call", {
-                    "tool": "automation_macro",
-                    "params": {"operation": "replay", "name": name},
-                }),
-            ))
+            macro_items.append(
+                pystray.MenuItem(
+                    f"Replay: {m}",
+                    lambda i, name=m: api_post(
+                        "/api/v1/tools/call",
+                        {
+                            "tool": "automation_macro",
+                            "params": {"operation": "replay", "name": name},
+                        },
+                    ),
+                )
+            )
     else:
         macro_items.append(pystray.MenuItem("(no saved macros)", None, enabled=False))
 
     return pystray.Menu(
         pystray.MenuItem(f"{status_icon} Server {status_text} — {tools} {rec_indicator}", None, enabled=False),
-        pystray.MenuItem(f"Ports: 10789 (API) / 10788 (Web)", None, enabled=False),
+        pystray.MenuItem("Ports: 10789 (API) / 10788 (Web)", None, enabled=False),
         pystray.Menu.SEPARATOR,
         pystray.MenuItem(
             "Disable Automation" if automation_enabled else "Enable Automation",
@@ -259,11 +274,14 @@ def build_menu():
         ),
         pystray.MenuItem("Approve 5 min", quick_approve),
         pystray.Menu.SEPARATOR,
-        pystray.MenuItem("Quick Macros", pystray.Menu(
-            pystray.MenuItem("Open Notepad", lambda i, _: run_macro("notepad", i)),
-            pystray.MenuItem("Take Screenshot", lambda i, _: run_macro("screenshot", i)),
-            pystray.MenuItem("Run Demo", lambda i, _: run_macro("demo", i)),
-        )),
+        pystray.MenuItem(
+            "Quick Macros",
+            pystray.Menu(
+                pystray.MenuItem("Open Notepad", lambda i, _: run_macro("notepad", i)),
+                pystray.MenuItem("Take Screenshot", lambda i, _: run_macro("screenshot", i)),
+                pystray.MenuItem("Run Demo", lambda i, _: run_macro("demo", i)),
+            ),
+        ),
         pystray.MenuItem(record_label, toggle_recording),
         pystray.MenuItem("Saved Macros", pystray.Menu(*macro_items)),
         pystray.Menu.SEPARATOR,
@@ -285,14 +303,21 @@ automation_enabled = os.environ.get("WINDOWS_COMPUTER_USE_MCP_BYPASS_HITL", "").
 def hotkey_listener():
     try:
         import keyboard as kb
-        kb.add_hotkey("ctrl+shift+r", lambda: (
-            setattr(sys.modules[__name__], "RECORDING", not RECORDING),
-            api_post("/api/v1/tools/call", {
-                "tool": "automation_macro",
-                "params": {"operation": "stop" if RECORDING else "record"},
-            }),
-            notify("Recording stopped" if not RECORDING else "Recording started"),
-        ))
+
+        kb.add_hotkey(
+            "ctrl+shift+r",
+            lambda: (
+                setattr(sys.modules[__name__], "RECORDING", not RECORDING),
+                api_post(
+                    "/api/v1/tools/call",
+                    {
+                        "tool": "automation_macro",
+                        "params": {"operation": "stop" if RECORDING else "record"},
+                    },
+                ),
+                notify("Recording stopped" if not RECORDING else "Recording started"),
+            ),
+        )
         kb.wait()
     except Exception:
         pass

@@ -79,16 +79,12 @@ def mock_application():
 @pytest.fixture
 def mock_pyautogui():
     """Mock pyautogui for testing across portmanteau modules."""
-    # We patch it in multiple modules because portmanteau tools import it directly
-    mock_instance = MagicMock()
-    patches = [
-        patch("windows_computer_use_mcp.tools.portmanteau_mouse.pyautogui", mock_instance),
-        patch("windows_computer_use_mcp.tools.portmanteau_elements.pyautogui", mock_instance),
-        patch("windows_computer_use_mcp.tools.portmanteau_keyboard.pyautogui", mock_instance),
-    ]
+    import sys
 
-    for p in patches:
-        p.start()
+    mock_instance = MagicMock()
+    # Patch pyautogui at the sys.modules level so local imports inside functions resolve
+    old_pyautogui = sys.modules.get("pyautogui")
+    sys.modules["pyautogui"] = mock_instance
 
     # Configure common mock behavior
     mock_instance.position.return_value = (500, 500)
@@ -106,8 +102,11 @@ def mock_pyautogui():
 
     yield mock_instance
 
-    for p in patches:
-        p.stop()
+    # Restore original pyautogui
+    if old_pyautogui is not None:
+        sys.modules["pyautogui"] = old_pyautogui
+    else:
+        sys.modules.pop("pyautogui", None)
 
 
 @pytest.fixture
@@ -159,6 +158,7 @@ def mock_pygetwindow():
     with patch("windows_computer_use_mcp.tools.portmanteau_system.gw") as mock:
         mock_window = MagicMock()
         mock_window.title = "Test Window"
+        mock_window._hWnd = 12345
         mock_window.isActive = True
         mock.getWindowsWithTitle.return_value = [mock_window]
         mock.getAllWindows.return_value = [mock_window]

@@ -140,7 +140,7 @@ def image_diff(
 
     diff_path = None
     if output_path and CV2_AVAILABLE:
-        heatmap = (mask.astype(np.uint8) * 255)
+        heatmap = mask.astype(np.uint8) * 255
         cv2.imwrite(output_path, heatmap)
         diff_path = output_path
     elif output_path:

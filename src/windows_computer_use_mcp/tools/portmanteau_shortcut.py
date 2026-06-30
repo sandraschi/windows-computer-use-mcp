@@ -5,8 +5,8 @@ from __future__ import annotations
 import logging
 import time
 
-from windows_computer_use_mcp import shortcut_engine
 from windows_computer_use_mcp import profiles as app_profiles
+from windows_computer_use_mcp import shortcut_engine
 
 try:
     from windows_computer_use_mcp.app import app

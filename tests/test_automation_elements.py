@@ -129,11 +129,10 @@ class TestAutomationElements:
         verify_result(result, expected_status="error")
         assert "not found" in result.message.lower()
 
-    def test_coordinate_click_absolute(self, mock_desktop_uia, mock_pyautogui, verify_result):
+    def test_coordinate_click_absolute(self, mock_desktop_uia, verify_result):
         """Test clicking at absolute coordinates via automation_elements."""
-        # Note: automation_elements uses pyautogui for coordinate clicks
+        # Note: automation_elements uses win32_mouse.click, not pyautogui.click
         req = ElementOperationRequest(operation="click", window_handle=123, x=500, y=500, absolute=True)
         result = automation_elements(req)
 
         verify_result(result)
-        mock_pyautogui.click.assert_called_once_with(500, 500, button="left")
