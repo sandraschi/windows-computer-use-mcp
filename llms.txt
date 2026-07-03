@@ -40,7 +40,7 @@ All long-running operations (`analyze_winapp`, `global_keylogger`) show a "CUA a
 ## Docs hub
 
 - Contributor: docs/DEVELOPMENT.md, docs/TESTING.md
-- Archived fleet imports: docs/development/archive/ (stale notepadpp-mcp notes)
+- Archived fleet imports: docs/development/archive/
 
 ## Metadata
 
