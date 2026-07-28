@@ -5,10 +5,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "windows-computer-use-mcp"
 version = "0.7.0"
-description = "Windows Computer Use for AI Agents — click, screenshot, type, drag, OCR, and verify native Windows UI via MCP. FastMCP 3.2.0 agentic sampling."
+description = "Windows Computer Use for AI Agents â€” click, screenshot, type, drag, OCR, and verify native Windows UI via MCP. FastMCP 3.2.0 agentic sampling."
 readme = "README.md"
 authors = [
-    {name = "Sandra Schilling", email = "sandra@example.com"},
+    {name = "Sandra Schilling", email = "sandraschipal@gmail.com"},
 ]
 requires-python = ">=3.12"
 classifiers = [
@@ -28,7 +28,7 @@ classifiers = [
 
 dependencies = [
     # Core MCP framework - FastMCP 3.2.0 (Agentic Sampling)
-    "fastmcp>=3.4.2,<4",
+    "fastmcp>=3.4.4,<4",
     "fastapi>=0.95.0",
     "uvicorn[standard]>=0.22.0",
     "python-dotenv>=1.0.0",
@@ -113,11 +113,11 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 asyncio_mode = "auto"
 markers = [
-    "requires_hardware: needs local Windows host (OpenCV/camera/desktop) — skipped in CI",
-    "requires_network: needs LAN — skipped in CI",
-    "ci_only: contract tests meant for CI — skipped on local unless CI=true",
+    "requires_hardware: needs local Windows host (OpenCV/camera/desktop) â€” skipped in CI",
+    "requires_network: needs LAN â€” skipped in CI",
+    "ci_only: contract tests meant for CI â€” skipped on local unless CI=true",
     "slow: opt-in slow tests",
-    "destructive: real UI/input — skipped in CI",
+    "destructive: real UI/input â€” skipped in CI",
 ]
 
 [tool.mypy]
@@ -190,7 +190,7 @@ dev = [
     "pytest-html>=4.0.0",
     "pytest-timeout>=2.1.0",
     # Code quality
-    "ruff>=0.9.0",
+    "ruff>=0.16.0,<0.17",
     "mypy>=1.4.0",
     "pre-commit>=3.3.0",
     # Documentation
