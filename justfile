@@ -1,4 +1,4 @@
-set windows-shell := ["pwsh.exe", "-NoLogo", "-Command"]
+set windows-shell := ["powershell.exe", "-NoProfile", "-Command"]
 import 'scripts/just/fleet.just'
 
 # ── Dashboard ─────────────────────────────────────────────────────────────────
@@ -9,9 +9,15 @@ default:
 
 # ── Operations ────────────────────────────────────────────────────────────────
 
+# Synchronize deps, pre-commit hooks, and web SOTA frontend
+bootstrap:
+    uv sync --group dev
+    uv run pre-commit install
+    Set-Location web_sota; npm ci; if ($LASTEXITCODE -ne 0) { npm install }
+    Write-Host "Pre-commit hooks installed." -ForegroundColor Green
+
 # Initialize environment and synchronize dependencies
-install:
-    uv sync
+install: bootstrap
 
 # Start the full orchestration (Vite + FastAPI)
 start:
@@ -66,7 +72,7 @@ text-demo:
 
 # Build the PyInstaller backend .exe and copy to Tauri resources
 build-sidecar:
-    pwsh -NoProfile -File web_sota\build-sidecar.ps1
+    powershell.exe -NoProfile -File web_sota\build-sidecar.ps1
 
 # Build the Tauri NSIS desktop installer (full pipeline: frontend -> sidecar -> Rust -> NSIS)
 build-native: build-sidecar
@@ -79,14 +85,7 @@ build-native: build-sidecar
     # Copy the NSIS installer to dist/ as a release artifact
     $nsisDir = '{{justfile_directory()}}\web_sota\src-tauri\target\release\bundle\nsis'
     $distDir = '{{justfile_directory()}}\dist'
-    if (Test-Path $nsisDir) {
-        Get-ChildItem $nsisDir -Filter "*.exe" | Copy-Item -Destination $distDir -Force
-        Write-Host "NSIS installer copied to dist/" -ForegroundColor Green
-    }
-
-# Run the CUA smoke test against the installed NSIS app
-cua-nsis-test:
-    C:\Windows\py.exe scripts/cua-smoke.py
+    if (Test-Path $nsisDir) { Get-ChildItem $nsisDir -Filter "*.exe" | Copy-Item -Destination $distDir -Force; Write-Host "NSIS installer copied to dist/" -ForegroundColor Green }
 
 # ── System tray control ──────────────────────────────────────────────────────
 
@@ -109,8 +108,6 @@ demo:
 # Autonomous demo (showcases the repo using its own tools)
 demo-autonomous:
     uv run python scripts/demo-autonomous.py
-
-
 
 # ── Quality ───────────────────────────────────────────────────────────────────
 
@@ -156,37 +153,19 @@ audit-deps:
 
 # Fail if src/ and key root files contain machine-specific paths (e.g. fixed drive + Dev\repos)
 check-machine-paths:
-    pwsh -NoProfile -File .\scripts\check-no-machine-paths.ps1
+    powershell.exe -NoProfile -File .\scripts\check-no-machine-paths.ps1
 
 # Download and install Tesseract OCR 5.x (for OCR features)
 install-tesseract:
-    pwsh -NoProfile -File .\scripts\install-tesseract.ps1 -Interactive
+    powershell.exe -NoProfile -File .\scripts\install-tesseract.ps1 -Interactive
 
 # Quick smoke test: verify all 18 tools import and the server starts
 smoke:
-    pwsh -NoProfile -Command "uv run python -c '"'"'
-import sys
-from windows_computer_use_mcp.app import app
-from windows_computer_use_mcp import tools
-names = []
-try:
-    for t in app._tool_manager.list_tools():
-        names.append(t.name)
-except Exception:
-    pass
-print(f'Server OK — {len(names)} tools registered')
-for n in sorted(names):
-    print(f'  {n}')
-sys.exit(0 if names else 1)
-'"'"'"
+    uv run python -c "from windows_computer_use_mcp.app import app; n=len(list(app._tool_manager.list_tools())); print(f'Server OK — {n} tools registered'); raise SystemExit(0 if n else 1)"
 
 # Run Playwright e2e tests against the web operator UI (requires backend + frontend)
 e2e:
     cd web_sota; npm run test:e2e
-
-# Build Claude Desktop MCPB bundle (dist/windows-computer-use-mcp.mcpb)
-mcpb-pack:
-    pwsh -NoProfile -File .\scripts\build-mcpb-package.ps1 -NoSign
 
 # Run a portable YAML/JSON workflow file
 run-workflow FILE:

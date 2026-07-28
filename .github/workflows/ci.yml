@@ -1,3 +1,4 @@
+﻿# Fleet: mcp-central-docs/templates/ci.yml.template
 name: CI
 
 on:
@@ -9,25 +10,45 @@ on:
 
 jobs:
   check:
-    name: Windows check
+    name: Lint & Test (Windows)
     runs-on: windows-latest
-    env:
-      CI: "true"
     steps:
       - uses: actions/checkout@v4
 
-      - uses: astral-sh/setup-uv@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
+          version: latest
           enable-cache: true
 
-      - name: Sync dependencies
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web_sota/package-lock.json
+
+      - name: Install Python dependencies
         run: uv sync --group dev
 
       - name: Ruff check
-        run: uv run ruff check .
+        run: uv run ruff check src tests
+
+      - name: Ruff format check
+        run: uv run ruff format --check src tests
 
       - name: Pytest
-        run: uv run --group dev pytest -x --tb=short -k "not slow"
+        run: uv run python -m pytest -q --tb=short
 
-      - name: Import smoke
-        run: uv run python -c "from windows_computer_use_mcp.app import app; print('ok')"
+      - name: Install web dependencies
+        run: npm ci
+        working-directory: web_sota
+
+      - name: Biome check
+        run: npm run biome:ci
+        working-directory: web_sota
