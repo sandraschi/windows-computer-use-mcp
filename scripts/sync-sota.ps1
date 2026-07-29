@@ -2,11 +2,11 @@
 <#
 .SYNOPSIS
     Sync repository scripts with SOTA versions in mcp-central-docs
-    
+
 .DESCRIPTION
-    Pulls standard SOTA scripts (backup, standards, etc.) from the central 
+    Pulls standard SOTA scripts (backup, standards, etc.) from the central
     mcp-central-docs repository if it exists as a sibling.
-    
+
 .EXAMPLE
     .\scripts\sync-sota.ps1
 #>
@@ -53,10 +53,10 @@ foreach ($mapping in $sotaMapping) {
     }
 
     $sourceHash = (Get-FileHash $mapping.Source -Algorithm SHA256).Hash
-    
+
     if (Test-Path $mapping.Target) {
         $targetHash = (Get-FileHash $mapping.Target -Algorithm SHA256).Hash
-        
+
         if ($sourceHash -eq $targetHash) {
             Write-Host "  â­ï¸  $(Split-Path $mapping.Target -Leaf) is already up-to-date." -ForegroundColor Gray
             $skipped++
