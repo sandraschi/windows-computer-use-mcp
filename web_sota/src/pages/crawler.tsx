@@ -1,9 +1,3 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { apiPath } from "@/lib/api";
 import {
 	AlertTriangle,
 	ChevronRight,
@@ -16,6 +10,12 @@ import {
 	X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { apiPath } from "@/lib/api";
 
 interface Bounds {
 	x: number;
@@ -163,11 +163,11 @@ export function Crawler() {
 
 		const params: Record<string, unknown> = {
 			operation: method,
-			max_depth: Number.parseInt(maxDepth) || 5,
+			max_depth: Number.parseInt(maxDepth, 10) || 5,
 		};
 		if (windowTitle.trim()) params.window_title = windowTitle.trim();
 		if (outputDir.trim()) params.output_dir = outputDir.trim();
-		if (pid.trim()) params.window_handle = Number.parseInt(pid.trim());
+		if (pid.trim()) params.window_handle = Number.parseInt(pid.trim(), 10);
 
 		try {
 			const resp = await fetch(apiPath("/api/v1/tools/call"), {
@@ -267,10 +267,14 @@ export function Crawler() {
 						<h2 className="mb-4 text-lg font-semibold text-white">Target</h2>
 						<div className="grid gap-4 md:grid-cols-2">
 							<div>
-								<label className="mb-1 block text-sm text-slate-400">
+								<label
+									htmlFor="crawl-window-title"
+									className="mb-1 block text-sm text-slate-400"
+								>
 									Window Title
 								</label>
 								<Input
+									id="crawl-window-title"
 									value={windowTitle}
 									onChange={(e) => setWindowTitle(e.target.value)}
 									placeholder="e.g. Wbridge5, Notepad"
@@ -281,10 +285,14 @@ export function Crawler() {
 								</p>
 							</div>
 							<div>
-								<label className="mb-1 block text-sm text-slate-400">
+								<label
+									htmlFor="crawl-executable"
+									className="mb-1 block text-sm text-slate-400"
+								>
 									Executable Path
 								</label>
 								<Input
+									id="crawl-executable"
 									value={executable}
 									onChange={(e) => setExecutable(e.target.value)}
 									placeholder="C:\Programs\App\app.exe"
@@ -295,10 +303,14 @@ export function Crawler() {
 								</p>
 							</div>
 							<div>
-								<label className="mb-1 block text-sm text-slate-400">
+								<label
+									htmlFor="crawl-pid"
+									className="mb-1 block text-sm text-slate-400"
+								>
 									PID (optional)
 								</label>
 								<Input
+									id="crawl-pid"
 									value={pid}
 									onChange={(e) => setPid(e.target.value)}
 									placeholder="e.g. 90124"
@@ -309,10 +321,14 @@ export function Crawler() {
 								</p>
 							</div>
 							<div>
-								<label className="mb-1 block text-sm text-slate-400">
+								<label
+									htmlFor="crawl-output-dir"
+									className="mb-1 block text-sm text-slate-400"
+								>
 									Output Directory
 								</label>
 								<Input
+									id="crawl-output-dir"
 									value={outputDir}
 									onChange={(e) => setOutputDir(e.target.value)}
 									placeholder="defaults to ./winapp_analysis/"
@@ -326,10 +342,14 @@ export function Crawler() {
 						<h2 className="mb-4 text-lg font-semibold text-white">Options</h2>
 						<div className="grid gap-4 md:grid-cols-3">
 							<div>
-								<label className="mb-1 block text-sm text-slate-400">
+								<label
+									htmlFor="crawl-method"
+									className="mb-1 block text-sm text-slate-400"
+								>
 									Method
 								</label>
 								<select
+									id="crawl-method"
 									value={method}
 									onChange={(e) => setMethod(e.target.value)}
 									className="w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-200"
@@ -340,10 +360,14 @@ export function Crawler() {
 								</select>
 							</div>
 							<div>
-								<label className="mb-1 block text-sm text-slate-400">
+								<label
+									htmlFor="crawl-max-depth"
+									className="mb-1 block text-sm text-slate-400"
+								>
 									Max Depth
 								</label>
 								<Input
+									id="crawl-max-depth"
 									type="number"
 									min={1}
 									max={20}
@@ -387,7 +411,7 @@ export function Crawler() {
 						</Card>
 					)}
 
-					{result && result.success && (
+					{result?.success && (
 						<Card className="border-emerald-800 bg-emerald-950/20 p-4">
 							<h3 className="mb-2 text-lg font-semibold text-emerald-400">
 								Crawl Complete
@@ -519,12 +543,16 @@ export function Crawler() {
 					)}
 
 					{imageModal && (
-						<div
-							className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-8"
-							onClick={() => setImageModal(null)}
-						>
+						<div className="fixed inset-0 z-50 flex items-center justify-center p-8">
+							<button
+								type="button"
+								aria-label="Close image preview"
+								className="absolute inset-0 bg-black/80 border-0 p-0 cursor-default"
+								onClick={() => setImageModal(null)}
+							/>
 							<div className="relative max-h-full max-w-full">
 								<button
+									type="button"
 									onClick={() => setImageModal(null)}
 									className="absolute -right-3 -top-3 rounded-full bg-slate-900 p-1 text-white shadow-lg"
 								>

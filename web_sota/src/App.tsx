@@ -1,21 +1,21 @@
-import { AppLayout } from "@/components/layout/app-layout";
-import Logging from "@/pages/Logging";
-import { Biometrics } from "@/pages/biometrics";
-import { Chat } from "@/pages/chat";
-import { Crawler } from "@/pages/crawler";
-import { Dashboard } from "@/pages/dashboard";
-import { Elements } from "@/pages/elements";
-import { Help } from "@/pages/help";
-import { Settings } from "@/pages/settings";
-import { Targets } from "@/pages/targets";
-import { Tools } from "@/pages/tools";
-import { Windows } from "@/pages/windows";
 import {
 	Navigate,
 	Route,
 	BrowserRouter as Router,
 	Routes,
 } from "react-router-dom";
+import { AppLayout } from "@/components/layout/app-layout";
+import { Biometrics } from "@/pages/biometrics";
+import { Chat } from "@/pages/chat";
+import { Crawler } from "@/pages/crawler";
+import { Dashboard } from "@/pages/dashboard";
+import { Elements } from "@/pages/elements";
+import { Help } from "@/pages/help";
+import Logging from "@/pages/Logging";
+import { Settings } from "@/pages/settings";
+import { Targets } from "@/pages/targets";
+import { Tools } from "@/pages/tools";
+import { Windows } from "@/pages/windows";
 
 function App() {
 	return (

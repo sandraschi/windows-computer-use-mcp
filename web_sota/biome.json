@@ -6,7 +6,15 @@
 		"useIgnoreFile": true
 	},
 	"files": {
-		"includes": ["**", "!!**/dist"]
+		"includes": [
+			"src/**",
+			"index.html",
+			"biome.json",
+			"package.json",
+			"e2e/**",
+			"!!dist",
+			"!!src-tauri"
+		]
 	},
 	"css": {
 		"parser": {

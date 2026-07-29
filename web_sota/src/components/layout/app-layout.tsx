@@ -1,7 +1,7 @@
+import { useState } from "react";
 import { McpOnboardingDialog } from "@/components/McpOnboardingDialog";
 import { useMcpSetup } from "@/hooks/useMcpSetup";
 import { useZoom } from "@/lib/use-zoom";
-import { useState } from "react";
 import { Sidebar } from "./sidebar";
 import { Topbar } from "./topbar";
 

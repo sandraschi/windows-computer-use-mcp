@@ -17,7 +17,9 @@ test.describe("Navigation", () => {
 	for (const { route, heading } of PAGES) {
 		test(`${route} loads with heading`, async ({ page }) => {
 			await page.goto(route);
-			await expect(page.getByRole("heading", { name: heading })).toBeVisible({ timeout: 10000 });
+			await expect(page.getByRole("heading", { name: heading })).toBeVisible({
+				timeout: 10000,
+			});
 		});
 	}
 

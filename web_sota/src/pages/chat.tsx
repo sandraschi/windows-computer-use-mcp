@@ -1,3 +1,14 @@
+import {
+	Bot,
+	Download,
+	Loader2,
+	RefreshCw,
+	Send,
+	Sparkles,
+	Trash2,
+	User,
+} from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { PERSONAS, type Persona } from "@/chat/personas";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -5,8 +16,36 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { apiPath } from "@/lib/api";
-import { Bot, Loader2, RefreshCw, Send, Sparkles, User } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+
+const HISTORY_KEY = "pywinauto-chat-history";
+const MAX_HISTORY = 100;
+
+const EXAMPLE_PROMPTS = [
+	{
+		group: "Windows",
+		prompts: [
+			"Can you click-and-drag a file from one folder to another?",
+			"List all open windows and their titles",
+			"How do I take a screenshot with annotations?",
+		],
+	},
+	{
+		group: "Automation",
+		prompts: [
+			"Write a script to open Notepad and type Hello World",
+			"Record a macro for logging into the admin panel",
+			"Set up a watcher that waits for the Save dialog",
+		],
+	},
+	{
+		group: "Safety",
+		prompts: [
+			"Which operations require human approval?",
+			"What happens if a tool times out?",
+			"Explain the retry logic for failed clicks",
+		],
+	},
+];
 
 type ChatTurn = { role: "user" | "assistant"; content: string };
 
@@ -17,6 +56,15 @@ const LS_REPO = "pywinauto_llm_include_repo";
 
 type Preset = { id: string; label: string; base_url: string };
 
+function loadHistory(): ChatTurn[] {
+	try {
+		const raw = localStorage.getItem(HISTORY_KEY);
+		return raw ? JSON.parse(raw) : [];
+	} catch {
+		return [];
+	}
+}
+
 export function Chat() {
 	const [baseUrl, setBaseUrl] = useState("");
 	const [presets, setPresets] = useState<Preset[]>([]);
@@ -25,16 +73,45 @@ export function Chat() {
 	const [personaId, setPersonaId] = useState<string>("default");
 	const [includeRepo, setIncludeRepo] = useState(true);
 	const [repoMarkdown, setRepoMarkdown] = useState("");
-	const [messages, setMessages] = useState<ChatTurn[]>([]);
+	const [messages, setMessages] = useState<ChatTurn[]>(() => loadHistory());
 	const [input, setInput] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [modelsLoading, setModelsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [skillName, setSkillName] = useState<string | null>(null);
 
 	const persona: Persona = useMemo(
 		() => PERSONAS.find((p) => p.id === personaId) ?? PERSONAS[0],
 		[personaId],
 	);
+
+	// Persist messages to localStorage
+	useEffect(() => {
+		try {
+			localStorage.setItem(
+				HISTORY_KEY,
+				JSON.stringify(messages.slice(-MAX_HISTORY)),
+			);
+		} catch {
+			/* ignore */
+		}
+	}, [messages]);
+
+	// Skill fetch
+	useEffect(() => {
+		(async () => {
+			try {
+				const r = await fetch(apiPath("/api/skills"));
+				if (r.ok) {
+					const data = await r.json();
+					const skills = data?.skills ?? [];
+					if (skills.length > 0) setSkillName(skills[0].name || skills[0]);
+				}
+			} catch {
+				/* no skills */
+			}
+		})();
+	}, []);
 
 	useEffect(() => {
 		const b = localStorage.getItem(LS_BASE);
@@ -207,26 +284,74 @@ export function Chat() {
 		}
 	};
 
+	const clearChat = () => {
+		setMessages([]);
+		setError(null);
+		localStorage.removeItem(HISTORY_KEY);
+	};
+
+	const exportChat = () => {
+		if (messages.length === 0) return;
+		const lines = messages.map(
+			(m) =>
+				`[${new Date().toISOString()}] ${m.role === "user" ? "You" : "AI"}: ${m.content}`,
+		);
+		const blob = new Blob([lines.join("\n\n---\n\n")], { type: "text/plain" });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `pywinauto-chat-${new Date().toISOString().slice(0, 10)}.txt`;
+		a.click();
+		URL.revokeObjectURL(url);
+	};
+
 	return (
-		<div className="flex flex-col gap-4 pb-8">
-			<div className="flex flex-wrap items-start justify-between gap-3">
-				<div>
-					<h2 className="text-2xl font-bold tracking-tight text-white">
-						Local LLM chat
-					</h2>
-					<p className="text-slate-400 text-sm max-w-2xl">
-						Gloms onto your OpenAI-compatible server:{" "}
-						<strong className="text-slate-300">Ollama</strong> (
-						<code className="text-xs text-slate-500">11434</code>) or{" "}
-						<strong className="text-slate-300">LM Studio</strong> (
-						<code className="text-xs text-slate-500">1234</code>). Personas +
-						repo knowledge answer questions like &quot;can I click and
-						drag?&quot; with project-accurate context.
-					</p>
+		<div data-testid="chat-page" className="flex flex-col gap-4 pb-8">
+			<div
+				data-testid="chat-controls"
+				className="flex flex-wrap items-start justify-between gap-3"
+			>
+				<div className="flex items-center gap-3">
+					<div>
+						<h2 className="text-2xl font-bold tracking-tight text-white">
+							Local LLM chat
+						</h2>
+						{skillName && (
+							<span className="text-[10px] text-zinc-500 bg-zinc-800 px-1.5 py-0.5 rounded font-mono">
+								skill:{skillName}
+							</span>
+						)}
+					</div>
 				</div>
-				<Badge variant="outline" className="border-slate-600 text-slate-400">
-					Backend proxy only (localhost)
-				</Badge>
+				<div className="flex items-center gap-2">
+					<Button
+						data-testid="chat-export"
+						type="button"
+						variant="outline"
+						size="sm"
+						onClick={exportChat}
+						disabled={messages.length === 0}
+						className="border-slate-700 text-slate-400"
+					>
+						<Download className="h-4 w-4 mr-1.5" />
+						Export
+					</Button>
+					<Button
+						data-testid="chat-clear"
+						type="button"
+						variant="outline"
+						size="sm"
+						onClick={clearChat}
+						disabled={messages.length === 0}
+						className="border-slate-700 text-slate-400"
+					>
+						<Trash2 className="h-4 w-4 mr-1.5" />
+						Clear
+					</Button>
+					<Badge variant="outline" className="border-slate-600 text-slate-400">
+						Backend proxy only (localhost)
+					</Badge>
+				</div>
 			</div>
 
 			<Card className="border-slate-800 bg-slate-950/50">
@@ -297,6 +422,7 @@ export function Chat() {
 					<div className="space-y-2">
 						<Label className="text-slate-400">Persona</Label>
 						<select
+							data-testid="personality-select"
 							className="w-full bg-slate-950 border border-slate-800 rounded-md px-3 py-2 text-sm text-white"
 							value={personaId}
 							onChange={(e) => setPersonaId(e.target.value)}
@@ -337,12 +463,43 @@ export function Chat() {
 			<Card className="flex-1 border-slate-800 bg-slate-950/50 flex flex-col min-h-[420px] overflow-hidden">
 				<CardContent className="flex flex-col flex-1 p-0 min-h-0">
 					<ScrollArea className="flex-1 h-[min(55vh,520px)] p-4">
-						<div className="space-y-4 pr-4">
+						<div data-testid="chat-messages" className="space-y-4 pr-4">
 							{messages.length === 0 && (
-								<p className="text-slate-500 text-sm">
-									Ask about this repo: e.g. whether you can click-and-drag, what
-									requires approval, or which tool lists windows.
-								</p>
+								<div className="text-slate-500 text-sm text-center pt-4">
+									<Bot className="w-10 h-10 mx-auto mb-2 opacity-20" />
+									<p>
+										Ask about this repo — e.g. click-and-drag, approval
+										requirements, or window listing.
+									</p>
+									{skillName && (
+										<p className="text-xs text-slate-600 mt-1">
+											skill: {skillName}
+										</p>
+									)}
+									<div
+										data-testid="example-prompts"
+										className="mt-5 max-w-md mx-auto space-y-2.5"
+									>
+										{EXAMPLE_PROMPTS.map((group) => (
+											<div key={group.group}>
+												<p className="text-[10px] uppercase tracking-wider text-slate-600 text-left mb-1 px-1">
+													{group.group}
+												</p>
+												<div className="flex flex-wrap gap-1.5 justify-center">
+													{group.prompts.map((p) => (
+														<button
+															key={p}
+															onClick={() => setInput(p)}
+															className="text-xs px-2.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/50 hover:bg-slate-700/50 text-slate-400 hover:text-slate-200 transition-colors text-left"
+														>
+															{p}
+														</button>
+													))}
+												</div>
+											</div>
+										))}
+									</div>
+								</div>
 							)}
 							{messages.map((m, i) => (
 								<div key={i} className="flex gap-3">
@@ -398,6 +555,7 @@ export function Chat() {
 						</div>
 						<div className="flex gap-2">
 							<textarea
+								data-testid="chat-input"
 								className="flex-1 min-h-[88px] bg-slate-950 border border-slate-800 rounded-md px-4 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-blue-500 resize-y"
 								placeholder="Message…"
 								value={input}
@@ -410,6 +568,7 @@ export function Chat() {
 								}}
 							/>
 							<Button
+								data-testid="chat-send"
 								type="button"
 								className="self-end bg-blue-600 hover:bg-blue-700 shrink-0"
 								onClick={() => void send()}

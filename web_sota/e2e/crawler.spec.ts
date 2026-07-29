@@ -6,9 +6,13 @@ test.describe("Crawler page", () => {
 	});
 
 	test("shows crawl form", async ({ page }) => {
-		await expect(page.getByRole("heading", { name: "App Crawler" })).toBeVisible();
+		await expect(
+			page.getByRole("heading", { name: "App Crawler" }),
+		).toBeVisible();
 		await expect(page.getByText("Window title")).toBeVisible();
-		await expect(page.getByRole("button", { name: /crawl|start/i })).toBeAttached();
+		await expect(
+			page.getByRole("button", { name: /crawl|start/i }),
+		).toBeAttached();
 	});
 
 	test("reports section is accessible", async ({ page }) => {

@@ -1,3 +1,11 @@
+import {
+	Activity,
+	ListOrdered,
+	ScanFace,
+	ShieldCheck,
+	Trash2,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { CameraPreview } from "@/components/CameraPreview";
 import { CameraSelect } from "@/components/CameraSelect";
 import { Badge } from "@/components/ui/badge";
@@ -12,14 +20,6 @@ import {
 } from "@/hooks/useCameras";
 import { apiPath } from "@/lib/api";
 import { callMcpTool } from "@/lib/mcpTools";
-import {
-	Activity,
-	ListOrdered,
-	ScanFace,
-	ShieldCheck,
-	Trash2,
-} from "lucide-react";
-import { useEffect, useState } from "react";
 
 type SafetyPayload = {
 	status?: string;

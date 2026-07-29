@@ -1,5 +1,5 @@
-import { apiPath } from "@/lib/api";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { apiPath } from "@/lib/api";
 
 type LogEntry = {
 	id: string;
@@ -269,14 +269,14 @@ export default function Logging() {
 			</div>
 
 			{showClear && (
-				<div
-					className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
-					onClick={() => setShowClear(false)}
-				>
-					<div
-						className="bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-sm"
-						onClick={(e) => e.stopPropagation()}
-					>
+				<div className="fixed inset-0 z-50 flex items-center justify-center">
+					<button
+						type="button"
+						aria-label="Close clear logs dialog"
+						className="absolute inset-0 bg-black/60 border-0 p-0 cursor-default"
+						onClick={() => setShowClear(false)}
+					/>
+					<div className="relative bg-slate-900 border border-slate-700 rounded-xl p-6 max-w-sm">
 						<h3 className="text-lg font-bold text-slate-200 mb-2">
 							Clear all logs?
 						</h3>
@@ -285,12 +285,14 @@ export default function Logging() {
 						</p>
 						<div className="flex gap-3 justify-end">
 							<button
+								type="button"
 								className="px-4 py-2 rounded border border-slate-700 text-slate-400 text-sm hover:bg-slate-800"
 								onClick={() => setShowClear(false)}
 							>
 								Cancel
 							</button>
 							<button
+								type="button"
 								className="px-4 py-2 rounded bg-red-700 text-white text-sm hover:bg-red-600"
 								onClick={handleClear}
 							>

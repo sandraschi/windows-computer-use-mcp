@@ -1,3 +1,12 @@
+import {
+	Activity,
+	Cpu,
+	Database,
+	MessageSquare,
+	Save,
+	Sliders,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { McpClientPanel } from "@/components/McpClientPanel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,15 +21,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useMcpSetup } from "@/hooks/useMcpSetup";
 import { apiPath } from "@/lib/api";
-import {
-	Activity,
-	Cpu,
-	Database,
-	MessageSquare,
-	Save,
-	Sliders,
-} from "lucide-react";
-import { useEffect, useState } from "react";
 
 interface LlmProvider {
 	id: string;

@@ -1,6 +1,3 @@
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { apiPath } from "@/lib/api";
 import {
 	Activity,
 	Box,
@@ -12,6 +9,9 @@ import {
 	RefreshCw,
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { apiPath } from "@/lib/api";
 
 type HostInfo = {
 	cpu_percent: number;
@@ -96,7 +96,7 @@ export function Dashboard() {
 
 	const scheduleRetry = useCallback(() => {
 		if (retryRef.current >= 5) return;
-		const delay = Math.min(1000 * Math.pow(2, retryRef.current), 30000);
+		const delay = Math.min(1000 * 2 ** retryRef.current, 30000);
 		retryRef.current++;
 		if (retryTimerRef.current) clearTimeout(retryTimerRef.current);
 		retryTimerRef.current = setTimeout(refresh, delay);

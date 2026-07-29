@@ -1,5 +1,5 @@
-import { apiPath } from "@/lib/api";
 import { useCallback, useEffect, useState } from "react";
+import { apiPath } from "@/lib/api";
 
 export type CameraDevice = {
 	index: number;

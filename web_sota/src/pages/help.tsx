@@ -1,5 +1,5 @@
-import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
 
 const TABS = [
 	{ id: "start", label: "Quick Start" },

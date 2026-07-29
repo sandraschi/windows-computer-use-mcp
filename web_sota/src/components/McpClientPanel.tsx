@@ -1,3 +1,5 @@
+import { CheckCircle2, Circle, Loader2, Plug } from "lucide-react";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,8 +10,6 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import type { McpRegistrationStatus } from "@/hooks/useMcpSetup";
-import { CheckCircle2, Circle, Loader2, Plug } from "lucide-react";
-import { useState } from "react";
 
 type McpClientPanelProps = {
 	backendReady: boolean;

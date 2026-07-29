@@ -1,4 +1,3 @@
-import { cn } from "@/common/utils";
 import {
 	Activity,
 	BookOpen,
@@ -15,6 +14,7 @@ import {
 	Wrench,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { cn } from "@/common/utils";
 
 interface SidebarProps {
 	collapsed: boolean;

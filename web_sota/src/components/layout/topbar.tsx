@@ -1,11 +1,11 @@
 "use client";
 
-import { APPS_CATALOG } from "@/common/apps-catalog";
-import { apiPath } from "@/lib/api";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { ExternalLink, HelpCircle, LayoutGrid } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { APPS_CATALOG } from "@/common/apps-catalog";
+import { apiPath } from "@/lib/api";
 
 export function Topbar() {
 	const [backendOk, setBackendOk] = useState<boolean | null>(null);

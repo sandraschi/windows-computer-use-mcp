@@ -23,7 +23,7 @@ if (Test-Path $apiFile) {
         if ($apiPort -ne 10789) {
             throw "API_BASE in $apiFile points to port $apiPort but backend serves on 10789. Fix before building -- dev proxy masks this, prod will FAIL."
         }
-        Write-Host "  API_BASE port: $apiPort (matches backend) ✓" -ForegroundColor Green
+        Write-Host "  API_BASE port: $apiPort (matches backend) OK" -ForegroundColor Green
     }
 }
 
@@ -121,7 +121,7 @@ Write-Host "  Backend exe: $((Get-Item $src).Length / 1MB) MB"
 $envExample = "$Root\.env.example"
 if (Test-Path $envExample) {
     Copy-Item $envExample "$ResourceDir\.env.example" -Force
-    Write-Host "  Bundled .env.example ✓" -ForegroundColor Green
+    Write-Host "  Bundled .env.example OK" -ForegroundColor Green
 } else {
     Write-Host "  WARNING: .env.example not found at repo root" -ForegroundColor DarkYellow
 }
