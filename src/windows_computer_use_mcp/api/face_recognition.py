@@ -12,11 +12,11 @@ project_root = Path(__file__).parent.parent.parent
 if str(project_root) not in sys.path:
     sys.path.append(str(project_root))
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status  # noqa: E402
-from fastmcp import mcp  # noqa: E402
-from pydantic import BaseModel, Field  # noqa: E402
+from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
+from fastmcp import mcp
+from pydantic import BaseModel, Field
 
-from windows_computer_use_mcp.face_recognition import FaceRecognition  # noqa: E402
+from windows_computer_use_mcp.face_recognition import FaceRecognition
 
 # Initialize the face recognizer
 face_recognizer = FaceRecognition()

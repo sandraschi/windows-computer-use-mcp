@@ -6,9 +6,9 @@
 
 ## 🚨 **Problem**
 
-**Issue**: White-on-white text in Notepad++ main editor  
-**Symptom**: Text area divided in two (left white, right grey), no cursor, typing does nothing  
-**Attempts**: Multiple config fixes failed, even with fresh config generation  
+**Issue**: White-on-white text in Notepad++ main editor
+**Symptom**: Text area divided in two (left white, right grey), no cursor, typing does nothing
+**Attempts**: Multiple config fixes failed, even with fresh config generation
 **Conclusion**: Corrupted installation requiring complete reinstall
 
 ---
@@ -41,10 +41,10 @@ Start-Process "C:\Program Files\Notepad++\notepad++.exe"
 
 ## 📦 **Fresh Installation**
 
-**Version Installed**: Notepad++ 8.8.6 (Latest as of October 2025)  
-**Installation Path**: `C:\Program Files\Notepad++\`  
-**Config Path**: `C:\Users\sandr\AppData\Roaming\Notepad++\` (freshly created)  
-**Default Theme**: Default light theme with black text on white background  
+**Version Installed**: Notepad++ 8.8.6 (Latest as of October 2025)
+**Installation Path**: `C:\Program Files\Notepad++\`
+**Config Path**: `C:\Users\sandr\AppData\Roaming\Notepad++\` (freshly created)
+**Default Theme**: Default light theme with black text on white background
 
 ---
 
@@ -187,10 +187,9 @@ Copy-Item "C:\Users\sandr\AppData\Roaming\Notepad++.backup-*/session.xml" "C:\Us
 
 ---
 
-*Nuclear Reinstall completed: October 8, 2025*  
-*Version installed: 8.8.6*  
-*Method: Complete uninstall + fresh install*  
+*Nuclear Reinstall completed: October 8, 2025*
+*Version installed: 8.8.6*
+*Method: Complete uninstall + fresh install*
 *Status: ✅ Should be working!*
 
 **Check Notepad++ now - text should be VISIBLE!** 🎨✅
-

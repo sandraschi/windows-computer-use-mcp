@@ -1,9 +1,9 @@
 # MCPB Extension Building - Complete Guide for MCP Servers
 
-**Version:** 3.1.0  
-**Date:** 2025-01-15  
-**Applies to:** ALL MCP server repositories  
-**AI Tools:** Windsurf, Cursor, Claude Code  
+**Version:** 3.1.0
+**Date:** 2025-01-15
+**Applies to:** ALL MCP server repositories
+**AI Tools:** Windsurf, Cursor, Claude Code
 
 ## 🚨 IMPORTANT: DXT is now MCPB
 
@@ -31,7 +31,7 @@
    ```bash
    # Rename dxt.json to mcpb.json
    mv dxt.json mcpb.json
-   
+
    # Rename manifest file
    mv dxt_manifest.json mcpb_manifest.json
    ```
@@ -42,7 +42,7 @@
    dxt validate
    dxt pack
    dxt sign
-   
+
    # New MCPB commands
    mcpb validate
    mcpb pack
@@ -585,7 +585,7 @@ your-mcp/
 
 **Root Cause**: DXT runner executes from extension root, but Python modules are in `src/` subdirectory.
 
-**Solution**: ALWAYS include these fields in Python-based DXT manifests. 
+**Solution**: ALWAYS include these fields in Python-based DXT manifests.
 
 **IMPORTANT**: Do NOT use `cwd` in `mcp_config` as it will cause validation to fail. Instead, ensure your Python path is set correctly using `PYTHONPATH` environment variable.
 
@@ -773,7 +773,7 @@ Add a `prompts` section to your manifest.json:
    # Build packages locally first
    python -m build
    mcpb pack . dist/package.mcpb
-   
+
    # Create and push tag
    git tag -a v1.0.0 -m "Release v1.0.0"
    git push origin v1.0.0
@@ -784,10 +784,10 @@ Add a `prompts` section to your manifest.json:
    ```bash
    # Install twine
    pip install twine
-   
+
    # Upload to TestPyPI
    twine upload --repository-url https://test.pypi.org/legacy/ dist/*
-   
+
    # Upload to PyPI (after testing)
    twine upload dist/*
    ```
@@ -807,41 +807,41 @@ on:
 
 jobs:
   # ... (test and lint jobs remain the same) ...
-  
+
   build:
     name: Build and Publish
     needs: [test, lint]
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/'))
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v3
-    
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: "3.11"
-    
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install build mcpb
-    
+
     - name: Build Python package
       run: python -m build
-    
+
     - name: Build MCPB package
       run: |
         mkdir -p dist
         mcpb pack . dist/package.mcpb
-    
+
     - name: Publish to PyPI
       if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
-    
+
     - name: Create GitHub Release
       if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
@@ -921,7 +921,7 @@ httpx>=0.24.0
 
 ```json
 "workspace_directory": {
-  "type": "directory", 
+  "type": "directory",
   "title": "Workspace Directory",
   "description": "Directory for project files and outputs",
   "required": true,
@@ -946,7 +946,7 @@ httpx>=0.24.0
 ```json
 "debug_mode": {
   "type": "boolean",
-  "title": "Debug Mode", 
+  "title": "Debug Mode",
   "description": "Enable detailed logging for troubleshooting",
   "required": false,
   "default": false
@@ -1026,7 +1026,7 @@ httpx>=0.24.0
     "type": "python",
     "entry_point": "src/example_mcp/server.py",
     "mcp_config": {
-      "command": "python", 
+      "command": "python",
       "args": ["-m", "example_mcp.server"],
       "cwd": "src",
       "env": {
@@ -1076,7 +1076,7 @@ httpx>=0.24.0
       "description": "Process files using external tool integration"
     },
     {
-      "name": "analyze_data", 
+      "name": "analyze_data",
       "description": "Analyze data with AI-powered insights"
     },
     {
@@ -1340,7 +1340,7 @@ $appDataPath = $env:APPDATA
 $extensionPath = Get-ChildItem "$appDataPath\Claude\Claude Extensions" | Where-Object Name -like "*$extensionName*"
 if ($extensionPath) {
     Write-Host "✅ Extension found: $($extensionPath.FullName)"
-    
+
     # Check for main.py
     $mainPy = Join-Path $extensionPath.FullName "server\main.py"
     if (Test-Path $mainPy) {
@@ -1348,7 +1348,7 @@ if ($extensionPath) {
     } else {
         Write-Host "❌ Main script NOT found: $mainPy"
     }
-    
+
     # Check logs
     $logPath = "$appDataPath\Claude\logs\mcp-server-$extensionName.log"
     if (Test-Path $logPath) {
@@ -1367,7 +1367,7 @@ if ($extensionPath) {
 #### Problem: ModuleNotFoundError
 
 ```
-python.exe: Error while finding module specification for 'your_mcp.server' 
+python.exe: Error while finding module specification for 'your_mcp.server'
 (ModuleNotFoundError: No module named 'your_mcp')
 [your-mcp] [error] Server disconnected
 ```
@@ -1468,55 +1468,55 @@ on:
 jobs:
   build-mcpb:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-        
+
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        
+
     - name: Install MCPB CLI
       run: npm install -g @anthropic-ai/mcpb
-      
+
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
         pip install "fastmcp>=2.12.0,<3.0.0"
         pip install -r requirements.txt
-        
+
     - name: Create dist directory
       run: mkdir -p dist
-        
+
     - name: Validate manifest.json
       run: mcpb validate mcpb/manifest.json
-      
+
     - name: Build MCPB extension
       run: |
         cd mcpb
         mcpb pack . ../dist/package.mcpb
-        
+
     - name: Sign MCPB extension (optional)
       if: ${{ secrets.MCPB_SIGNING_KEY }}
       run: |
         echo "${{ secrets.MCPB_SIGNING_KEY }}" > signing.key
         mcpb sign --key signing.key dist/*.mcpb
         rm signing.key
-        
+
     - name: Upload MCPB artifact
       uses: actions/upload-artifact@v3
       with:
         name: mcpb-extension
         path: dist/*.mcpb
         retention-days: 30
-        
+
     - name: Create GitHub Release
       if: startsWith(github.ref, 'refs/tags/')
       uses: softprops/action-gh-release@v1
@@ -1527,19 +1527,19 @@ jobs:
         prerelease: false
         body: |
           ## MCPB Extension Release
-          
+
           Download the `.mcpb` file below and drag it to Claude Desktop for one-click installation.
-          
+
           ### Installation
           1. Download the `.mcpb` file from the assets below
           2. Drag the file to Claude Desktop
           3. Follow the configuration prompts
           4. Restart Claude Desktop
-          
+
           ### Dependencies
           - FastMCP 2.10.1+ (bundled)
           - Python 3.8+ (built into Claude Desktop)
-          
+
           ### What's New
           See the auto-generated release notes below.
       env:
@@ -1621,7 +1621,7 @@ mcpb pack . ../package.mcpb
 {
   "user_config": {
     "api_key": {
-      "type": "string", 
+      "type": "string",
       "title": "API Key",
       "description": "Your service API key",
       "sensitive": true,
@@ -1742,7 +1742,7 @@ mcpb pack . ../package.mcpb
 {
   "dependencies": ["fastmcp>=2.12.0,<3.0.0"],
   "server": {
-    "type": "python", 
+    "type": "python",
     "entry_point": "src/docker_mcp/server.py",
     "mcp_config": {
       "command": "python",
@@ -1764,7 +1764,7 @@ mcpb pack . ../package.mcpb
   "dependencies": ["fastmcp>=2.12.0,<3.0.0"],
   "server": {
     "type": "python",
-    "entry_point": "src/database_mcp/server.py", 
+    "entry_point": "src/database_mcp/server.py",
     "mcp_config": {
       "command": "python",
       "args": ["-m", "database_mcp.server"],

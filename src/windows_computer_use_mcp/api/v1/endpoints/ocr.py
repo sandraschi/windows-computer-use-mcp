@@ -20,8 +20,8 @@ project_root = Path(__file__).parent.parent.parent.parent.parent
 if str(project_root) not in sys.path:
     sys.path.append(str(project_root))
 
-from windows_computer_use_mcp.core.config import get_config  # noqa: E402
-from windows_computer_use_mcp.services.ocr_service import OCRService  # noqa: E402
+from windows_computer_use_mcp.core.config import get_config
+from windows_computer_use_mcp.services.ocr_service import OCRService
 
 # Configure logging
 logger = logging.getLogger(__name__)

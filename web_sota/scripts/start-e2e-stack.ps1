@@ -9,7 +9,7 @@ $backend = & (Join-Path $ScriptDir "start-backend.ps1") -Background -Port $Backe
 try {
     Set-Location (Split-Path -Parent $ScriptDir)
     if (-not (Test-Path "dist\index.html")) {
-        Write-Host "dist/ missing — running npm run build" -ForegroundColor Yellow
+        Write-Host "dist/ missing - running npm run build" -ForegroundColor Yellow
         npm run build
     }
     npx vite preview --host 127.0.0.1 --port $WebPort --strictPort

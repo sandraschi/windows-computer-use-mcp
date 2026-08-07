@@ -1,13 +1,13 @@
 set windows-shell := ["powershell.exe", "-NoProfile", "-Command"]
 import 'scripts/just/fleet.just'
 
-# ── Dashboard ─────────────────────────────────────────────────────────────────
+# --- Dashboard ---
 
 # Open the interactive recipe dashboard in the browser
 default:
     @just --list
 
-# ── Operations ────────────────────────────────────────────────────────────────
+# --- Operations ---
 
 # Synchronize deps, pre-commit hooks, and web SOTA frontend
 bootstrap:
@@ -30,7 +30,7 @@ dev:
 # Launch Microsoft Paint and draw a SOTA Landscape Masterpiece directly via tool calls
 paint-demo:
     @$env:WINDOWS_COMPUTER_USE_MCP_BYPASS_HITL = "1"; \
-    Write-Host "🎨 Starting Industrial Paint Demo (Justfile/PowerShell Orchestrated)" -ForegroundColor Cyan; \
+    Write-Host " Starting Industrial Paint Demo (Justfile/PowerShell Orchestrated)" -ForegroundColor Cyan; \
     Start-Process "mspaint.exe"; \
     Start-Sleep -Seconds 3; \
     Write-Host "[INIT] Locating Paint window..." -ForegroundColor Gray; \
@@ -61,14 +61,14 @@ paint-demo:
     uv run -q python -c "from pywinauto_mcp.tools.portmanteau_mouse import automation_mouse; automation_mouse('drag', x=$($sx+50), y=$($sy+50), x2=$sx, y2=$($sy+100), duration=0.5)"; \
     uv run -q python -c "from pywinauto_mcp.tools.portmanteau_mouse import automation_mouse; automation_mouse('drag', x=$sx, y=$($sy+100), x2=$($sx-50), y2=$($sy+50), duration=0.5)"; \
     uv run -q python -c "from pywinauto_mcp.tools.portmanteau_mouse import automation_mouse; automation_mouse('drag', x=$($sx-50), y=$($sy+50), x2=$sx, y2=$sy, duration=0.5)"; \
-    Write-Host "✅ Industrial Painting Complete!" -ForegroundColor Cyan
+    Write-Host " Industrial Painting Complete!" -ForegroundColor Cyan
 
 # Launch Notepad and render SOTA ASCII Art
 text-demo:
-    @echo "📝 Executing Text ASCII Demo (HITL Bypassed)..."
+    @echo " Executing Text ASCII Demo (HITL Bypassed)..."
     $env:WINDOWS_COMPUTER_USE_MCP_BYPASS_HITL = "1"; uv run python scripts/text_demo.py
 
-# ── Tauri NSIS ─────────────────────────────────────────────────────────────────
+# --- Tauri NSIS ---
 
 # Build the PyInstaller backend .exe and copy to Tauri resources
 build-sidecar:
@@ -87,13 +87,13 @@ build-native: build-sidecar
     $distDir = '{{justfile_directory()}}\dist'
     if (Test-Path $nsisDir) { Get-ChildItem $nsisDir -Filter "*.exe" | Copy-Item -Destination $distDir -Force; Write-Host "NSIS installer copied to dist/" -ForegroundColor Green }
 
-# ── System tray control ──────────────────────────────────────────────────────
+# --- System tray control ---
 
 # Launch system tray controller (HITL bypass toggle, approve, web UI, status)
 tray:
     uv run python scripts/tray-control.py
 
-# ── Demos (examples/*.py + scripts/) ─────────────────────────────────────────
+# --- Demos  examples py  scripts ---
 
 # Run Python example demos in sequence: mouse dance, nine Notepads in a 3x3 grid, typewriter
 demo:
@@ -109,7 +109,7 @@ demo:
 demo-autonomous:
     uv run python scripts/demo-autonomous.py
 
-# ── Quality ───────────────────────────────────────────────────────────────────
+# --- Quality ---
 
 # Execute full test suite with coverage
 test:
@@ -139,7 +139,7 @@ type-check:
 # Run all quality checks and tests
 check: lint format type-check test
 
-# ── Hardening ─────────────────────────────────────────────────────────────────
+# --- Hardening ---
 
 # Execute Bandit security audit
 check-sec:
@@ -149,7 +149,7 @@ check-sec:
 audit-deps:
     uv run safety check
 
-# ── Maintenance ───────────────────────────────────────────────────────────────
+# --- Maintenance ---
 
 # Fail if src/ and key root files contain machine-specific paths (e.g. fixed drive + Dev\repos)
 check-machine-paths:
@@ -161,7 +161,7 @@ install-tesseract:
 
 # Quick smoke test: verify all 18 tools import and the server starts
 smoke:
-    uv run python -c "from windows_computer_use_mcp.app import app; n=len(list(app._tool_manager.list_tools())); print(f'Server OK — {n} tools registered'); raise SystemExit(0 if n else 1)"
+    uv run python -c "from windows_computer_use_mcp.app import app; n=len(list(app._tool_manager.list_tools())); print(f'Server OK - {n} tools registered'); raise SystemExit(0 if n else 1)"
 
 # Run Playwright e2e tests against the web operator UI (requires backend + frontend)
 e2e:
@@ -180,3 +180,5 @@ clean:
     if (Test-Path ".pytest_cache") { Remove-Item -Recurse -Force .pytest_cache }
     if (Test-Path "src/windows_computer_use_mcp.egg-info") { Remove-Item -Recurse -Force src/windows_computer_use_mcp.egg-info }
     Get-ChildItem -Recurse -Filter "__pycache__" | Remove-Item -Recurse -Force
+
+# Bootstrap: install dev deps + pre-commit hook

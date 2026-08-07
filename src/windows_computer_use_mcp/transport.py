@@ -190,6 +190,34 @@ async def run_server_async(mcp_app, args: argparse.Namespace | None = None, serv
         server_name: Server name for logging and help text.
 
     """
+    proxy_url = os.getenv("PYWINAUTO_MCP_API_URL")
+    if proxy_url:
+        try:
+            import httpx
+
+            r = httpx.post(
+                proxy_url,
+                json={
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "initialize",
+                    "params": {
+                        "protocolVersion": "2025-11-25",
+                        "capabilities": {},
+                        "clientInfo": {"name": "probe", "version": "1"},
+                    },
+                },
+                headers={"Accept": "application/json, text/event-stream"},
+                timeout=0.5,
+            )
+            if r.status_code == 200:
+                from fastmcp.server import create_proxy
+
+                proxy = create_proxy(proxy_url, name=server_name)
+                await proxy.run_stdio_async(show_banner=False)
+                return
+        except Exception:
+            pass
     if args is None:
         parser = create_argument_parser(server_name)
         args = parser.parse_args()

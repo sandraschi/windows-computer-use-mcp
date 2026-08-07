@@ -1,6 +1,6 @@
 # Windows Computer Use - Usage Scenarios & Patterns
 
-**Target:** AI Agents, Claude Desktop, MCP Clients  
+**Target:** AI Agents, Claude Desktop, MCP Clients
 **Platform:** Windows 10/11 only
 
 > **Opt-in tools:** `automation_face` and `global_keylogger` are **not registered** in default installs. Scenarios below that mention them require env flags — see [SAFETY.md](SAFETY.md) and [README.md](../README.md).
@@ -494,17 +494,17 @@ for text_region in state["ocr_results"]:
 ```python
 def click_element_robust(handle, control_id, timeout=10.0):
     """Click an element with retry and fallback logic."""
-    
+
     # Try by control ID first
     result = automation_elements("click", window_handle=handle, control_id=control_id)
     if result["status"] == "success":
         return result
-    
+
     # Fallback: Wait for element
     wait_result = automation_elements("wait", window_handle=handle, control_id=control_id, timeout=timeout)
     if wait_result["found"]:
         return automation_elements("click", window_handle=handle, control_id=control_id)
-    
+
     # Last resort: Find by OCR and click position
     text = automation_visual("extract_text")
     # Find matching text and click its position
@@ -516,17 +516,17 @@ def click_element_robust(handle, control_id, timeout=10.0):
 ```python
 def verify_operation_completed(expected_state, timeout=10.0):
     """Verify an operation completed by checking UI state."""
-    
+
     start_time = time.time()
     while time.time() - start_time < timeout:
         state = get_desktop_state(use_ocr=True)
-        
+
         # Check for expected text/element
         if expected_state in str(state):
             return True
-        
+
         automation_system("wait", seconds=0.5)
-    
+
     return False
 ```
 
@@ -535,7 +535,7 @@ def verify_operation_completed(expected_state, timeout=10.0):
 ```python
 def automation_with_recovery(operation_func, max_retries=3):
     """Execute automation with automatic error recovery."""
-    
+
     for attempt in range(max_retries):
         try:
             result = operation_func()
@@ -549,7 +549,7 @@ def automation_with_recovery(operation_func, max_retries=3):
             elif "not found" in str(e).lower():
                 # Wait and retry
                 automation_system("wait", seconds=1.0)
-    
+
     raise Exception(f"Operation failed after {max_retries} attempts")
 ```
 
@@ -558,17 +558,17 @@ def automation_with_recovery(operation_func, max_retries=3):
 ```python
 def verify_click_worked(before_screenshot, after_screenshot):
     """Verify a click had an effect by comparing screenshots."""
-    
+
     # Take before screenshot
     before = automation_visual("screenshot", return_base64=True)
-    
+
     # Perform click
     automation_mouse("click", x=x, y=y)
-    
+
     # Take after screenshot
     automation_system("wait", seconds=0.3)
     after = automation_visual("screenshot", return_base64=True)
-    
+
     # Compare (simplified - real implementation would use image diff)
     return before != after
 ```
@@ -598,11 +598,11 @@ if result["status"] == "error":
     # Try alternative approaches
     # 1. Wait for element to appear
     automation_elements("wait", window_handle=handle, control_id="SaveButton", timeout=5.0)
-    
+
     # 2. Use OCR to find and click
     text = automation_visual("extract_text")
     # Find "Save" in extracted text and click its position
-    
+
     # 3. Use keyboard shortcut instead
     automation_keyboard("hotkey", keys=["ctrl", "s"])
 ```
@@ -694,4 +694,3 @@ automation_keyboard("type", text="ab")
 - [Development](./DEVELOPMENT.md)
 - [MCP Technical Docs](./mcp-technical/README.md)
 - [Glama Platform Integration](./glama-platform/README.md)
-

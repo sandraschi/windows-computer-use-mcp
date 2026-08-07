@@ -38,7 +38,7 @@ function Show-InstallDialog {
     Add-Type -AssemblyName System.Drawing
 
     $form = New-Object System.Windows.Forms.Form
-    $form.Text = "Windows Computer Use — Optional Components"
+    $form.Text = "Windows Computer Use - Optional Components"
     $form.Width = 460
     $form.Height = 260
     $form.StartPosition = "CenterScreen"
@@ -55,7 +55,7 @@ function Show-InstallDialog {
     $form.Controls.Add($label)
 
     $tessBox = New-Object System.Windows.Forms.CheckBox
-    $tessBox.Text = "Install Tesseract OCR 5.x (${Version}) — 15 MB download"
+    $tessBox.Text = "Install Tesseract OCR 5.x (${Version}) - 15 MB download"
     $tessBox.Checked = $true
     $tessBox.Location = New-Object System.Drawing.Point(20, 85)
     $form.Controls.Add($tessBox)

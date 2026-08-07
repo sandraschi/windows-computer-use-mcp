@@ -1,6 +1,6 @@
 # Cua-style desktop loop (operator)
 
-**Roadmap:** [CUA_PARITY_ROADMAP.md](./CUA_PARITY_ROADMAP.md)  
+**Roadmap:** [CUA_PARITY_ROADMAP.md](./CUA_PARITY_ROADMAP.md)
 **Fleet doc:** [CUA_DRIVER_AND_PYWINAUTO.md](file:///D:/Dev/repos/mcp-central-docs/patterns/CUA_DRIVER_AND_PYWINAUTO.md)
 
 ## Quick loop

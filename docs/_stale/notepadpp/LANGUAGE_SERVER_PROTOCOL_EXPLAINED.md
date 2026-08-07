@@ -1,7 +1,7 @@
 # 🧠 Language Server Protocol (LSP) - Explained
 
-**Created**: October 8, 2025  
-**Context**: Understanding Serena MCP's semantic code understanding  
+**Created**: October 8, 2025
+**Context**: Understanding Serena MCP's semantic code understanding
 
 ---
 
@@ -26,7 +26,7 @@ Every text editor had to implement language support separately:
 - **Vim**: Yet another...
 - **Emacs**: Yet another...
 
-**Result**: 
+**Result**:
 - ❌ Duplicate work (5 editors = 5 Python parsers!)
 - ❌ Inconsistent features
 - ❌ Bugs in each implementation
@@ -413,4 +413,3 @@ Active duration: 2h 15m
 <function_calls>
 <invoke name="run_terminal_cmd">
 <parameter name="command">if (-not (Test-Path ".cursor")) { New-Item -Path ".cursor" -ItemType Directory -Force; Write-Host "✅ Created .cursor folder" } else { Write-Host "✅ .cursor folder exists" }
-

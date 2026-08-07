@@ -108,16 +108,16 @@ Common fixtures available in `conftest.py`:
 ```python
 class TestMyTool:
     """Tests for my_tool."""
-    
-    @patch('windows_computer_use_mcp.tools.my_module.some_dependency')
+
+    @patch("windows_computer_use_mcp.tools.my_module.some_dependency")
     def test_my_tool_success(self, mock_dep, app_instance):
         """Test my_tool with successful execution."""
         from windows_computer_use_mcp.tools.my_module import my_tool
-        
+
         mock_dep.return_value = "expected_result"
-        
+
         result = my_tool(param="value")
-        
+
         assert isinstance(result, dict)
         assert "success" in result
 ```
@@ -152,4 +152,3 @@ Tests run automatically on:
 - Some tests require Windows OS
 - Use `@pytest.mark.windows_only` marker
 - Skip on non-Windows: `pytest -m "not windows_only"`
-

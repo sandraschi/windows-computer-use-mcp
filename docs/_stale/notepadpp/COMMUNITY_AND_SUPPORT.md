@@ -31,14 +31,14 @@
 - 💬 **Community** - Forum links
 - 🐛 **Bug Tracker** - GitHub issues
 
-**Updates**: Weekly to monthly  
+**Updates**: Weekly to monthly
 **Languages**: English (primary), 90+ translations available
 
 ---
 
 ### **2. GitHub Repository**
 
-**Main Repository**:  
+**Main Repository**:
 **URL**: https://github.com/notepad-plus-plus/notepad-plus-plus
 
 **Statistics** (October 2025):
@@ -68,7 +68,7 @@
 
 ### **3. Official Documentation**
 
-**Notepad++ User Manual**:  
+**Notepad++ User Manual**:
 **URL**: https://npp-user-manual.org
 
 **Content**:
@@ -79,20 +79,20 @@
 - ✅ Troubleshooting
 - ✅ Configuration reference
 
-**Format**: Online HTML documentation  
-**Search**: Full-text search available  
+**Format**: Online HTML documentation
+**Search**: Full-text search available
 **Updates**: Maintained with each release
 
 ---
 
 ### **4. Plugin Repository**
 
-**nppPluginList**:  
+**nppPluginList**:
 **URL**: https://github.com/notepad-plus-plus/nppPluginList
 
-**Purpose**: Official plugin database  
-**Plugins**: 1,400+ curated and signed  
-**Activity**: Regular updates  
+**Purpose**: Official plugin database
+**Plugins**: 1,400+ curated and signed
+**Activity**: Regular updates
 **Security**: All plugins verified and signed
 
 ---
@@ -241,7 +241,7 @@
 
 **Account**: [@Notepad_plus](https://twitter.com/notepad_plus)
 
-**Followers**: ~20,000  
+**Followers**: ~20,000
 **Activity**: Moderate (few posts per month)
 
 **Content**:
@@ -256,7 +256,7 @@
 
 **Page**: Notepad++ Official
 
-**Followers**: ~5,000  
+**Followers**: ~5,000
 **Activity**: Low (occasional posts)
 
 **Content**:
@@ -310,15 +310,15 @@
 
 ### **IRC (Historical)**
 
-**Channels**: #notepad++ on Freenode (historical)  
+**Channels**: #notepad++ on Freenode (historical)
 **Status**: Largely inactive (moved to GitHub Discussions)
 
 ---
 
 ### **Telegram**
 
-**Groups**: Several unofficial groups exist  
-**Languages**: Multiple languages  
+**Groups**: Several unofficial groups exist
+**Languages**: Multiple languages
 **Activity**: Varies by group
 
 ---
@@ -400,7 +400,7 @@ Title: White-on-white text in Global Styles
 Notepad++ Version: 8.7.1
 Windows: Windows 11 Pro
 
-Issue: After changing theme, main editor text became invisible 
+Issue: After changing theme, main editor text became invisible
 (appears to be white text on white background).
 
 Folder tree is visible, but main text editor shows nothing.
@@ -652,7 +652,7 @@ Attached: Screenshot showing invisible text
 
 **Bug Reports**: GitHub Issues only
 
-**Security Issues**: 
+**Security Issues**:
 - Email: security@notepad-plus-plus.org (if exists)
 - Or: GitHub Security tab
 
@@ -961,16 +961,15 @@ Based on GitHub contributions:
 - ✅ **Professional**: High-quality support
 - ✅ **Welcoming**: Friendly to newcomers
 
-**Primary Hub**: Official Community Forum  
-**Best Support**: Forum + GitHub Issues  
-**Fastest Help**: Reddit (casual) or Forum (technical)  
+**Primary Hub**: Official Community Forum
+**Best Support**: Forum + GitHub Issues
+**Fastest Help**: Reddit (casual) or Forum (technical)
 
 ---
 
-*Community & Support Guide*  
-*Last Updated: October 8, 2025*  
-*Community Size: 100M+ users*  
+*Community & Support Guide*
+*Last Updated: October 8, 2025*
+*Community Size: 100M+ users*
 *Status: Comprehensive*
 
 **Join the Notepad++ community!** 🌐✨
-

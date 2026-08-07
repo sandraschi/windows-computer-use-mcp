@@ -87,4 +87,3 @@ The smoke script (scripts/cua-smoke.py) runs 9 phases: kill → install → laun
 All phases are non-fatal except install, launch, and WebView bridge (release gate). The config file scripts/cua-nsis-config.json enables fleet reuse.
 
 See docs/ASSESSMENT_BY_CURSOR_2026-06-14_CUA_NSIS.md for full gap analysis.
-

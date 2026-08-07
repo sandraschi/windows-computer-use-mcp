@@ -521,7 +521,19 @@ def nav_click_through(output_dir: str):
             sidebar_step_y = int(cfg("sidebar_step_y", 55))
             click_x = wx + sidebar_click_x
             click_y = wy + sidebar_first_y + idx * sidebar_step_y
-            cua_click(win.get("handle", 0), click_x, click_y)
+            clicked = False
+            try:
+                import pywinauto
+                app = pywinauto.Application(backend="uia").connect(handle=win.get("handle", 0))
+                w = app.window(handle=win.get("handle", 0))
+                link = w.descendants(title=label)
+                if link:
+                    link[0].click_input()
+                    clicked = True
+            except Exception:
+                pass
+            if not clicked:
+                cua_click(win.get("handle", 0), click_x, click_y)
             time.sleep(2)
 
             # OCR after click

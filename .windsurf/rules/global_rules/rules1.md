@@ -493,7 +493,7 @@ mcp-project/
   ```bash
   # Install tools
   pip install safety pip-audit
-  
+
   # Run scans
   safety check
   pip-audit

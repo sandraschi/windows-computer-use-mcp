@@ -1,6 +1,6 @@
 # Office / LibreOffice background dispatch matrix
 
-**Dispatch:** `WINDOWS_COMPUTER_USE_MCP_DISPATCH=background` or per-call `dispatch="background"`.  
+**Dispatch:** `WINDOWS_COMPUTER_USE_MCP_DISPATCH=background` or per-call `dispatch="background"`.
 **Blocked:** `status=blocked`, `data.code=background_unavailable`.
 
 | App | `get_window_state` (ax/som) | UIA `invoke` / `click_input` | PostMessage to HWND | Typical fallback |

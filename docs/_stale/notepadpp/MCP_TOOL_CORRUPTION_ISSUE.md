@@ -1,7 +1,7 @@
 # 🚨 MCP Tool Corruption Issue - Lesson Learned
 
-**Date**: October 8, 2025  
-**Severity**: HIGH  
+**Date**: October 8, 2025
+**Severity**: HIGH
 **Status**: IDENTIFIED - Our tools likely caused Notepad++ corruption
 
 ---
@@ -133,9 +133,9 @@ STYLE_DEFAULT = 32
 
 # Set default style colors directly
 await controller.send_message(
-    controller.scintilla_hwnd, 
-    SCI_STYLESETFORE, 
-    STYLE_DEFAULT, 
+    controller.scintilla_hwnd,
+    SCI_STYLESETFORE,
+    STYLE_DEFAULT,
     0x000000  # Black
 )
 await controller.send_message(
@@ -164,14 +164,14 @@ await controller.send_message(
 async def fix_invisible_text():
     """
     ⚠️ WARNING: This tool uses UI automation and may corrupt Notepad++ config!
-    
+
     BACKUP YOUR CONFIG FIRST:
     - Copy C:\\Users\\...\\AppData\\Roaming\\Notepad++\\ to safe location
-    
+
     SAFER ALTERNATIVE:
     - Manually use Settings → Style Configurator
     - Select "Obsidian" or "Default" theme
-    
+
     USE AT YOUR OWN RISK!
     """
     # ... existing code ...
@@ -269,11 +269,10 @@ Update warnings in server.py docstrings.
 
 ---
 
-*Issue documented: October 8, 2025*  
-*Affected tools: fix_invisible_text, fix_display_issue*  
-*Root cause: Blind UI automation*  
-*Action: Deprecate or rewrite with safe API*  
+*Issue documented: October 8, 2025*
+*Affected tools: fix_invisible_text, fix_display_issue*
+*Root cause: Blind UI automation*
+*Action: Deprecate or rewrite with safe API*
 *Priority: HIGH*
 
 **Our tools should NEVER corrupt user configurations!** ⚠️
-

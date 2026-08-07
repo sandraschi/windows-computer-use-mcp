@@ -1,7 +1,8 @@
 """Tests for dependency failure reporting and agentic recovery."""
 
-import pytest
 from unittest.mock import patch
+
+import pytest
 
 
 class TestDependencyFailures:

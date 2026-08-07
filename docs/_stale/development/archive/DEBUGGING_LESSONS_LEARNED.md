@@ -1,9 +1,9 @@
 > **Archived fleet import** — From **notepadpp-mcp** / generic fleet dev notes. **Not** pywinauto-mcp source of truth. See [DEVELOPMENT.md](../../DEVELOPMENT.md) and [TESTING.md](../../TESTING.md).
 # 🎓 FastMCP 2.12 Debugging: Lessons Learned
 
-**Real-World Experience Report**  
-**Project**: nest-protect MCP Server  
-**Timeline**: 3 Days of Intensive Debugging (Sept 17-19, 2025)  
+**Real-World Experience Report**
+**Project**: nest-protect MCP Server
+**Timeline**: 3 Days of Intensive Debugging (Sept 17-19, 2025)
 **Result**: From Broken → Production Ready (24 Working Tools)
 
 ---
@@ -25,13 +25,13 @@ This document captures the **complete debugging journey** of transforming a brok
    ✅ Server starts successfully
    ✅ Claude Desktop connects via STDIO
    ✅ Initial handshake completes
-   
+
 2. DISCOVERY PHASE (1-5 seconds) ← **DANGER ZONE**
    🎯 Claude requests tool list
-   🎯 FastMCP loads and validates tools  
+   🎯 FastMCP loads and validates tools
    🎯 Tool functions are imported and checked
    ❌ MOST FAILURES HAPPEN HERE
-   
+
 3. OPERATION PHASE (5+ seconds)
    ✅ Tools respond to user requests
    ✅ Sustained operation
@@ -153,7 +153,7 @@ shared_data = {}
 async def tool1():
     shared_data["key"] = "value"  # Race conditions possible
 
-@app.tool() 
+@app.tool()
 async def tool2():
     return shared_data["key"]  # May not exist
 ```
@@ -189,7 +189,7 @@ async def tool2():
 ```python
 def validate_environment():
     """Quick environment check before starting server."""
-    
+
     # Test 1: Critical imports
     critical_imports = ["fastmcp", "pydantic", "aiohttp"]
     for module in critical_imports:
@@ -199,7 +199,7 @@ def validate_environment():
         except ImportError as e:
             print(f"❌ {module}: {e}")
             return False
-    
+
     # Test 2: Custom modules
     try:
         from .tools import device_status, auth_tools  # Your modules
@@ -207,7 +207,7 @@ def validate_environment():
     except ImportError as e:
         print(f"❌ Custom modules: {e}")
         return False
-    
+
     # Test 3: Configuration
     try:
         config = get_config()  # Your config loading
@@ -215,7 +215,7 @@ def validate_environment():
     except Exception as e:
         print(f"❌ Configuration: {e}")
         return False
-    
+
     return True
 
 if __name__ == "__main__":
@@ -273,7 +273,7 @@ Look for these patterns in logs:
 
 ```
 ❌ "ImportError" during tool loading
-❌ "ValidationError" during config access  
+❌ "ValidationError" during config access
 ❌ "AttributeError" for missing objects
 ❌ "TimeoutError" for network calls
 ❌ "PermissionError" for file access
@@ -316,17 +316,17 @@ async def file_tool(path: str) -> dict:
         # Validate path
         if not os.path.exists(path):
             return {"success": False, "error": "File not found"}
-        
+
         # Check permissions
         if not os.access(path, os.R_OK):
             return {"success": False, "error": "Permission denied"}
-        
+
         # Read file
         with open(path, 'r') as f:
             content = f.read()
-        
+
         return {"success": True, "content": content}
-    
+
     except PermissionError:
         return {"success": False, "error": "Permission denied"}
     except UnicodeDecodeError:
@@ -345,19 +345,19 @@ async def device_tool(device_id: str) -> dict:
         # Validate device ID format
         if not device_id or len(device_id) < 5:
             return {"success": False, "error": "Invalid device ID"}
-        
-        # Check device availability  
+
+        # Check device availability
         if not await is_device_online(device_id):
             return {"success": False, "error": "Device offline"}
-        
+
         # Perform operation with timeout
         result = await asyncio.wait_for(
-            device_operation(device_id), 
+            device_operation(device_id),
             timeout=30.0
         )
-        
+
         return {"success": True, "result": result}
-        
+
     except asyncio.TimeoutError:
         return {"success": False, "error": "Device operation timeout"}
     except DeviceError as e:
@@ -388,7 +388,7 @@ async def device_tool(device_id: str) -> dict:
 
 ### **Time Investment vs. Results**
 - **Day 1**: 8 hours → Basic server startup working
-- **Day 2**: 6 hours → All tools loading without crashes  
+- **Day 2**: 6 hours → All tools loading without crashes
 - **Day 3**: 4 hours → Production-ready with real API integration
 - **Total**: 18 hours → Complete transformation
 
@@ -398,7 +398,7 @@ async def device_tool(device_id: str) -> dict:
 
 ### **Common Mental Traps**
 
-1. **"Claude is randomly killing my server"** 
+1. **"Claude is randomly killing my server"**
    - Reality: Your server is crashing during tool discovery
 
 2. **"The framework is buggy"**
@@ -515,9 +515,9 @@ async def control_device(device_ip: str) -> dict:
         # Test connectivity first
         if not await ping_device(device_ip):
             return {"error": "Device not reachable"}
-        
+
         # Your device control logic
-        
+
     except NetworkError:
         return {"error": "Network connectivity issue"}
     except AuthenticationError:
@@ -574,13 +574,13 @@ async def example_tool(param: str) -> Dict[str, Any]:
     """Example tool with comprehensive error handling."""
     try:
         logger.info(f"Tool called with param: {param}")
-        
+
         # Your tool logic here
         result = await some_operation(param)
-        
+
         logger.info("Tool completed successfully")
         return {"success": True, "result": result}
-        
+
     except SpecificError as e:
         logger.warning(f"Expected error: {e}")
         return {"success": False, "error": str(e)}
@@ -593,7 +593,7 @@ if __name__ == "__main__":
     if not validate_environment():
         logger.error("Environment validation failed - exiting")
         sys.exit(1)
-    
+
     logger.info("Starting server...")
     app.run()
 ```
@@ -604,7 +604,7 @@ if __name__ == "__main__":
 
 ### **Documentation to Bookmark**
 - FastMCP 2.12 Official Docs
-- Pydantic V2 Migration Guide  
+- Pydantic V2 Migration Guide
 - aiohttp Best Practices
 - Python asyncio Documentation
 

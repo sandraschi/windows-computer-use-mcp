@@ -1,8 +1,8 @@
 > **Archived fleet import** — From **notepadpp-mcp** / generic fleet dev notes. **Not** pywinauto-mcp source of truth. See [DEVELOPMENT.md](../../DEVELOPMENT.md) and [TESTING.md](../../TESTING.md).
 # Robust Link Parser - Complete Solution
 
-**Date:** October 10, 2025  
-**Problem:** write_note fails on large notes with many links  
+**Date:** October 10, 2025
+**Problem:** write_note fails on large notes with many links
 **Solution:** Timeout-safe, limit-enforcing link parser
 
 ---
@@ -10,7 +10,7 @@
 ## The Problem
 
 **User report:**
-> "when trying to write very large notes that have many links,  
+> "when trying to write very large notes that have many links,
 > the link parser chokes and the write note fails"
 
 ### What Was Happening
@@ -67,11 +67,11 @@ for match in pattern.finditer(content):
     if time.time() - start_time > max_parse_time:
         result.add_error("Timeout!")
         return  # Graceful exit
-    
+
     if len(links) >= max_links:
         result.add_warning("Link limit reached")
         return  # Graceful exit
-    
+
     # Parse link
     links.append(parse_link(match))
 ```
@@ -118,10 +118,10 @@ from link_parser import parse_links_safe
 
 async def write_note(title: str, content: str, folder: str):
     """Write note with safe link parsing."""
-    
+
     # Parse links safely
     link_result = parse_links_safe(content)
-    
+
     if not link_result.is_valid:
         # Log but continue - content is still valid
         logger.warning("link_parsing_failed",
@@ -130,14 +130,14 @@ async def write_note(title: str, content: str, folder: str):
         # Save note WITHOUT link extraction
         save_note(title, content, folder, links=[])
         return
-    
+
     # Check warnings
     if link_result.warnings:
         for warning in link_result.warnings:
             logger.info("link_parsing_warning",
                        title=title,
                        warning=warning)
-    
+
     # Save note WITH extracted links
     save_note(title, content, folder, links=link_result.links)
 ```
@@ -465,16 +465,16 @@ First 10 links:
 
 ## Integration Checklist
 
-✅ **Link parser module created**  
-✅ **Non-greedy regex patterns**  
-✅ **Timeout protection (5 seconds)**  
-✅ **Link limit enforcement (10,000)**  
-✅ **Content size limit (10 MB)**  
-✅ **Comprehensive tests (30+ cases)**  
-✅ **Safe wrapper function**  
-✅ **Statistics API**  
-✅ **CLI tool**  
-✅ **Complete documentation**  
+✅ **Link parser module created**
+✅ **Non-greedy regex patterns**
+✅ **Timeout protection (5 seconds)**
+✅ **Link limit enforcement (10,000)**
+✅ **Content size limit (10 MB)**
+✅ **Comprehensive tests (30+ cases)**
+✅ **Safe wrapper function**
+✅ **Statistics API**
+✅ **CLI tool**
+✅ **Complete documentation**
 
 ---
 
@@ -625,7 +625,7 @@ Warnings: "Large number of links (2000)"
 async def write_note(title: str, content: str, folder: str):
     # Parse links (might hang/crash)
     links = extract_links(content)  # ❌ CATASTROPHIC BACKTRACKING
-    
+
     # Save note
     save_note_with_links(title, content, links)
 ```
@@ -639,7 +639,7 @@ from link_parser import parse_links_safe
 async def write_note(title: str, content: str, folder: str):
     # Parse links safely
     link_result = parse_links_safe(content)
-    
+
     if link_result.is_valid:
         # Normal path: links extracted
         save_note_with_links(title, content, link_result.links)
@@ -652,11 +652,11 @@ async def write_note(title: str, content: str, folder: str):
                       title=title,
                       errors=link_result.errors)
         save_note_with_links(title, content, links=[])
-    
+
     # Log warnings
     for warning in link_result.warnings:
         logger.info("link_warning", warning=warning)
-    
+
     return f"Note saved: {title}"
 ```
 
@@ -766,4 +766,3 @@ save_note(content, links=result.links if result.is_valid else [])
 ---
 
 *From catastrophic backtracking to linear time - October 10, 2025*
-

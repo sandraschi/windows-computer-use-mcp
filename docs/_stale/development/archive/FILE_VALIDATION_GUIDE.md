@@ -128,20 +128,20 @@ async def scan_files():
     for file_path in files:
         # Validate first
         result = validator.validate_file(file_path)
-        
+
         if not result.is_valid:
             logger.warning("skipping_invalid_file",
                           path=file_path,
                           errors=result.errors)
             sync_monitor.metrics.files_skipped += 1
             continue
-        
+
         # Log warnings but continue
         for warning in result.warnings:
             logger.info("file_warning",
                        path=file_path,
                        warning=warning)
-        
+
         # Safe to process
         process(result.content, result.frontmatter)
 ```
@@ -201,7 +201,7 @@ def test_broken_yaml():
     # Lenient mode
     assert result.is_valid
     assert "YAML" in result.warnings
-    
+
     # Strict mode
     assert not result.is_valid
     assert "YAML" in result.errors
@@ -262,10 +262,10 @@ print(summary)
 validator = FileValidator(
     # Maximum file size
     max_file_size=10 * 1024 * 1024,  # 10 MB default
-    
+
     # Allow empty files?
     allow_empty=True,                 # Warn but allow
-    
+
     # Strict frontmatter?
     strict_frontmatter=False          # Warn but allow
 )
@@ -304,7 +304,7 @@ class SyncMetrics:
     files_scanned: int = 0
     files_skipped: int = 0      # NEW
     files_with_warnings: int = 0 # NEW
-    
+
     # Breakdown by error type
     encoding_errors: int = 0     # NEW
     frontmatter_errors: int = 0  # NEW
@@ -326,7 +326,7 @@ if not result.is_valid:
             metrics.filename_errors += 1
         elif "size" in error.lower():
             metrics.size_errors += 1
-    
+
     logger.error("file_validation_failed",
                 path=file_path,
                 errors=result.errors,
@@ -418,22 +418,22 @@ result = validator.validate_file(path)
 
 if not result.is_valid:
     # Try to fix common issues
-    
+
     # Encoding issue? Try to convert
     if any("encoding" in e.lower() for e in result.errors):
         fixed_path = fix_encoding(path)
         result = validator.validate_file(fixed_path)
-    
+
     # Frontmatter issue? Remove it
     elif any("frontmatter" in e.lower() for e in result.errors):
         fixed_content = remove_frontmatter(path)
         process(fixed_content)
-    
+
     # Filename issue? Rename
     elif any("filename" in e.lower() for e in result.errors):
         new_path = sanitize_filename(path)
         result = validator.validate_file(new_path)
-    
+
     # Still invalid? Skip
     else:
         logger.error("unfixable_file", path=path)
@@ -550,12 +550,12 @@ for file in test_files:
 
 ## Summary
 
-✅ **Prevents crashes** from any file issues  
-✅ **Comprehensive validation** of all aspects  
-✅ **Lenient by default** for user content  
-✅ **Detailed error reporting** for debugging  
-✅ **Easy to integrate** into any sync system  
-✅ **Thoroughly tested** with 30+ test cases  
+✅ **Prevents crashes** from any file issues
+✅ **Comprehensive validation** of all aspects
+✅ **Lenient by default** for user content
+✅ **Detailed error reporting** for debugging
+✅ **Easy to integrate** into any sync system
+✅ **Thoroughly tested** with 30+ test cases
 
 **Your sync will NEVER crash on bad files again!** 🛡️
 
@@ -572,4 +572,3 @@ for file in test_files:
 *"If it can go wrong with a file, we validate for it!"*
 
 *October 10, 2025*
-

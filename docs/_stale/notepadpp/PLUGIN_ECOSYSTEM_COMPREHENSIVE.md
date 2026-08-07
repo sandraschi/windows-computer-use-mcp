@@ -39,10 +39,10 @@
 
 ### **Repository Details**
 
-**Full Name**: notepad-plus-plus/nppPluginList  
-**Purpose**: Central repository for official Notepad++ plugins  
-**Maintenance**: Active (updated monthly)  
-**Security**: Cryptographically signed binaries  
+**Full Name**: notepad-plus-plus/nppPluginList
+**Purpose**: Central repository for official Notepad++ plugins
+**Maintenance**: Active (updated monthly)
+**Security**: Cryptographically signed binaries
 
 ### **Repository Structure**
 
@@ -386,8 +386,8 @@ execute_plugin_command("Compare", "Compare")
 
 ### **Plugin API**
 
-**Communication Method**: Windows Messages  
-**Language**: C++ (primary), others via FFI  
+**Communication Method**: Windows Messages
+**Language**: C++ (primary), others via FFI
 **API Version**: Notepad++ Plugin Interface v2.0+
 
 ### **Basic Plugin Structure**
@@ -878,10 +878,9 @@ Based on community surveys and forum discussions:
 
 ---
 
-*Complete Plugin Ecosystem Guide*  
-*Last Updated: October 8, 2025*  
-*Plugins Covered: 1,400+*  
+*Complete Plugin Ecosystem Guide*
+*Last Updated: October 8, 2025*
+*Plugins Covered: 1,400+*
 *Status: Comprehensive*
 
 **Master the Notepad++ plugin ecosystem!** 🔌✨
-

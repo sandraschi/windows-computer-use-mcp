@@ -1,6 +1,6 @@
 # AutoHotkey vs Windows Computer Use - Comparative Analysis
 
-**Purpose:** Understanding two competing Windows automation approaches  
+**Purpose:** Understanding two competing Windows automation approaches
 **Date:** 2025-11-29
 
 ---
@@ -68,7 +68,7 @@ User describes goal → AI decides actions → Adaptive execution
 
 **Example: Ask Claude**
 ```
-User: "Find the Notepad window, type 'Meeting notes for tomorrow', 
+User: "Find the Notepad window, type 'Meeting notes for tomorrow',
        save it as meeting.txt on my desktop"
 
 Claude: (uses automation_windows, automation_keyboard, etc.)
@@ -350,4 +350,3 @@ See: [AHK EXE Security Warning](../../../autohotkey-test/docs/AHK_EXE_SECURITY_W
 - [Windows Cleanup Robot](../../../autohotkey-test/scriptlets/windows_cleanup_robot.ahk) - Safe diagnostic tool
 - [Windows Computer Use Usage Scenarios](./USAGE_SCENARIOS.md) - MCP usage patterns
 - [Portmanteau Pattern](../../mcp-central-docs/patterns/PORTMANTEAU_CONCEPT.md) - Tool design
-

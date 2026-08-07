@@ -1,7 +1,7 @@
 # 🎨 Notepad++ White-on-White Text Fix
 
-**Date**: October 8, 2025  
-**Issue**: Text invisible due to white foreground on white background  
+**Date**: October 8, 2025
+**Issue**: Text invisible due to white foreground on white background
 **Status**: ✅ **FIXED**
 
 ---
@@ -14,7 +14,7 @@ Found in: `C:\Users\sandr\AppData\Roaming\Notepad++\stylers.xml`
 
 **Problematic configuration**:
 ```xml
-<WidgetStyle name="Global override" styleID="0" 
+<WidgetStyle name="Global override" styleID="0"
     fgColor="FFFF80"    ← Light yellow (poor contrast)
     bgColor="FF8000"    ← Orange background
     ...
@@ -45,19 +45,19 @@ Created: `C:\Users\sandr\AppData\Roaming\Notepad++\stylers.xml.backup-[timestamp
 
 ```xml
 <!-- BEFORE (Bad contrast) -->
-<WidgetStyle name="Global override" styleID="0" 
+<WidgetStyle name="Global override" styleID="0"
     fgColor="FFFF80"    ← Light yellow
     bgColor="FF8000"    ← Orange
     ...
 />
 
 <!-- AFTER (Good contrast) -->
-<WidgetStyle name="Global override" styleID="0" 
+<WidgetStyle name="Global override" styleID="0"
     fgColor="000000"    ← Black text ✅
     bgColor="FFFFFF"    ← White background ✅
-    fontName="Courier New" 
-    fontStyle="0" 
-    fontSize="10" 
+    fontName="Courier New"
+    fontStyle="0"
+    fontSize="10"
 />
 ```
 
@@ -101,10 +101,10 @@ Or use Task Manager to force-restart:
 
 After restarting Notepad++, you should see:
 
-✅ **Black text** on white background  
-✅ **Clear visibility** in main editor  
-✅ **Proper contrast** for all text  
-✅ **Folder tree visible** (was already OK)  
+✅ **Black text** on white background
+✅ **Clear visibility** in main editor
+✅ **Proper contrast** for all text
+✅ **Folder tree visible** (was already OK)
 
 ---
 
@@ -169,19 +169,18 @@ Copy-Item "C:\Users\sandr\AppData\Roaming\Notepad++\stylers.xml.backup-*" `
 
 ## 🎯 **Summary**
 
-**Problem**: White/invisible text in Notepad++ main editor  
-**Cause**: Global override with poor contrast colors  
-**Fix**: Set black text (000000) on white background (FFFFFF)  
-**Status**: ✅ **FIXED**  
+**Problem**: White/invisible text in Notepad++ main editor
+**Cause**: Global override with poor contrast colors
+**Fix**: Set black text (000000) on white background (FFFFFF)
+**Status**: ✅ **FIXED**
 
 **Next Step**: **Restart Notepad++ to see the fix!**
 
 ---
 
-*Fix applied: October 8, 2025*  
-*Files modified: stylers.xml, config.xml*  
-*Backup location: Same directory with .backup-[timestamp] extension*  
+*Fix applied: October 8, 2025*
+*Files modified: stylers.xml, config.xml*
+*Backup location: Same directory with .backup-[timestamp] extension*
 *Action required: Restart Notepad++*
 
 **Your text should now be perfectly visible!** ✅🎨
-

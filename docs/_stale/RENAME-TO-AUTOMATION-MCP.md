@@ -1,14 +1,14 @@
 # Rename Proposal: windows-computer-use-mcp → automation-mcp
 
-**Status**: 📋 **READY FOR IMPLEMENTATION**  
-**Date**: 2025-08-28  
+**Status**: 📋 **READY FOR IMPLEMENTATION**
+**Date**: 2025-08-28
 **Priority**: High (UX Improvement)
 
 ## Problem Statement
 
 The current name `windows-computer-use-mcp` has significant UX issues:
 - ❌ Obscure library name nobody recognizes
-- ❌ Horrible to type (py-win-auto = mental gymnastics)  
+- ❌ Horrible to type (py-win-auto = mental gymnastics)
 - ❌ Sounds technical/intimidating
 - ❌ No clear indication of functionality
 - ❌ Mixed case/lowercase inconsistency
@@ -149,7 +149,7 @@ automation-mcp
 
 ### Long-term Strategic Value
 - 🚀 **Professional branding** for enterprise adoption
-- 🔍 **Better discoverability** in MCP ecosystem  
+- 🔍 **Better discoverability** in MCP ecosystem
 - 🌐 **Future expansion potential** to other platforms
 - 🏗️ **Consistent naming** with other MCP servers
 
@@ -157,7 +157,7 @@ automation-mcp
 
 **Estimated effort**: 2-3 hours total
 - **Phase 1-2**: 1 hour (rename, package updates)
-- **Phase 3**: 30 minutes (documentation)  
+- **Phase 3**: 30 minutes (documentation)
 - **Phase 4-5**: 1 hour (testing, validation)
 
 **Recommended approach**: Single PR with all changes for atomic transition
@@ -180,12 +180,12 @@ automation-mcp
 
 Renaming `windows-computer-use-mcp` to `automation-mcp` is a **high-value, low-risk improvement** that will significantly enhance user experience and adoption. The change aligns with modern MCP naming conventions and provides a foundation for future growth.
 
-**Recommendation**: **IMPLEMENT IMMEDIATELY** 
+**Recommendation**: **IMPLEMENT IMMEDIATELY**
 
 The improved conversational UX alone justifies the small implementation effort. Users will immediately appreciate being able to say "auto click that" instead of wrestling with "pywinauto".
 
 ---
 
-**Implementation Ready**: All details provided above  
-**Next Action**: Execute rename following the phase-by-phase plan  
+**Implementation Ready**: All details provided above
+**Next Action**: Execute rename following the phase-by-phase plan
 **Success Metric**: Natural "auto" commands work seamlessly in Claude Desktop

@@ -35,60 +35,60 @@ from io import BytesIO
 ```python
 class UIElementWalker:
     """Walk Windows UI Automation tree and extract elements"""
-    
+
     INTERACTIVE_TYPES = {
-        'Button', 'Edit', 'ComboBox', 'ListItem', 'MenuItem', 
-        'TabItem', 'Hyperlink', 'CheckBox', 'RadioButton', 
+        'Button', 'Edit', 'ComboBox', 'ListItem', 'MenuItem',
+        'TabItem', 'Hyperlink', 'CheckBox', 'RadioButton',
         'Slider', 'ScrollBar', 'DataItem', 'Link'
     }
-    
+
     INFORMATIVE_TYPES = {
         'Text', 'StatusBar', 'TitleBar', 'ToolBar', 'Header'
     }
-    
+
     def __init__(self, max_depth: int = 10):
         self.max_depth = max_depth
         self.elements = []
-        
+
     def walk(self, root_element=None) -> List[Dict]:
         """Walk UI tree and extract element information"""
         if root_element is None:
             root_element = Desktop(backend='uia')
-        
+
         self.elements = []
         self._recurse(root_element, depth=0)
         return self.elements
-    
+
     def _recurse(self, element, depth: int):
         """Recursively walk UI tree"""
         if depth > self.max_depth:
             return
-            
+
         try:
             # Extract element properties
             info = self._extract_element_info(element)
-            
+
             if info and self._should_include(info):
                 info['id'] = len(self.elements)
                 self.elements.append(info)
-            
+
             # Recurse children
             for child in element.children():
                 self._recurse(child, depth + 1)
-                
+
         except Exception as e:
             # Skip problematic elements
             pass
-    
+
     def _extract_element_info(self, element) -> Optional[Dict]:
         """Extract all relevant properties from element"""
         try:
             # Get bounding rectangle
             rect = element.rectangle()
-            
+
             # Get parent window
             parent_window = self._get_parent_window(element)
-            
+
             info = {
                 'type': element.control_type,
                 'name': element.window_text(),
@@ -104,12 +104,12 @@ class UIElementWalker:
                 'shortcut': getattr(element, 'access_key', ''),
                 'class_name': element.class_name()
             }
-            
+
             return info
-            
+
         except Exception:
             return None
-    
+
     def _get_parent_window(self, element):
         """Find parent top-level window"""
         current = element
@@ -121,22 +121,22 @@ class UIElementWalker:
             except:
                 break
         return None
-    
+
     def _should_include(self, info: Dict) -> bool:
         """Determine if element should be included"""
         # Must be visible
         if not info.get('is_visible'):
             return False
-        
+
         # Must have valid bounds
         if info['bounds']['width'] <= 0 or info['bounds']['height'] <= 0:
             return False
-        
+
         # Must be interactive or informative
         elem_type = info.get('type', '')
         if elem_type not in self.INTERACTIVE_TYPES and elem_type not in self.INFORMATIVE_TYPES:
             return False
-            
+
         return True
 ```
 
@@ -145,7 +145,7 @@ class UIElementWalker:
 ```python
 class ScreenshotAnnotator:
     """Annotate screenshots with UI element bounding boxes"""
-    
+
     COLOR_MAP = {
         'Button': '#00FF00',      # Green
         'Edit': '#FFFF00',        # Yellow
@@ -156,26 +156,26 @@ class ScreenshotAnnotator:
         'RadioButton': '#DDA0DD', # Plum
         'default': '#FFFFFF'      # White
     }
-    
+
     def __init__(self, font_size: int = 12):
         self.font_size = font_size
         try:
             self.font = ImageFont.truetype("arial.ttf", font_size)
         except:
             self.font = ImageFont.load_default()
-    
+
     def capture_and_annotate(self, elements: List[Dict]) -> Image:
         """Capture screenshot and draw element annotations"""
         # Capture full screen
         screenshot = ImageGrab.grab()
         draw = ImageDraw.Draw(screenshot)
-        
+
         # Draw each element
         for elem in elements:
             self._draw_element(draw, elem)
-        
+
         return screenshot
-    
+
     def _draw_element(self, draw: ImageDraw, elem: Dict):
         """Draw single element annotation"""
         bounds = elem['bounds']
@@ -183,20 +183,20 @@ class ScreenshotAnnotator:
         y = bounds['y']
         x2 = x + bounds['width']
         y2 = y + bounds['height']
-        
+
         # Get color for element type
         color = self.COLOR_MAP.get(elem['type'], self.COLOR_MAP['default'])
-        
+
         # Draw bounding box
         draw.rectangle([x, y, x2, y2], outline=color, width=2)
-        
+
         # Draw label with ID
         label = str(elem['id'])
         label_bg = [x, y - 18, x + 30, y - 2]
-        
+
         draw.rectangle(label_bg, fill=color)
         draw.text((x + 2, y - 16), label, fill='#000000', font=self.font)
-    
+
     def to_base64(self, image: Image) -> str:
         """Convert image to base64 string"""
         buffer = BytesIO()
@@ -209,30 +209,30 @@ class ScreenshotAnnotator:
 ```python
 class OCRExtractor:
     """Extract text from UI elements using OCR"""
-    
+
     def __init__(self, tesseract_cmd: Optional[str] = None):
         if tesseract_cmd:
             pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
-    
+
     def enhance_elements(self, elements: List[Dict], screenshot: Image) -> List[Dict]:
         """Add OCR text to elements without readable text"""
         for elem in elements:
             # Skip if already has good text
             if elem.get('name') and len(elem['name'].strip()) >= 2:
                 continue
-            
+
             # Extract text via OCR
             ocr_text = self._extract_text(elem, screenshot)
             if ocr_text:
                 elem['ocr_text'] = ocr_text
-        
+
         return elements
-    
+
     def _extract_text(self, elem: Dict, screenshot: Image) -> str:
         """OCR text from element region"""
         try:
             bounds = elem['bounds']
-            
+
             # Crop element region with padding
             padding = 2
             region = screenshot.crop((
@@ -241,15 +241,15 @@ class OCRExtractor:
                 bounds['x'] + bounds['width'] + padding,
                 bounds['y'] + bounds['height'] + padding
             ))
-            
+
             # OCR with single line mode
             text = pytesseract.image_to_string(
-                region, 
+                region,
                 config='--psm 7'  # Single text line
             )
-            
+
             return text.strip()
-            
+
         except Exception:
             return ''
 ```
@@ -259,16 +259,16 @@ class OCRExtractor:
 ```python
 class DesktopStateFormatter:
     """Format desktop state into structured output"""
-    
+
     def format(self, elements: List[Dict], screenshot: Optional[Image] = None) -> Dict:
         """Format complete state output"""
         # Separate element types
         interactive = [e for e in elements if self._is_interactive(e)]
         informative = [e for e in elements if self._is_informative(e)]
-        
+
         # Build text report
         text_report = self._build_text_report(interactive, informative)
-        
+
         # Prepare output
         output = {
             'text': text_report,
@@ -276,18 +276,18 @@ class DesktopStateFormatter:
             'informative_elements': informative,
             'element_count': len(elements)
         }
-        
+
         # Add screenshot if provided
         if screenshot:
             annotator = ScreenshotAnnotator()
             output['screenshot_base64'] = annotator.to_base64(screenshot)
-        
+
         return output
-    
+
     def _build_text_report(self, interactive: List[Dict], informative: List[Dict]) -> str:
         """Build human-readable text report"""
         lines = []
-        
+
         # Interactive elements section
         lines.append("Interactive Elements:")
         lines.append("-" * 60)
@@ -298,9 +298,9 @@ class DesktopStateFormatter:
                 f"[{elem['id']}] {elem['type']} \"{name}\" "
                 f"at ({bounds['x']},{bounds['y']}) - App: {elem['app']}"
             )
-        
+
         lines.append("\n")
-        
+
         # Informative elements section
         lines.append("Informative Elements:")
         lines.append("-" * 60)
@@ -308,13 +308,13 @@ class DesktopStateFormatter:
             name = elem.get('name', elem.get('ocr_text', ''))
             if name:
                 lines.append(f"- {name} (App: {elem['app']})")
-        
+
         return "\n".join(lines)
-    
+
     def _is_interactive(self, elem: Dict) -> bool:
         """Check if element is interactive"""
         return elem['type'] in UIElementWalker.INTERACTIVE_TYPES
-    
+
     def _is_informative(self, elem: Dict) -> bool:
         """Check if element is informative"""
         return elem['type'] in UIElementWalker.INFORMATIVE_TYPES
@@ -325,43 +325,43 @@ class DesktopStateFormatter:
 ```python
 class DesktopStateCapture:
     """Main desktop state capture orchestrator"""
-    
-    def __init__(self, 
+
+    def __init__(self,
                  max_depth: int = 10,
                  tesseract_cmd: Optional[str] = None):
         self.walker = UIElementWalker(max_depth)
         self.annotator = ScreenshotAnnotator()
         self.ocr = OCRExtractor(tesseract_cmd)
         self.formatter = DesktopStateFormatter()
-    
+
     def capture(self, use_vision: bool = False, use_ocr: bool = False) -> Dict:
         """
         Capture desktop state
-        
+
         Args:
             use_vision: Include annotated screenshot
             use_ocr: Use OCR to extract text from elements
-            
+
         Returns:
             Dictionary with text report, element data, and optional screenshot
         """
         # Walk UI tree
         elements = self.walker.walk()
-        
+
         screenshot = None
-        
+
         if use_vision or use_ocr:
             # Capture screenshot
             screenshot = ImageGrab.grab()
-            
+
             # Enhance with OCR if requested
             if use_ocr:
                 elements = self.ocr.enhance_elements(elements, screenshot)
-            
+
             # Annotate screenshot if vision enabled
             if use_vision:
                 screenshot = self.annotator.capture_and_annotate(elements)
-        
+
         # Format output
         return self.formatter.format(elements, screenshot)
 ```
@@ -381,12 +381,12 @@ def get_desktop_state(
 ) -> dict:
     """
     Capture comprehensive desktop state with UI element discovery
-    
+
     Args:
         use_vision: Include annotated screenshot with element boundaries
         use_ocr: Use OCR to extract text from visual elements
         max_depth: Maximum UI tree traversal depth
-        
+
     Returns:
         Desktop state with elements, text report, and optional screenshot
     """
@@ -483,7 +483,7 @@ dependencies = [
 
 1. **Tesseract OCR** - Install from: https://github.com/UB-Mannheim/tesseract/wiki
    - Add to PATH or specify path in OCRExtractor
-   
+
 2. **Windows UI Automation** - Built into Windows (no install needed)
 
 3. **Python 3.11+** - For full compatibility

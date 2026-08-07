@@ -226,6 +226,3 @@ When contributing to this project, please:
 ---
 
 *For more detailed information about each release, see the [GitHub Releases](https://github.com/yourusername/windows-computer-use-mcp/releases) page.*
-
-
-

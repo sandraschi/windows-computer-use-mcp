@@ -2,7 +2,7 @@
 
 **Best text editors for Windows when Notepad++ isn't working**
 
-**Created**: October 8, 2025  
+**Created**: October 8, 2025
 **Context**: RustDesk remote desktop compatibility
 
 ---
@@ -289,10 +289,10 @@ code
 
 ## 🎊 **Summary**
 
-**Problem**: Our MCP tools likely corrupted Notepad++ via blind keyboard automation  
-**Impact**: Your Notepad++ broken for ~1 week  
-**Solution**: Use alternative editor (VS Code recommended)  
-**Long-term**: Fix/deprecate dangerous tools  
+**Problem**: Our MCP tools likely corrupted Notepad++ via blind keyboard automation
+**Impact**: Your Notepad++ broken for ~1 week
+**Solution**: Use alternative editor (VS Code recommended)
+**Long-term**: Fix/deprecate dangerous tools
 
 **Install VS Code now**:
 ```powershell

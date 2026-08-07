@@ -83,7 +83,7 @@ function Show-InstallDialog {
     Add-Type -AssemblyName System.Drawing
 
     $form = New-Object System.Windows.Forms.Form
-    $form.Text = "Pywinauto MCP — AI client setup"
+    $form.Text = "Pywinauto MCP - AI client setup"
     $form.Width = 460
     $form.Height = 260
     $form.StartPosition = "CenterScreen"

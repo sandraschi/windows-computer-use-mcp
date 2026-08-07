@@ -2,7 +2,7 @@
 
 **The Ultimate Reference for Notepad++ - History, Features, Plugins, and Community**
 
-**Last Updated**: October 8, 2025  
+**Last Updated**: October 8, 2025
 **Notepad++ Latest Version**: 8.7.x (2025)
 
 ---
@@ -24,10 +24,10 @@
 
 ### **Origins (2003)**
 
-**Creator**: Don Ho  
-**Initial Release**: November 25, 2003  
-**Original Purpose**: Lightweight alternative to heavy IDEs  
-**License**: GPL (GNU General Public License)  
+**Creator**: Don Ho
+**Initial Release**: November 25, 2003
+**Original Purpose**: Lightweight alternative to heavy IDEs
+**License**: GPL (GNU General Public License)
 
 **Why Created**:
 - Frustration with bloated text editors
@@ -171,10 +171,10 @@
 
 ### **Official Plugin Repository**
 
-**Repository**: [notepad-plus-plus/nppPluginList](https://github.com/notepad-plus-plus/nppPluginList)  
-**Total Plugins**: 1,400+  
-**Contributors**: 98+  
-**Stars**: 1.4k+  
+**Repository**: [notepad-plus-plus/nppPluginList](https://github.com/notepad-plus-plus/nppPluginList)
+**Total Plugins**: 1,400+
+**Contributors**: 98+
+**Stars**: 1.4k+
 
 ---
 
@@ -300,7 +300,7 @@ execute_plugin_command("Compare", "Compare Files")
 ### **Official Channels**
 
 #### **1. Official Website**
-**URL**: https://notepad-plus-plus.org  
+**URL**: https://notepad-plus-plus.org
 **Content**:
 - Download links
 - Release notes
@@ -308,7 +308,7 @@ execute_plugin_command("Compare", "Compare Files")
 - Documentation
 
 #### **2. GitHub Repository**
-**URL**: https://github.com/notepad-plus-plus/notepad-plus-plus  
+**URL**: https://github.com/notepad-plus-plus/notepad-plus-plus
 **Stats**:
 - ⭐ 22k+ stars
 - 🍴 4.7k+ forks
@@ -322,7 +322,7 @@ execute_plugin_command("Compare", "Compare Files")
 - Releases
 
 #### **3. Official Documentation**
-**URL**: https://npp-user-manual.org  
+**URL**: https://npp-user-manual.org
 **Content**:
 - Complete user manual
 - Feature documentation
@@ -334,8 +334,8 @@ execute_plugin_command("Compare", "Compare Files")
 ### **Community Forums**
 
 #### **1. Notepad++ Community Forum**
-**URL**: https://community.notepad-plus-plus.org  
-**Type**: Official forum  
+**URL**: https://community.notepad-plus-plus.org
+**Type**: Official forum
 **Activity**: Very active (daily posts)
 
 **Sections**:
@@ -356,8 +356,8 @@ execute_plugin_command("Compare", "Compare Files")
 ---
 
 #### **2. Reddit - r/notepadplusplus**
-**URL**: https://reddit.com/r/notepadplusplus  
-**Members**: ~15,000+ subscribers  
+**URL**: https://reddit.com/r/notepadplusplus
+**Members**: ~15,000+ subscribers
 **Activity**: Moderate (weekly posts)
 
 **Content**:
@@ -376,8 +376,8 @@ execute_plugin_command("Compare", "Compare Files")
 ---
 
 #### **3. Stack Overflow**
-**Tag**: [notepad++]  
-**Questions**: 10,000+  
+**Tag**: [notepad++]
+**Questions**: 10,000+
 **Activity**: Daily
 
 **Best For**:
@@ -412,12 +412,12 @@ While there's no official Discord, several community servers exist:
 
 ### **Social Media**
 
-**Twitter**: [@Notepad_plus](https://twitter.com/notepad_plus)  
+**Twitter**: [@Notepad_plus](https://twitter.com/notepad_plus)
 - Release announcements
 - News and updates
 - Quick tips
 
-**LinkedIn**: Notepad++ Official  
+**LinkedIn**: Notepad++ Official
 - Professional updates
 - Enterprise features
 
@@ -616,14 +616,14 @@ C:\Users\{username}\AppData\Roaming\Notepad++\
   - Version: 5.x (as of 2025)
   - C++ implementation
   - Cross-platform editing engine
-  
+
 - **Win32 API** - Windows integration
   - Native Windows controls
   - File dialogs
   - System integration
 
-**Language**: C++ (primary)  
-**Build System**: Visual Studio  
+**Language**: C++ (primary)
+**Build System**: Visual Studio
 **Platforms**: Windows (primary), Wine (Linux/Mac)
 
 ---
@@ -722,7 +722,7 @@ Notepad++
             <!-- ... hundreds of styles per language -->
         </LexerType>
     </LexerStyles>
-    
+
     <GlobalStyles>
         <!-- Editor-wide appearance -->
         <WidgetStyle name="Default Style" ... />
@@ -733,9 +733,9 @@ Notepad++
 </NotepadPlus>
 ```
 
-**Typical Size**: 1,800+ lines  
-**Languages Configured**: 80+  
-**Styles Per Language**: 10-30  
+**Typical Size**: 1,800+ lines
+**Languages Configured**: 80+
+**Styles Per Language**: 10-30
 
 ---
 
@@ -743,21 +743,21 @@ Notepad++
 
 #### **Issue 1: White-on-White Text**
 
-**Cause**: Global override misconfigured  
-**Location**: `stylers.xml` - GlobalStyles section  
+**Cause**: Global override misconfigured
+**Location**: `stylers.xml` - GlobalStyles section
 **Fix**: See [NOTEPADPP_COLOR_FIX_2025_10_08.md](NOTEPADPP_COLOR_FIX_2025_10_08.md)
 
 #### **Issue 2: Lost Shortcuts**
 
-**Cause**: shortcuts.xml corrupted  
-**Fix**: 
+**Cause**: shortcuts.xml corrupted
+**Fix**:
 1. Close Notepad++
 2. Delete `shortcuts.xml`
 3. Restart (recreates with defaults)
 
 #### **Issue 3: Plugin Errors**
 
-**Cause**: Incompatible plugin versions  
+**Cause**: Incompatible plugin versions
 **Fix**:
 1. Plugins → Plugin Admin → Updates tab
 2. Update all plugins
@@ -769,17 +769,17 @@ Notepad++
 
 ### **Documentation**
 
-**1. User Manual** (Primary Reference)  
-**URL**: https://npp-user-manual.org  
-**Content**: Complete feature documentation  
+**1. User Manual** (Primary Reference)
+**URL**: https://npp-user-manual.org
+**Content**: Complete feature documentation
 **Languages**: Multiple languages available
 
-**2. Plugin Development**  
-**URL**: https://npp-user-manual.org/docs/plugin-communication/  
+**2. Plugin Development**
+**URL**: https://npp-user-manual.org/docs/plugin-communication/
 **Content**: Plugin API documentation
 
-**3. GitHub Wiki**  
-**URL**: https://github.com/notepad-plus-plus/notepad-plus-plus/wiki  
+**3. GitHub Wiki**
+**URL**: https://github.com/notepad-plus-plus/notepad-plus-plus/wiki
 **Content**: Development docs, build instructions
 
 ---
@@ -820,8 +820,8 @@ Notepad++
 
 ### **Repository Information**
 
-**URL**: https://github.com/notepad-plus-plus/nppPluginList  
-**Purpose**: Official signed plugin repository  
+**URL**: https://github.com/notepad-plus-plus/nppPluginList
+**Purpose**: Official signed plugin repository
 **Security**: All plugins cryptographically signed
 
 **Statistics** (2025):
@@ -912,7 +912,7 @@ nppPluginList/
 
 ### **2. Function List**
 
-**Supported Languages**: 40+  
+**Supported Languages**: 40+
 **Features**:
 - Automatic function detection
 - Quick navigation
@@ -1080,8 +1080,8 @@ While no official books exist, many programming books reference Notepad++ as a r
 - **Closed Issues**: 10,000+
 - **Pull Requests**: Hundreds merged
 
-**Update Frequency**: Monthly to quarterly releases  
-**Maintenance**: Active and ongoing  
+**Update Frequency**: Monthly to quarterly releases
+**Maintenance**: Active and ongoing
 **Community**: Very engaged
 
 ---
@@ -1180,7 +1180,7 @@ C:\Users\{username}\AppData\Roaming\Notepad++\
 
 ### **Performance Issues**
 
-**Problem**: Slow with large files  
+**Problem**: Slow with large files
 **Solutions**:
 - Disable unnecessary plugins
 - Increase file size limit (Settings → Preferences)
@@ -1189,7 +1189,7 @@ C:\Users\{username}\AppData\Roaming\Notepad++\
 
 ### **Plugin Issues**
 
-**Problem**: Plugins not loading  
+**Problem**: Plugins not loading
 **Solutions**:
 - Check Plugin Admin for updates
 - Verify plugin compatibility
@@ -1198,7 +1198,7 @@ C:\Users\{username}\AppData\Roaming\Notepad++\
 
 ### **Display Issues**
 
-**Problem**: Invisible text, broken themes  
+**Problem**: Invisible text, broken themes
 **Solutions**:
 - See [NOTEPADPP_COLOR_FIX_2025_10_08.md](NOTEPADPP_COLOR_FIX_2025_10_08.md)
 - Reset to default theme
@@ -1252,8 +1252,7 @@ C:\Users\{username}\AppData\Roaming\Notepad++\
 
 **This is your complete guide to Notepad++!** 📝✨
 
-*Last updated: October 8, 2025*  
-*Notepad++ version: 8.7.x*  
-*Status: Comprehensive*  
+*Last updated: October 8, 2025*
+*Notepad++ version: 8.7.x*
+*Status: Comprehensive*
 *Pages: 15+*
-

@@ -38,10 +38,9 @@
 			},
 			"nsis": {
 				"installerHooks": "./windows/hooks.nsh",
-				"installMode": "currentUser",
-}
+				"installMode": "currentUser"
+			}
 		}
 	},
 	"plugins": {}
 }
-

@@ -1,7 +1,7 @@
 # 📊 AI-Powered Monitoring Stack Deployment
 
-**From Specialist Territory to 5-Minute Setup**  
-**Grafana + Prometheus + Loki + Promtail with AI + Docker**  
+**From Specialist Territory to 5-Minute Setup**
+**Grafana + Prometheus + Loki + Promtail with AI + Docker**
 **Timeline**: September 2025
 
 ---
@@ -75,7 +75,7 @@ Create a complete monitoring stack with Grafana, Prometheus, Loki, and Promtail 
 
 REQUIREMENTS:
 - Grafana dashboards for home surveillance and IoT monitoring
-- Prometheus for metrics collection 
+- Prometheus for metrics collection
 - Loki for log aggregation
 - Promtail for log shipping
 - Persistent storage for all data
@@ -83,7 +83,7 @@ REQUIREMENTS:
 - Pre-configured dashboards for common home monitoring scenarios
 - Include example configurations for:
   * Smart home devices (Nest, sensors)
-  * Network infrastructure monitoring  
+  * Network infrastructure monitoring
   * Application performance monitoring
   * System resource monitoring
 
@@ -222,7 +222,7 @@ networks:
 
 **2. Network Monitoring Dashboard**:
 - Internet speed tests over time
-- Router CPU/memory usage  
+- Router CPU/memory usage
 - Connected device counts
 - Bandwidth usage by device
 - DNS response times
@@ -313,16 +313,16 @@ async def collect_metrics():
     cpu_usage.set(psutil.cpu_percent())
     memory_usage.set(psutil.virtual_memory().percent)
     disk_usage.set(psutil.disk_usage('/').percent)
-    
+
     # Internet speed test
     speed = await test_internet_speed()
     internet_speed.set(speed)
-    
+
     # Nest device data
     devices = await get_nest_devices()
     for device in devices:
         nest_protect_battery.labels(device_id=device['id']).set(device['battery'])
-    
+
     # Security system
     security_status.set(1 if await is_security_armed() else 0)
 ```
@@ -418,7 +418,7 @@ Include alerting rules for:
 ```
 Build monitoring for smart home ecosystem:
 - Nest thermostat temperature control efficiency
-- Smart lighting usage patterns and energy consumption  
+- Smart lighting usage patterns and energy consumption
 - Voice assistant query logs and response times
 - Smart plug power monitoring and automation
 - HVAC system performance and energy usage
@@ -484,7 +484,7 @@ Include debugging dashboards for:
 ### **Home Automation Dashboard**
 "Went from scattered IoT device apps to unified monitoring in one afternoon. Now I can see everything from solar production to pet door activity in one place. The neighbors are definitely impressed!"
 
-### **Development Project Monitoring**  
+### **Development Project Monitoring**
 "Added comprehensive monitoring to our MCP server project. Now we can see API performance, error patterns, and usage analytics. What used to require a dedicated DevOps person took me 30 minutes with AI assistance."
 
 ### **Small Business Infrastructure**
@@ -522,7 +522,7 @@ Include debugging dashboards for:
 
 **Perfect for**:
 - ✅ Home surveillance and automation
-- ✅ Development project monitoring  
+- ✅ Development project monitoring
 - ✅ Small business infrastructure
 - ✅ Learning DevOps concepts
 - ✅ Impressing technically-minded friends!

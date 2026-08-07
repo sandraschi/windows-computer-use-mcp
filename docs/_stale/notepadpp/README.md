@@ -462,11 +462,10 @@ Our **notepadpp-mcp** server automates Notepad++, so we need to thoroughly under
 
 ---
 
-*Notepad++ Documentation Hub*  
-*Location: `docs/notepadpp/`*  
-*Created: October 8, 2025*  
-*Coverage: Complete*  
+*Notepad++ Documentation Hub*
+*Location: `docs/notepadpp/`*
+*Created: October 8, 2025*
+*Coverage: Complete*
 *Status: Reference-grade documentation*
 
 **Your complete Notepad++ reference library!** 📚✨
-

@@ -1,7 +1,7 @@
 # windows-computer-use-mcp - Project Assessment
 
-**Category**: MCP Server  
-**Assessment Date**: 2026-01-01  
+**Category**: MCP Server
+**Assessment Date**: 2026-01-01
 **Status**: Production Ready
 
 ---

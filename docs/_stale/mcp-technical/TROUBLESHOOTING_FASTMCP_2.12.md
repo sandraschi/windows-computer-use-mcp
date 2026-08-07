@@ -1,9 +1,9 @@
 # 🔧 FastMCP 2.12 Troubleshooting Guide
 
-**Based on Real-World Debugging Experience**  
-**Project**: nest-protect MCP Server  
-**Timeline**: September 17-20, 2025  
-**Framework**: FastMCP 2.12.3  
+**Based on Real-World Debugging Experience**
+**Project**: nest-protect MCP Server
+**Timeline**: September 17-20, 2025
+**Framework**: FastMCP 2.12.3
 **Status**: ✅ **PRODUCTION READY**
 
 This guide documents the **complete debugging journey** from a broken MCP server to a production-ready system. Use this to troubleshoot similar issues in other MCP projects like avatarmcp, local llms, and tapo.
@@ -297,7 +297,7 @@ async def my_tool():
 
 **What happens**:
 1. ✅ Server starts successfully
-2. ✅ Claude connects and initializes  
+2. ✅ Claude connects and initializes
 3. ❌ Claude tries to list tools → import error occurs
 4. ❌ Server crashes due to unhandled import error
 5. ❌ Claude detects disconnect and sends `--kill` to cleanup
@@ -363,12 +363,12 @@ def test_tool_registration():
         # Import all your tool modules
         from .tools import device_status, device_control, auth_tools
         logger.info("All tool modules imported successfully")
-        
+
         # Test that required dependencies are available
         import aiohttp
         import pydantic
         logger.info("All dependencies available")
-        
+
     except Exception as e:
         logger.error(f"Tool registration test failed: {e}", exc_info=True)
         raise
@@ -403,7 +403,7 @@ If this works but your full server doesn't, you have an issue in your tool imple
 
 ### **Fix 1: State Manager Import Errors**
 
-#### **❌ Problem**: 
+#### **❌ Problem**:
 ```python
 # state_manager.py was missing imports
 def get_app_state():
@@ -451,7 +451,7 @@ def create_server():
 # __main__.py
 async def main():  # ❌ Made it async but app.run() is blocking
     app.run()
-    
+
 asyncio.run(main())  # ❌ This creates issues
 ```
 
@@ -531,7 +531,7 @@ async def test_tool() -> dict:
     return {"status": "working"}
 
 # Step 2: Add real functionality
-@app.tool() 
+@app.tool()
 async def real_tool(param: str) -> dict:
     # Your actual logic here
     return {"result": param}
@@ -563,7 +563,7 @@ async def validate_all_tools():
         ("test_tool", {}),
         ("real_tool", {"param": "test"}),
     ]
-    
+
     for tool_name, params in tools:
         try:
             result = await globals()[tool_name](**params)
@@ -587,11 +587,11 @@ async def validate_all_tools():
 1. **Simple FastMCP Pattern**:
    ```python
    app = FastMCP("name")
-   
+
    @app.tool()
    async def tool() -> dict:
        return {"result": "data"}
-   
+
    app.run()
    ```
 
@@ -599,7 +599,7 @@ async def validate_all_tools():
    ```python
    # Global state object
    app_state = AppState()
-   
+
    def get_app_state() -> AppState:
        return app_state
    ```
@@ -610,7 +610,7 @@ async def validate_all_tools():
    import aiohttp
    import pydantic
    from typing import Dict, Any
-   
+
    # Not inside functions
    ```
 
@@ -661,7 +661,7 @@ async def validate_all_tools():
 **The key insight**: Claude Desktop doesn't kill servers randomly. It kills them because they crash during normal operation, usually during tool discovery or execution. The "start and kill after a few seconds" pattern almost always indicates:
 
 1. **Import errors** when tools are loaded
-2. **Validation errors** when configuration is accessed  
+2. **Validation errors** when configuration is accessed
 3. **Missing dependencies** when tools try to execute
 4. **Unhandled exceptions** in async functions
 

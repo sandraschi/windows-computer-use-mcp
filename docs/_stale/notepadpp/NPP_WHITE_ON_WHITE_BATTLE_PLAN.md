@@ -1,9 +1,9 @@
 # 🎯 Notepad++ White-on-White Battle Plan
 
-**Mission**: Fix the damn invisible text, once and for all!  
-**Stubbornness Level**: 9/10  
-**Stupidity Level**: 8/10  
-**Date**: October 8, 2025  
+**Mission**: Fix the damn invisible text, once and for all!
+**Stubbornness Level**: 9/10
+**Stupidity Level**: 8/10
+**Date**: October 8, 2025
 **Status**: TO BE CONQUERED TOMORROW
 
 ---
@@ -72,7 +72,7 @@ Get-ChildItem "$env:LOCALAPPDATA\Notepad++" -Force -Recurse
 1. **Disable DirectWrite in Notepad++**:
    - Settings → Preferences → MISC
    - Uncheck "Enable DirectWrite"
-   
+
 2. **Test locally** (not via RustDesk):
    - Go to physical PC
    - Open Notepad++
@@ -278,11 +278,11 @@ Get-ItemProperty "C:\Program Files\Notepad++\SciLexer.dll" | Select-Object Versi
 
 ## 🔥 **Battle Cry**
 
-> **"Tomorrow we fix Notepad++... and if it's the last thing we ever do!"**  
+> **"Tomorrow we fix Notepad++... and if it's the last thing we ever do!"**
 > *— Sandra, October 8, 2025, 9/10 stubborn, 8/10 stupid problem*
 
-**Stubbornness Level**: MAXIMUM  
-**Determination Level**: LEGENDARY  
+**Stubbornness Level**: MAXIMUM
+**Determination Level**: LEGENDARY
 **Backup Plan**: Ready and waiting
 
 ---
@@ -295,14 +295,14 @@ Get-ItemProperty "C:\Program Files\Notepad++\SciLexer.dll" | Select-Object Versi
 - Can't identify root cause
 - Getting too frustrated
 
-**Remember**: The goal is to EDIT TEXT, not fix Notepad++!  
+**Remember**: The goal is to EDIT TEXT, not fix Notepad++!
 **VS Code works perfectly** - it's not defeat, it's pragmatism! 🎯
 
 ---
 
-*Battle Plan Created: October 8, 2025*  
-*Status: Ready for tomorrow's assault*  
-*Backup Plan: VS Code standing by*  
+*Battle Plan Created: October 8, 2025*
+*Status: Ready for tomorrow's assault*
+*Backup Plan: VS Code standing by*
 *Mood: Determined but realistic*
 
 **LET'S GET THIS THING FIXED!** 💪🔥
@@ -333,4 +333,3 @@ foreach ($test in $tests) {
 **One of these WILL work!** ✅
 
 *Good luck tomorrow, warrior!* ⚔️
-

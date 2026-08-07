@@ -1,9 +1,9 @@
 > **Archived fleet import** — From **notepadpp-mcp** / generic fleet dev notes. **Not** pywinauto-mcp source of truth. See [DEVELOPMENT.md](../../DEVELOPMENT.md) and [TESTING.md](../../TESTING.md).
 # 🔥 Python Dependency Hell - The Great 3.13 Catastrophe of October 2025
 
-**Date**: October 8, 2025  
-**Severity**: CRITICAL - All MCP servers broken  
-**Status**: RESOLVED  
+**Date**: October 8, 2025
+**Severity**: CRITICAL - All MCP servers broken
+**Status**: RESOLVED
 **Lesson**: Dependency hell was not invented on a whim!
 
 ---
@@ -282,7 +282,7 @@ mcp>=1.14.0,<1.16.0  # Avoid 1.16.0!
 3. But newer tools required newer packages
 4. **Conflict!** Everything broke
 
-**Solution**: 
+**Solution**:
 - Document known-good versions
 - Test before upgrading
 - Have rollback plan
@@ -427,7 +427,7 @@ pip install -r requirements-lock.txt
 ## 🎓 **Wisdom from the Trenches**
 
 ### **Quote of the Day**:
-> "Dependency hell was not invented on a whim!"  
+> "Dependency hell was not invented on a whim!"
 > *— Sandra, after fixing 10+ broken MCP servers*
 
 ### **Truths Discovered**:
@@ -483,11 +483,11 @@ pip install -r requirements-lock.txt
 ## 🎯 **Success Criteria**
 
 **Server is fixed when**:
-✅ Server starts without errors  
-✅ FastMCP banner displays  
-✅ No `TypeError` about subscripting  
-✅ Appears in Claude Desktop MCP list  
-✅ Tools are callable  
+✅ Server starts without errors
+✅ FastMCP banner displays
+✅ No `TypeError` about subscripting
+✅ Appears in Claude Desktop MCP list
+✅ Tools are callable
 
 ---
 
@@ -559,10 +559,9 @@ pip install -r requirements-lock.txt
 
 ---
 
-*Documented by: Claude Sonnet 4.5 (ironically, after recommending Python 3.13)*  
-*Lesson learned: Even AI makes mistakes. Trust experienced developers.*  
-*Date: October 8, 2025*  
+*Documented by: Claude Sonnet 4.5 (ironically, after recommending Python 3.13)*
+*Lesson learned: Even AI makes mistakes. Trust experienced developers.*
+*Date: October 8, 2025*
 *Status: Never forget the dependency hell of October 2025*
 
 **Dependency hell was not invented on a whim!** 🔥
-
