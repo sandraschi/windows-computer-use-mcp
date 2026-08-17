@@ -1,0 +1,188 @@
+set windows-shell := ["powershell.exe", "-NoProfile", "-Command"]
+import 'scripts/just/fleet.just'
+
+# ── Dashboard ─────────────────────────────────────────────────────────────────
+
+# Open the interactive recipe dashboard in the browser
+default:
+    @just --list
+
+# ── Operations ────────────────────────────────────────────────────────────────
+
+# Synchronize deps, pre-commit hooks, and web SOTA frontend
+bootstrap:
+    uv sync --group dev
+    uv run pre-commit install
+    Set-Location web_sota; npm ci; if ($LASTEXITCODE -ne 0) { npm install }
+    Write-Host "Pre-commit hooks installed." -ForegroundColor Green
+
+# Initialize environment and synchronize dependencies
+install: bootstrap
+
+# Start the full orchestration (Vite + FastAPI)
+start:
+    pwsh -File .\start.ps1
+
+# Start backend in development mode (reload enabled)
+dev:
+    $env:PYTHONPATH = "src"; uv run uvicorn windows_computer_use_mcp.server:app --reload --port 10789
+
+# Launch Microsoft Paint and draw a SOTA Landscape Masterpiece directly via tool calls
+paint-demo:
+    @$env:WINDOWS_COMPUTER_USE_MCP_BYPASS_HITL = "1"; \
+    Write-Host "🎨 Starting Industrial Paint Demo (Justfile/PowerShell Orchestrated)" -ForegroundColor Cyan; \
+    Start-Process "mspaint.exe"; \
+    Start-Sleep -Seconds 3; \
+    Write-Host "[INIT] Locating Paint window..." -ForegroundColor Gray; \
+    $win = uv run -q python -c "import json; from windows_computer_use_mcp.tools.portmanteau_windows import automation_windows; print(json.dumps(automation_windows('find', class_name='MSPaintApp')))" | ConvertFrom-Json; \
+    if (-not $win.success) { Write-Host "[ERROR] Paint not found" -ForegroundColor Red; exit 1 }; \
+    $handle = $win.windows[0].handle; \
+    Write-Host "[INIT] Maximizing Paint (HWND: $handle)..." -ForegroundColor Gray; \
+    uv run -q python -c "from windows_computer_use_mcp.tools.portmanteau_windows import automation_windows; automation_windows('maximize', handle=$handle)"; \
+    uv run -q python -c "from windows_computer_use_mcp.tools.portmanteau_windows import automation_windows; automation_windows('activate', handle=$handle)"; \
+    Write-Host "[INIT] Discovering Canvas element..." -ForegroundColor Gray; \
+    $canvas = uv run -q python -c "import json; from windows_computer_use_mcp.tools.portmanteau_elements import automation_elements; print(json.dumps(automation_elements('rect', window_handle=$handle, auto_id='image')))" | ConvertFrom-Json; \
+    if (-not $canvas.success) { \
+        Write-Host "[WARN] Canvas ID 'image' not found, searching by type..." -ForegroundColor Yellow; \
+        $canvas = uv run -q python -c "import json; from windows_computer_use_mcp.tools.portmanteau_elements import automation_elements; print(json.dumps(automation_elements('rect', window_handle=$handle, control_type='Image')))" | ConvertFrom-Json; \
+    }; \
+    if (-not $canvas.success) { Write-Host "[ERROR] Could not find canvas" -ForegroundColor Red; exit 1 }; \
+    $cx = $canvas.left; $cy = $canvas.top; $cw = $canvas.width; $ch = $canvas.height; \
+    Write-Host "[DRAW] Drawing Meadow (Green)..." -ForegroundColor Green; \
+    uv run -q python -c "from windows_computer_use_mcp.tools.portmanteau_elements import automation_elements; automation_elements('click', window_handle=$handle, title='Green', exact_match=False)"; \
+    uv run -q python -c "from windows_computer_use_mcp.tools.portmanteau_mouse import automation_mouse; automation_mouse('drag', x=$($cx+10), y=$($cy+$ch-100), x2=$($cx+$cw-10), y2=$($cy+$ch-100), duration=1.5)"; \
+    Write-Host "[DRAW] Drawing Sky (Blue)..." -ForegroundColor Blue; \
+    uv run -q python -c "from windows_computer_use_mcp.tools.portmanteau_elements import automation_elements; automation_elements('click', window_handle=$handle, title='Blue', exact_match=False)"; \
+    uv run -q python -c "from windows_computer_use_mcp.tools.portmanteau_mouse import automation_mouse; automation_mouse('drag', x=$($cx+10), y=$($cy+100), x2=$($cx+$cw-10), y2=$($cy+100), duration=1.5)"; \
+    Write-Host "[DRAW] Drawing Sun (Red)..." -ForegroundColor Red; \
+    uv run -q python -c "from windows_computer_use_mcp.tools.portmanteau_elements import automation_elements; automation_elements('click', window_handle=$handle, title='Red', exact_match=False)"; \
+    $sx = $cx + $cw - 150; $sy = $cy + 150; \
+    uv run -q python -c "from pywinauto_mcp.tools.portmanteau_mouse import automation_mouse; automation_mouse('drag', x=$sx, y=$sy, x2=$($sx+50), y2=$($sy+50), duration=0.5)"; \
+    uv run -q python -c "from pywinauto_mcp.tools.portmanteau_mouse import automation_mouse; automation_mouse('drag', x=$($sx+50), y=$($sy+50), x2=$sx, y2=$($sy+100), duration=0.5)"; \
+    uv run -q python -c "from pywinauto_mcp.tools.portmanteau_mouse import automation_mouse; automation_mouse('drag', x=$sx, y=$($sy+100), x2=$($sx-50), y2=$($sy+50), duration=0.5)"; \
+    uv run -q python -c "from pywinauto_mcp.tools.portmanteau_mouse import automation_mouse; automation_mouse('drag', x=$($sx-50), y=$($sy+50), x2=$sx, y2=$sy, duration=0.5)"; \
+    Write-Host "✅ Industrial Painting Complete!" -ForegroundColor Cyan
+
+# Launch Notepad and render SOTA ASCII Art
+text-demo:
+    @echo "📝 Executing Text ASCII Demo (HITL Bypassed)..."
+    $env:WINDOWS_COMPUTER_USE_MCP_BYPASS_HITL = "1"; uv run python scripts/text_demo.py
+
+# ── Tauri NSIS ─────────────────────────────────────────────────────────────────
+
+# Build the PyInstaller backend .exe and copy to Tauri resources
+build-sidecar:
+    powershell.exe -NoProfile -File web_sota\build-sidecar.ps1
+
+# Build the Tauri NSIS desktop installer (full pipeline: frontend -> sidecar -> Rust -> NSIS)
+build-native: build-sidecar
+    $env:Path = "$env:USERPROFILE\.cargo\bin;$env:Path"
+    $vcvars = "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
+    $envOutput = cmd /c "`"$vcvars`" > nul & set" | Where-Object { $_ -match '^(INCLUDE|LIB|LIBPATH|VCToolsVersion|WindowsSdkDir|UniversalCRTSdkDir|UCRTVersion)=' }
+    foreach ($line in $envOutput) { $parts = $line.Split('=', 2); Set-Item -Path "env:$($parts[0])" -Value $parts[1] -ErrorAction SilentlyContinue }
+    Set-Location '{{justfile_directory()}}\web_sota\src-tauri'
+    npx @tauri-apps/cli build --bundles nsis
+    # Copy the NSIS installer to dist/ as a release artifact
+    $nsisDir = '{{justfile_directory()}}\web_sota\src-tauri\target\release\bundle\nsis'
+    $distDir = '{{justfile_directory()}}\dist'
+    if (Test-Path $nsisDir) { Get-ChildItem $nsisDir -Filter "*.exe" | Copy-Item -Destination $distDir -Force; Write-Host "NSIS installer copied to dist/" -ForegroundColor Green }
+
+# ── System tray control ──────────────────────────────────────────────────────
+
+# Launch system tray controller (HITL bypass toggle, approve, web UI, status)
+tray:
+    uv run python scripts/tray-control.py
+
+# ── Demos (examples/*.py + scripts/) ─────────────────────────────────────────
+
+# Run Python example demos in sequence: mouse dance, nine Notepads in a 3x3 grid, typewriter
+demo:
+    @Write-Host "[1/3] Mouse dance..." -ForegroundColor Cyan
+    uv run python examples/demo_mouse_dance.py --seconds 8
+    @Write-Host "[2/3] Notepad 3x3 grid..." -ForegroundColor Cyan
+    uv run python examples/demo_notepad_grid.py --auto --dwell 5
+    @Write-Host "[3/3] Notepad typewriter..." -ForegroundColor Cyan
+    uv run python examples/demo_notepad_typewriter.py
+    @Write-Host "All demos finished." -ForegroundColor Green
+
+# Autonomous demo (showcases the repo using its own tools)
+demo-autonomous:
+    uv run python scripts/demo-autonomous.py
+
+# ── Quality ───────────────────────────────────────────────────────────────────
+
+# Execute full test suite with coverage
+test:
+    uv run pytest --cov=src --cov-report=term-missing
+
+# Execute Ruff SOTA v13.1 linting
+lint:
+    uv run ruff check .
+    Set-Location '{{justfile_directory()}}\web_sota'
+    npx @biomejs/biome ci .
+
+# Execute Ruff SOTA v13.1 fix and formatting
+fix:
+    uv run ruff check . --fix --unsafe-fixes
+    uv run ruff format .
+    Set-Location '{{justfile_directory()}}\web_sota'
+    npx @biomejs/biome check --write .
+
+# Format code with ruff
+format:
+    uv run ruff format .
+
+# Type check code
+type-check:
+    uv run mypy src
+
+# Run all quality checks and tests
+check: lint format type-check test
+
+# ── Hardening ─────────────────────────────────────────────────────────────────
+
+# Execute Bandit security audit
+check-sec:
+    uv run bandit -r src/
+
+# Execute safety audit of dependencies
+audit-deps:
+    uv run safety check
+
+# ── Maintenance ───────────────────────────────────────────────────────────────
+
+# Fail if src/ and key root files contain machine-specific paths (e.g. fixed drive + Dev\repos)
+check-machine-paths:
+    powershell.exe -NoProfile -File .\scripts\check-no-machine-paths.ps1
+
+# Download and install Tesseract OCR 5.x (for OCR features)
+install-tesseract:
+    powershell.exe -NoProfile -File .\scripts\install-tesseract.ps1 -Interactive
+
+# Quick smoke test: verify all 18 tools import and the server starts
+smoke:
+    uv run python -c "from windows_computer_use_mcp.app import app; n=len(list(app._tool_manager.list_tools())); print(f'Server OK — {n} tools registered'); raise SystemExit(0 if n else 1)"
+
+# Run Playwright e2e tests against the web operator UI (requires backend + frontend)
+e2e:
+    cd web_sota; npm run test:e2e
+
+# Run a portable YAML/JSON workflow file
+run-workflow FILE:
+    uv run python scripts/run-workflow.py {{FILE}}
+
+# Remove build artifacts (keeps .mcpb and .exe in dist/)
+clean:
+    if (Test-Path "build") { Remove-Item -Recurse -Force build }
+    Get-ChildItem dist -Exclude "*.mcpb", "*.exe" | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+    if (Test-Path "htmlcov") { Remove-Item -Recurse -Force htmlcov }
+    if (Test-Path ".coverage") { Remove-Item .coverage }
+    if (Test-Path ".pytest_cache") { Remove-Item -Recurse -Force .pytest_cache }
+    if (Test-Path "src/windows_computer_use_mcp.egg-info") { Remove-Item -Recurse -Force src/windows_computer_use_mcp.egg-info }
+    Get-ChildItem -Recurse -Filter "__pycache__" | Remove-Item -Recurse -Force
+
+# Bootstrap: install dev deps + pre-commit hook
+bootstrap:
+    uv sync --group dev
+    uv run pre-commit install
+    Write-Host "Pre-commit hooks installed." -ForegroundColor Green

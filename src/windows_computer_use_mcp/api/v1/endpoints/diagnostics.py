@@ -57,13 +57,7 @@ async def get_diagnostics() -> dict[str, Any]:
             registered = await mcp_app.list_tools()
             tool_count = len(registered)
         except Exception:
-            try:
-                if hasattr(mcp_app, "_tool_manager") and hasattr(mcp_app._tool_manager, "tools"):
-                    tool_count = len(mcp_app._tool_manager.tools)
-                elif hasattr(mcp_app, "_tools"):
-                    tool_count = len(mcp_app._tools)
-            except Exception:
-                pass
+            pass
 
     # Recent errors (extend with ActivityLog when available)
     error_count = 0

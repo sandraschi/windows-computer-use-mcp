@@ -256,6 +256,30 @@ async def _run_steps(steps: list[dict], ctx: Context | None, mission_id: str, la
                 consecutive_failures,
                 retry_result.message,
             )
+            # Fleet self-healing: record the failure locally and pull recovery
+            # hints from the depot for the same tool + error pattern so the
+            # agent can prefer recorded hints over blind retry. Fail-soft.
+            try:
+                from windows_computer_use_mcp.fleet_error_hints import (
+                    fetch_or_local_hints,
+                    fleet_error_type_for,
+                    record_fleet_failure,
+                )
+
+                error_type = fleet_error_type_for(retry_result.message)
+                record_fleet_failure(
+                    tool=tool_name,
+                    operation=step_op,
+                    error_type=error_type,
+                    message=retry_result.message or "mission step failed",
+                    params=params,
+                )
+                hints = fetch_or_local_hints(tool=tool_name, error_type=error_type)
+                if hints:
+                    step_result["fleet_recovery_hints"] = hints
+                    step_result["message"] = f"{step_result['message']} [fleet hints: {'; '.join(hints[:3])}]"
+            except Exception:
+                pass
 
         if expected and retry_result.success and isinstance(retry_result.data, dict):
             step_result["verified"] = retry_result.data.get("verify")
