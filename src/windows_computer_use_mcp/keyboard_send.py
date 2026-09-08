@@ -1,4 +1,4 @@
-"""Unified keyboard dispatch — pyautogui or win32-focused."""
+"""Unified keyboard dispatch - pyautogui or win32-focused."""
 
 from __future__ import annotations
 

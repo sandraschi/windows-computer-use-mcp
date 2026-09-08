@@ -1,4 +1,4 @@
-"""PyWinAuto MCP — Windows UI automation server (FastMCP).
+"""PyWinAuto MCP - Windows UI automation server (FastMCP).
 
 Started and stopped by the MCP host (stdio or HTTP transport).
 """

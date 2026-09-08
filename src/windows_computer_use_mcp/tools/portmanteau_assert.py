@@ -1,4 +1,4 @@
-"""UI verification portmanteau tool — hash, diff, wait_stable, template/text asserts."""
+"""UI verification portmanteau tool - hash, diff, wait_stable, template/text asserts."""
 
 from __future__ import annotations
 
@@ -31,14 +31,14 @@ if app is not None:
 
     @app.tool(
         name="automation_assert",
-        description="""UI verification for computer-use automation — stability polling, image diff, template/OCR asserts.
+        description="""UI verification for computer-use automation - stability polling, image diff, template/OCR asserts.
 
 WHAT IT DOES:
 Polls screenshots until the UI stabilizes, compares before/after images, and asserts expected visual
 or text state. Use after keyboard shortcuts or clicks to confirm the action succeeded before continuing.
 
 WHEN TO USE:
-- wait_stable: after navigation shortcuts (F-keys, Ctrl+N) — wait for rendering to finish
+- wait_stable: after navigation shortcuts (F-keys, Ctrl+N) - wait for rendering to finish
 - assert_changed: confirm a step produced a visible UI change
 - assert_unchanged: confirm a no-op or focus-only action did not alter the canvas
 - diff: get changed_pct and a heatmap PNG for failure logs
@@ -52,7 +52,7 @@ If assert_changed fails with low changed_pct, the shortcut may not have reached 
 """,
     )
     def automation_assert(request: AssertOperationRequest) -> ToolResult:
-        """Verification portmanteau — stability, diff, and assert operations."""
+        """Verification portmanteau - stability, diff, and assert operations."""
         try:
             op = request.operation
             region = _region(request)

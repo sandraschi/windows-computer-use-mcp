@@ -37,7 +37,7 @@ def get_window_bbox(window_handle: int) -> tuple[int, int, int, int]:
 def virtual_screen_bounds() -> tuple[int, int, int, int]:
     """Return (left, top, right, bottom) of the entire virtual screen.
 
-    Spans all monitors — unlike GetSystemMetrics(SM_CXSCREEN) which
+    Spans all monitors - unlike GetSystemMetrics(SM_CXSCREEN) which
     only returns the primary monitor.
     """
     _require_win32()

@@ -42,11 +42,11 @@ SECURITY:
 - Do not use for spying; comply with law and policy.
 
 OPERATIONS:
-- 'start' — begin listening (optional max_buffer, include_release).
-- 'stop' — stop listener; buffer remains until cleared or new start.
-- 'status' — running flag, buffer fill, limits.
-- 'read' — return most recent events (limit, flush removes only those events from buffer).
-- 'clear' — empty buffer without stopping the listener.
+- 'start' - begin listening (optional max_buffer, include_release).
+- 'stop' - stop listener; buffer remains until cleared or new start.
+- 'status' - running flag, buffer fill, limits.
+- 'read' - return most recent events (limit, flush removes only those events from buffer).
+- 'clear' - empty buffer without stopping the listener.
 
 RETURNS:
 ToolResult with status, message, and data (events list, counts, etc.).

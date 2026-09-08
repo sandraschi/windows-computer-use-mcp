@@ -351,7 +351,7 @@ if app is not None:
                     info["items"] = element.item_texts()
                     info["selected_index"] = element.selected_index()
                     info["selected_text"] = element.selected_text()
-                except:
+                except Exception:
                     pass
 
             return info
@@ -458,7 +458,7 @@ if app is not None:
                     "method": "direct",
                     "timestamp": time.time(),
                 }
-            except:
+            except Exception:
                 # Fall back to keyboard input if direct setting fails
                 try:
                     element.set_focus()
@@ -662,7 +662,7 @@ if app is not None:
                         info["items"] = element.item_texts()
                         info["selected_index"] = element.selected_index()
                         info["selected_text"] = element.selected_text()
-                    except:
+                    except Exception:
                         pass
 
                 # Get position if available
@@ -676,7 +676,7 @@ if app is not None:
                         "width": rect.width(),
                         "height": rect.height(),
                     }
-                except:
+                except Exception:
                     pass
 
                 # Recursively get children
@@ -686,7 +686,7 @@ if app is not None:
                         child_info = get_element_info(child, depth + 1)
                         if child_info:
                             info["children"].append(child_info)
-                except:
+                except Exception:
                     pass
 
                 return info

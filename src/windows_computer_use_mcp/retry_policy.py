@@ -65,10 +65,10 @@ class RetryPolicy:
 
         If verify_fn is provided, the result is checked after each attempt.
         If verify_fn fails, the strategy chain kicks in:
-          1. refocus — re-activate the target window, retry
-          2. wait_stable — wait for UI to stabilize, retry
-          3. fallback_selector — if available, the caller handles this
-          4. escalate — return partial success with recovery_tip
+          1. refocus - re-activate the target window, retry
+          2. wait_stable - wait for UI to stabilize, retry
+          3. fallback_selector - if available, the caller handles this
+          4. escalate - return partial success with recovery_tip
         """
         last_result: Any = None
         last_error: str | None = None

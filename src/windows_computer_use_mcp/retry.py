@@ -1,4 +1,4 @@
-"""Retry helper — wires RETRY_ATTEMPTS / RETRY_DELAY from config."""
+"""Retry helper - wires RETRY_ATTEMPTS / RETRY_DELAY from config."""
 
 from __future__ import annotations
 
@@ -45,7 +45,7 @@ def with_retry(
                 break
             wait = min(base_delay * (2**attempt), 10.0)
             logger.warning(
-                "%s failed (attempt %d/%d): %s — retry in %.1fs", label, attempt + 1, max_attempts, exc, wait
+                "%s failed (attempt %d/%d): %s - retry in %.1fs", label, attempt + 1, max_attempts, exc, wait
             )
             time.sleep(wait)
 

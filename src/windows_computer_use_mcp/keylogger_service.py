@@ -1,7 +1,7 @@
 """Global low-level keyboard hook (Windows session) via pynput.
 
 Captures key events system-wide for the current user session. Intended for
-authorized automation and debugging only — see docs/SAFETY.md and
+authorized automation and debugging only - see docs/SAFETY.md and
 ``windows_computer_use_mcp_ENABLE_KEYLOGGER``.
 """
 

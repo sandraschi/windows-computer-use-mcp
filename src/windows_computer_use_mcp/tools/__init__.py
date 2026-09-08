@@ -17,7 +17,7 @@ into comprehensive portmanteau tools:
 7. automation_dialog    - File dialog path entry (3 operations)
 8. automation_shortcut  - Semantic app shortcuts (3 operations)
 9. automation_task      - Closed-loop task runner (4 operations)
-10. automation_face     - Face recognition (5 operations) — **opt-in** (`windows_computer_use_mcp_ENABLE_FACE=1` + face extra)
+10. automation_face     - Face recognition (5 operations) - **opt-in** (`windows_computer_use_mcp_ENABLE_FACE=1` + face extra)
 8. automation_system    - System utilities (7 operations)
 8. get_desktop_state    - Comprehensive desktop UI discovery (standalone)
 9. get_window_state     - Per-window snapshot (Cua-shaped; snapshot_id + element_index)

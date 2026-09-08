@@ -1,4 +1,4 @@
-"""Closed-loop task runner — observe, act, verify, recover."""
+"""Closed-loop task runner - observe, act, verify, recover."""
 
 from __future__ import annotations
 

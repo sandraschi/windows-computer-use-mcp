@@ -243,7 +243,7 @@ if app is not None:
             # Ensure button is released even if there's an error
             try:
                 mouse.release(button=button)
-            except:
+            except Exception:
                 pass
 
             return {"status": "error", "error": str(e), "error_type": type(e).__name__}

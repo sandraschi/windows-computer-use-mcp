@@ -1,4 +1,4 @@
-"""Windows Media OCR provider — uses built-in Windows.Media.Ocr API via PyWinRT.
+"""Windows Media OCR provider - uses built-in Windows.Media.Ocr API via PyWinRT.
 
 Available on every Windows 10/11 system. Zero external dependencies beyond
 the winrt-* packages installed from PyPI.

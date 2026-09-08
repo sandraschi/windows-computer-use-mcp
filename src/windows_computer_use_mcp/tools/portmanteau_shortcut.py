@@ -1,4 +1,4 @@
-"""Semantic app shortcut portmanteau — VRoid Studio and future registries."""
+"""Semantic app shortcut portmanteau - VRoid Studio and future registries."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ if app is not None:
 
     @app.tool(
         name="automation_shortcut",
-        description="""Semantic application shortcuts — send by action name, not raw key codes.
+        description="""Semantic application shortcuts - send by action name, not raw key codes.
 
 WHAT IT DOES:
 Maps app-specific action names (e.g. vroidstudio/export_vrm → F8) to keyboard sequences,

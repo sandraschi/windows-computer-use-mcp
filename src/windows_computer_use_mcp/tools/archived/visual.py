@@ -205,7 +205,7 @@ if app is not None:
                     # Clean up temp file
                     try:
                         os.unlink(screenshot["file_path"])
-                    except:
+                    except Exception:
                         pass
                 except Exception as e:
                     return {"status": "error", "error": f"Failed to process screenshot: {e}"}
@@ -223,7 +223,7 @@ if app is not None:
                 )
                 confidences = [float(c) for c in data["conf"] if float(c) > 0]
                 avg_confidence = sum(confidences) / len(confidences) if confidences else 0
-            except:
+            except Exception:
                 avg_confidence = -1
 
             return {
@@ -329,7 +329,7 @@ if app is not None:
                 if "file_path" in screenshot:
                     try:
                         os.unlink(screenshot["file_path"])
-                    except:
+                    except Exception:
                         pass
 
         except Exception as e:
@@ -460,7 +460,7 @@ if app is not None:
                 if "file_path" in screenshot:
                     try:
                         os.unlink(screenshot["file_path"])
-                    except:
+                    except Exception:
                         pass
 
         except Exception as e:

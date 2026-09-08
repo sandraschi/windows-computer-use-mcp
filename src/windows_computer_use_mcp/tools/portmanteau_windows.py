@@ -34,7 +34,7 @@ def _get_desktop():
 
 
 def _fast_find_by_title(title: str, *, partial: bool = True) -> list[dict[str, Any]]:
-    """Fast title search via pygetwindow — avoids slow UIA desktop enumeration."""
+    """Fast title search via pygetwindow - avoids slow UIA desktop enumeration."""
     try:
         import pygetwindow as gw
 

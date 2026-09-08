@@ -4,10 +4,10 @@ Keep this factual and concise so it fits in context windows. Update when tools o
 """
 
 REPO_CONTEXT_MARKDOWN = """
-## pywinauto-mcp — what this project is
+## pywinauto-mcp - what this project is
 
 - **Purpose:** Windows desktop **UI automation** exposed over **MCP** (Model Context Protocol) using **PyWinAuto**, **PyAutoGUI**, and related libraries.
-- **Scope:** Automates **real windows, controls, mouse, keyboard** on the host Windows session — not a browser sandbox.
+- **Scope:** Automates **real windows, controls, mouse, keyboard** on the host Windows session - not a browser sandbox.
 
 ## Can I click and drag?
 
@@ -17,16 +17,16 @@ REPO_CONTEXT_MARKDOWN = """
 
 ## Main MCP tools (portmanteau pattern)
 
-- **`automation_windows`** — find, focus, resize, close windows.
-- **`automation_elements`** — click, type, read UI elements / control identifiers.
-- **`automation_mouse`** — pointer moves, clicks (HITL may apply).
-- **`automation_keyboard`** — keys and shortcuts (HITL may apply).
-- **`automation_visual`** — screenshots, OCR, template matching.
-- **`automation_system`** — status, help, wait, clipboard, processes, start apps, etc.
-- **`get_desktop_state`** — structured UI tree / discovery.
-- **`approve_automation`** — extends approval window for sensitive actions.
-- **`automation_safety`** — counters, kill switch / dry-run visibility.
-- **`automation_face`** — optional face features; **off** unless **`windows_computer_use_mcp_ENABLE_FACE=1`** + face extra (**`docs/SAFETY.md` §5**).
+- **`automation_windows`** - find, focus, resize, close windows.
+- **`automation_elements`** - click, type, read UI elements / control identifiers.
+- **`automation_mouse`** - pointer moves, clicks (HITL may apply).
+- **`automation_keyboard`** - keys and shortcuts (HITL may apply).
+- **`automation_visual`** - screenshots, OCR, template matching.
+- **`automation_system`** - status, help, wait, clipboard, processes, start apps, etc.
+- **`get_desktop_state`** - structured UI tree / discovery.
+- **`approve_automation`** - extends approval window for sensitive actions.
+- **`automation_safety`** - counters, kill switch / dry-run visibility.
+- **`automation_face`** - optional face features; **off** unless **`windows_computer_use_mcp_ENABLE_FACE=1`** + face extra (**`docs/SAFETY.md` §5**).
 
 ## Isolation
 
@@ -35,5 +35,5 @@ REPO_CONTEXT_MARKDOWN = """
 ## Answering user questions
 
 - Prefer **accurate, cautious** answers: cite **HITL**, **approval**, and **dry-run** when discussing input automation.
-- If asked about **web** apps inside a browser, note that **browser MCP** is often more appropriate than desktop automation — but pywinauto can still drive browser windows as native windows when appropriate.
+- If asked about **web** apps inside a browser, note that **browser MCP** is often more appropriate than desktop automation - but pywinauto can still drive browser windows as native windows when appropriate.
 """.strip()

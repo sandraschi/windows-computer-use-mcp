@@ -295,7 +295,7 @@ OPERATIONS:
                         if 0 <= idx < len(candidates):
                             candidates = [candidates[idx]]
                 except Exception as e:
-                    logger.warning("Ambiguity sampling failed: %s — using first candidate", e)
+                    logger.warning("Ambiguity sampling failed: %s - using first candidate", e)
                     candidates = candidates[:1]
             else:
                 candidates = candidates[:1]

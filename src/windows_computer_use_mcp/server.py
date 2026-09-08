@@ -45,10 +45,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# REST API router — serves /api/v1/health, /api/v1/diagnostics, etc.
+# REST API router - serves /api/v1/health, /api/v1/diagnostics, etc.
 app.include_router(api_router)
 
-# FastMCP streamable HTTP endpoint — serves MCP protocol on /mcp
+# FastMCP streamable HTTP endpoint - serves MCP protocol on /mcp
 app.mount("/mcp", _mcp_http)
 
 # Legacy: also mount at root for backward compat (MCP clients that expect /)

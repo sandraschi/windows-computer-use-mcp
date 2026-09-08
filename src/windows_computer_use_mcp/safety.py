@@ -1,6 +1,6 @@
 """Rate limits, kill switch, and dry-run for desktop UI automation (FastMCP + sampling amplification).
 
-Vendor "My Computer"–style products add guardrails; this module adds **server-side** belts for
+Vendor "My Computer"-style products add guardrails; this module adds **server-side** belts for
 self-hosted pywinauto-mcp. See mcp-central-docs: patterns/windows_computer_use_mcp_SAFETY.md
 """
 

@@ -1,7 +1,7 @@
 """Mouse interaction portmanteau tool for PyWinAuto MCP.
 
 Pointer injection uses :mod:`windows_computer_use_mcp.win32_mouse` (``SetCursorPos`` +
-``mouse_event``) with per-monitor DPI awareness — not raw PyAutoGUI — so move,
+``mouse_event``) with per-monitor DPI awareness - not raw PyAutoGUI - so move,
 click, and drag match screen coordinates reliably on scaled displays.
 """
 
@@ -44,7 +44,7 @@ if app is not None:
 
 WHAT IT DOES:
 Moves, clicks, drags, and scrolls using **Win32** ``SetCursorPos`` / ``mouse_event``
-(DPI-aware), not PyAutoGUI alone — reliable move/click/drag on scaled monitors.
+(DPI-aware), not PyAutoGUI alone - reliable move/click/drag on scaled monitors.
 
 WHEN TO USE:
 - Use 'position' to get current screen coordinates before planning a movement.

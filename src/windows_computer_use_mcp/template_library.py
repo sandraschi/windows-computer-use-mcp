@@ -101,7 +101,7 @@ def ensure_placeholder_templates(app: str = "vroidstudio") -> list[str]:
     try:
         from PIL import Image
     except ImportError:
-        logger.warning("PIL not available — cannot create placeholder templates")
+        logger.warning("PIL not available - cannot create placeholder templates")
         return []
 
     created: list[str] = []

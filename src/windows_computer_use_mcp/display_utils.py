@@ -284,7 +284,7 @@ def translate_coords(x: int, y: int, monitor_index: int | None = None) -> tuple[
         monitor_index: Optional 0-based monitor index.
 
     Returns:
-        (virtual_x, virtual_y) — absolute virtual screen coordinates.
+        (virtual_x, virtual_y) - absolute virtual screen coordinates.
     """
     if monitor_index is not None:
         ox, oy = get_monitor_origin(monitor_index)

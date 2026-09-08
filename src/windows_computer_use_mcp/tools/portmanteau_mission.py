@@ -101,7 +101,7 @@ def _call_tool(tool_name: str, params: dict) -> ToolResult:
 
     sig = inspect.signature(fn)
     if any(p.annotation is Context or str(p.annotation) == "Context" for p in sig.parameters.values()):
-        return ToolResult(status="error", message=f"Tool {tool_name} requires Context — cannot call inline")
+        return ToolResult(status="error", message=f"Tool {tool_name} requires Context - cannot call inline")
 
     try:
         request_type = None
@@ -162,11 +162,11 @@ async def _run_steps(steps: list[dict], ctx: Context | None, mission_id: str, la
         app_path = step.get("app_path")
         if not _check_window_alive(window_handle) and app_path:
             if ctx:
-                await ctx.info(f"Window lost — re-launching {app_path}")
+                await ctx.info(f"Window lost - re-launching {app_path}")
             if _relaunch_app(app_path):
                 time.sleep(2)
             else:
-                logger.warning("Could not re-launch %s — skipping step", app_path)
+                logger.warning("Could not re-launch %s - skipping step", app_path)
                 consecutive_failures += 1
                 results.append(
                     {
@@ -298,7 +298,7 @@ async def _run_steps(steps: list[dict], ctx: Context | None, mission_id: str, la
         if consecutive_failures >= _MAX_CONSECUTIVE_FAILURES:
             logger.warning("Aborting mission: %d consecutive failures", consecutive_failures)
             if ctx:
-                await ctx.info(f"Aborting — {consecutive_failures} consecutive failures.")
+                await ctx.info(f"Aborting - {consecutive_failures} consecutive failures.")
             break
 
     _MISSIONS[mission_id]["status"] = "complete"
@@ -473,7 +473,7 @@ if app is not None:
 
 WHAT IT DOES:
 This tool elevates automation from individual clicks to high-level objectives.
-Give it a natural-language goal — it decomposes into steps, executes each with
+Give it a natural-language goal - it decomposes into steps, executes each with
 retry + verification, and returns pass/fail with evidence.
 
 WHEN TO USE:

@@ -1,4 +1,4 @@
-"""Task runner portmanteau — closed-loop computer use assistant."""
+"""Task runner portmanteau - closed-loop computer use assistant."""
 
 from __future__ import annotations
 
@@ -23,7 +23,7 @@ if app is not None:
 
     @app.tool(
         name="automation_task",
-        description="""Closed-loop task runner — the MVP computer use assistant.
+        description="""Closed-loop task runner - the MVP computer use assistant.
 
 WHAT IT DOES:
 Executes a list of steps (shortcut, dialog, wait_stable, assert_file, focus, screenshot, click, preflight)

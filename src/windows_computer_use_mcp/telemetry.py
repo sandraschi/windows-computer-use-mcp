@@ -1,4 +1,4 @@
-"""Telemetry SQLite store — logs every action for stats and adaptive learning."""
+"""Telemetry SQLite store - logs every action for stats and adaptive learning."""
 
 from __future__ import annotations
 
@@ -196,7 +196,7 @@ def get_best_strategy(tool: str, operation: str) -> str | None:
 
 
 # ---------------------------------------------------------------------------
-# Self-improving telemetry — failure analysis, issue drafts, weekly reports
+# Self-improving telemetry - failure analysis, issue drafts, weekly reports
 # ---------------------------------------------------------------------------
 
 
@@ -263,12 +263,12 @@ def _suggest_improvement(tool: str, operation: str, error: str, strategy: str | 
     if "access is denied" in error_lower or "permission" in error_lower:
         return "Run the MCP server as Administrator, or use a different input dispatch mode."
     if "coordinate" in error_lower or "out of range" in error_lower:
-        return "Check multi-monitor layout with automation_mouse(position) — set monitor_index if using a secondary display."
+        return "Check multi-monitor layout with automation_mouse(position) - set monitor_index if using a secondary display."
     if "focus" in error_lower or "foreground" in error_lower:
         return "Call automation_windows(focus, handle=...) before the operation, or set WINDOWS_COMPUTER_USE_MCP_DISPATCH=foreground."
 
     if strategy == "ocr" and "found" in error_lower:
-        return "OCR region may be wrong — try a larger region or switch OCR provider with WINDOWS_COMPUTER_USE_MCP_OCR_PROVIDER env."
+        return "OCR region may be wrong - try a larger region or switch OCR provider with WINDOWS_COMPUTER_USE_MCP_OCR_PROVIDER env."
 
     if tool == "automation_elements" and operation in ("click", "set_text"):
         return "Try automation_smart(click) or automation_smart(set_text) which uses intent-based fallback."
@@ -298,7 +298,7 @@ def generate_issue_draft(days: int = 7, max_clusters: int = 5) -> dict[str, str 
         "\n### Top Failure Clusters\n",
     ]
     for c in clusters:
-        body_lines.append(f"#### `{c['tool']}/{c['operation']}` — {c['count']}x")
+        body_lines.append(f"#### `{c['tool']}/{c['operation']}` - {c['count']}x")
         body_lines.append(f"- Error: `{c['error'][:150]}`")
         body_lines.append(f"- Strategy: {c['strategy_used'] or 'default'}")
         if c.get("suggestion"):

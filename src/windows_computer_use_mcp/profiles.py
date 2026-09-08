@@ -1,4 +1,4 @@
-"""App-specific automation profiles — YAML-based interaction blueprints.
+"""App-specific automation profiles - YAML-based interaction blueprints.
 
 Each profile defines how to detect, launch, shortcut, and verify a Windows application.
 Profiles live in ``profiles/`` (built-in) and ``~/.windows-computer-use-mcp/profiles/`` (user).

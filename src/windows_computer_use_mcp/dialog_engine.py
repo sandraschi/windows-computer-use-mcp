@@ -1,4 +1,4 @@
-"""File dialog path entry — clipboard paste preferred over char-by-char typing."""
+"""File dialog path entry - clipboard paste preferred over char-by-char typing."""
 
 from __future__ import annotations
 

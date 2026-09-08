@@ -1,4 +1,4 @@
-"""Win32 keyboard input — focus target HWND before SendInput."""
+"""Win32 keyboard input - focus target HWND before SendInput."""
 
 from __future__ import annotations
 

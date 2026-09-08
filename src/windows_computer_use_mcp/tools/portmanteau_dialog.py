@@ -1,4 +1,4 @@
-"""File dialog portmanteau — path entry with clipboard paste fallback."""
+"""File dialog portmanteau - path entry with clipboard paste fallback."""
 
 from __future__ import annotations
 
@@ -21,7 +21,7 @@ if app is not None:
 
     @app.tool(
         name="automation_dialog",
-        description="""Windows file dialog helpers — set path field and confirm.
+        description="""Windows file dialog helpers - set path field and confirm.
 
 WHAT IT DOES:
 Fills Save/Open/Export dialog path fields using clipboard paste (default) or typed

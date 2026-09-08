@@ -30,7 +30,7 @@ class DesktopStateCapture:
         """Capture desktop or single-window state.
 
         Args:
-            use_vision: Legacy flag — include annotated screenshot (som)
+            use_vision: Legacy flag - include annotated screenshot (som)
             use_ocr: Use OCR to enrich elements
             capture_mode: Cua-style mode: ax | som | vision (overrides use_* when set)
             window_handle: Scope capture to one HWND when set

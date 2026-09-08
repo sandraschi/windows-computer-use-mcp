@@ -191,7 +191,7 @@ if app is not None:
             # Ensure mouse button is released on error
             try:
                 pyautogui.mouseUp(button="left")
-            except:
+            except Exception:
                 pass
 
             return {"status": "error", "error": str(e), "error_type": type(e).__name__}

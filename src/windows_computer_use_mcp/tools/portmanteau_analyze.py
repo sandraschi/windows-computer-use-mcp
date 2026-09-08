@@ -1,4 +1,4 @@
-"""WinApp analysis tool — auto-crawl UI tree, screenshot portfolio, element maps.
+"""WinApp analysis tool - auto-crawl UI tree, screenshot portfolio, element maps.
 
 PORTMANTEAU RATIONALE:
 Instead of manually calling get_window_state + automation_windows + automation_visual

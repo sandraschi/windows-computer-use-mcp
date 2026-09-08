@@ -164,7 +164,7 @@ class UIElementWalker:
                 if current.control_type == "Window":
                     return current
                 current = current.parent()
-            except:
+            except Exception:
                 break
         return None
 

@@ -114,7 +114,7 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
                 "monitors": monitors,
             }
 
-            # Build region tuple — support monitor_index for per-monitor capture
+            # Build region tuple - support monitor_index for per-monitor capture
             region = None
             mi = None
             if request.monitor_index is not None:
@@ -266,7 +266,7 @@ If 'find_image' fails to meet the confidence threshold (default 0.8), consider d
                         )
                         confidences = [float(c) for c in data["conf"] if float(c) > 0]
                         avg_confidence = sum(confidences) / len(confidences) if confidences else 0
-                    except:
+                    except Exception:
                         avg_confidence = -1
 
                 return ToolResult(

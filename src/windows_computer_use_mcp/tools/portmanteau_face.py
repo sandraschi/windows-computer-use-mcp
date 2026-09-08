@@ -15,7 +15,7 @@ SUPPORTED OPERATIONS:
 - recognize: Recognize faces in an image
 - list: List all known faces
 - delete: Delete a known face
-- capture: Capture from a local camera (OpenCV index) and recognize — use built-in or USB UVC webcam; not Tapo/IP cameras
+- capture: Capture from a local camera (OpenCV index) and recognize - use built-in or USB UVC webcam; not Tapo/IP cameras
 """
 
 import base64
@@ -429,7 +429,7 @@ If 'capture' fails to open the camera, verify the 'camera_index' (0 is usually t
                 if not save_capture_path:
                     try:
                         os.unlink(image_input)
-                    except:
+                    except Exception:
                         pass
 
                 return ToolResult(

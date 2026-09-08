@@ -1,4 +1,4 @@
-"""Session recording / macros — record, replay, and verify UI automation sequences.
+"""Session recording / macros - record, replay, and verify UI automation sequences.
 
 PORTMANTEAU PATTERN RATIONALE:
 Consolidates macro operations (record, stop, replay, replay_with_verify, list)
