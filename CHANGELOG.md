@@ -35,6 +35,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Mission engine decomposed: `_run_steps()` extracted as shared executor so both goal-based and preset-based missions use the same pipeline.
 - HITL status changed from `"clarification_needed"` to `"error"` — agents were ignoring the soft status. Hard error with recovery instruction is actionable.
 
+### Fixed
+
+- **`fleet-start.config.ps1` `Backend.Kind` was `'uvicorn'`, backend is NSSM, under a different name than `Name`**: the real service is `mcp-pywinauto-mcp`, not `pywinauto-mcp`, so this needed both `Kind='nssm'` and an explicit `NssmService` override (`Start-FleetNssmWebapp` falls back to `Name` only when `NssmService` isn't set, which would look for a service that doesn't exist). Without the fix, a perfectly healthy NSSM-held port got reported as blocked and the launcher exited 1 — an instacrash on plain double-click even though the service was fine. While verifying the fix, separately found `/api/v1/health` returns a real 404 even though the app is up and the path matches what `health.py`'s own route listing declares — looks like a router-mounting issue in `server.py`'s FastAPI app (the console-script entry point NSSM was launching, `windows-computer-use-mcp` → `main.py:main()`, is a *different, legacy* entry point with no REST layer at all — `--http --port` there just configures FastMCP's own transport, not the FastAPI app in `server.py`). NSSM now launches `python -m windows_computer_use_mcp.server` instead, with `PORT` set explicitly. Same `Backend.Kind` bug found and fixed across `discord-mcp`, `email-mcp`, `tvtropes-mcp` the same day.
+
 ## [0.7.0] — 2026-06-15
 
 ### Added
