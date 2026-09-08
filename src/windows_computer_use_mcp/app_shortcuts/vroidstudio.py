@@ -1,4 +1,4 @@
-"""VRoid Studio semantic shortcut registry — shortcut-first automation.
+"""VRoid Studio semantic shortcut registry - shortcut-first automation.
 
 Official reference: https://vroid.pixiv.help/hc/en-us/articles/900006050066
 """
@@ -18,7 +18,7 @@ class ShortcutDef:
     category: str = "general"
 
 
-# Clicks only for sample tile + preset thumbnails — everything else is here.
+# Clicks only for sample tile + preset thumbnails - everything else is here.
 VROIDSTUDIO_SHORTCUTS: dict[str, ShortcutDef] = {
     "save": ShortcutDef("save", "ctrl+s", "Save project", category="file"),
     "save_as": ShortcutDef(

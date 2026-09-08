@@ -1,4 +1,4 @@
-"""Computer vision module — multi-scale matching, feature matching, visual search.
+"""Computer vision module - multi-scale matching, feature matching, visual search.
 
 Extends the basic ``find_image`` (single-scale template match) with:
 - Multi-scale template matching across a range of scales
@@ -118,7 +118,7 @@ def find_template_feature_match(
     min_matches: int = 10,
     ratio_threshold: float = 0.75,
 ) -> list[dict[str, Any]]:
-    """Find a template using ORB feature matching — handles rotation and perspective changes.
+    """Find a template using ORB feature matching - handles rotation and perspective changes.
 
     Args:
         template_path: Path to the template image.

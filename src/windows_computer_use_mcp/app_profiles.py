@@ -1,4 +1,4 @@
-"""Per-application automation profiles — foreground policy, window title, regions."""
+"""Per-application automation profiles - foreground policy, window title, regions."""
 
 from __future__ import annotations
 
@@ -45,7 +45,7 @@ PROFILES: dict[str, AppProfile] = {
         window_title="VRoid Studio",
         dispatch="foreground",
         keyboard_backend="win32",
-        description="Unity GPU app — always foreground, shortcut-first",
+        description="Unity GPU app - always foreground, shortcut-first",
         stable_region=RegionMask(
             280,
             120,
@@ -68,14 +68,14 @@ PROFILES: dict[str, AppProfile] = {
         window_title="LibreOffice",
         dispatch="background",
         keyboard_backend="pyautogui",
-        description="Calc/Writer — background UIA often works",
+        description="Calc/Writer - background UIA often works",
     ),
     "kicad": AppProfile(
         app_id="kicad",
         window_title="KiCad",
         dispatch="foreground",
         keyboard_backend="win32",
-        description="EDA — schematic/PCB design, no API, shortcut-first",
+        description="EDA - schematic/PCB design, no API, shortcut-first",
         stable_region=RegionMask(0, 80, 1920, 1040, label="canvas"),
         template_version="default",
     ),

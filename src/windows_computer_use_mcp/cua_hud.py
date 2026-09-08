@@ -1,4 +1,4 @@
-"""CUA HUD overlay — "CUA at work" blinking red + e-stop button.
+"""CUA HUD overlay - "CUA at work" blinking red + e-stop button.
 
 Spawning a HUD:
     hud = CuaHUD()
@@ -38,7 +38,7 @@ class CuaHUD:
         try:
             import tkinter as tk
         except ImportError:
-            logger.warning("tkinter not available — HUD disabled")
+            logger.warning("tkinter not available - HUD disabled")
             return
 
         root = tk.Tk()

@@ -82,7 +82,7 @@ def compute_sha256(image: Image.Image) -> str:
 
 
 def compute_dhash(image: Image.Image, hash_size: int = 8) -> str:
-    """Difference hash — 64-bit hex, tolerant of minor rendering noise."""
+    """Difference hash - 64-bit hex, tolerant of minor rendering noise."""
     gray = image.convert("L").resize((hash_size + 1, hash_size), Image.Resampling.LANCZOS)
     pixels = list(gray.getdata())
     bits: list[int] = []
@@ -199,7 +199,7 @@ def wait_stable(
                 last_path = str(snap)
 
         if image_path:
-            # Static file — one read is enough for testing; simulate one stable frame
+            # Static file - one read is enough for testing; simulate one stable frame
             return {
                 "stable": True,
                 "frames_observed": 1,
