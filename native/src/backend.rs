@@ -97,7 +97,10 @@ pub fn materialize_backend(app: &AppHandle) -> Result<PathBuf, String> {
         app,
         &format!("using bundled backend: {}", bundled.display()),
     );
-    Ok(bundled)
+    // Strip Windows extended-length prefix
+    let s = bundled.to_string_lossy().to_string();
+    let clean = s.strip_prefix("\\\\?\\").map(PathBuf::from).unwrap_or(bundled.clone());
+    Ok(clean)
 }
 
 fn free_port(port: u16) -> bool {
