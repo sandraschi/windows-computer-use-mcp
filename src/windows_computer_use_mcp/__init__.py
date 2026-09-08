@@ -1,4 +1,4 @@
-"""PyWinAuto MCP — Windows UI automation via FastMCP."""
+"""PyWinAuto MCP - Windows UI automation via FastMCP."""
 
 from .main import app as mcp
 from .main import main

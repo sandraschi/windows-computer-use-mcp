@@ -22,7 +22,7 @@ router = APIRouter(tags=["safety"])
 
 @router.get("/status", response_model=dict[str, Any])
 async def safety_status() -> dict[str, Any]:
-    """Counters, env flags, face opt-in, HITL window — same payload as MCP tool."""
+    """Counters, env flags, face opt-in, HITL window - same payload as MCP tool."""
     gate = get_gate()
     snap = gate.snapshot()
     return {

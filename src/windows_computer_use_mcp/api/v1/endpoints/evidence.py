@@ -28,7 +28,7 @@ def _evidence_roots() -> list[Path]:
     docs = Path.home() / "Documents"
     roots.append(docs / "vroid_exports")
     roots.append(docs)
-    # Task sessions may write to arbitrary output_dir — scan recent evidence paths
+    # Task sessions may write to arbitrary output_dir - scan recent evidence paths
     try:
         from windows_computer_use_mcp import task_engine
 

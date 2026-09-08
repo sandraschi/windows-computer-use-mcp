@@ -21,7 +21,7 @@ DEFAULT_BASE = os.getenv("PYWINAUTO_LLM_BASE_URL", "http://127.0.0.1:11434/v1").
 
 REFINER_SYSTEM = """You are a prompt-refinement assistant for operators using pywinauto-mcp (Windows desktop automation).
 Rewrite the user's message to be clearer, more specific, and easier for a coding/automation assistant to act on.
-Output only the refined prompt text — no quotes, no preamble, no markdown fences."""
+Output only the refined prompt text - no quotes, no preamble, no markdown fences."""
 
 
 def _allowed_llm_base(url: str) -> bool:
@@ -153,7 +153,7 @@ async def chat_completions(body: ChatRequest) -> ChatResponse:
         text = msg.get("content")
         return ChatResponse(content=text, model=data.get("model"))
     except (KeyError, IndexError, TypeError) as e:
-        return ChatResponse(content=None, raw_error=f"Unexpected response shape: {e!s} — {data!s}"[:4000])
+        return ChatResponse(content=None, raw_error=f"Unexpected response shape: {e!s} - {data!s}"[:4000])
 
 
 @router.post("/refine", response_model=ChatResponse)

@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["cameras"])
 
-# Probe indices [0, MAX_INDEX) — some systems expose many virtual devices; cap is configurable.
+# Probe indices [0, MAX_INDEX) - some systems expose many virtual devices; cap is configurable.
 _DEFAULT_MAX = 10
 MAX_CAMERA_INDEX = min(
     int(os.getenv("windows_computer_use_mcp_CAMERA_MAX_INDEX", str(_DEFAULT_MAX))),
