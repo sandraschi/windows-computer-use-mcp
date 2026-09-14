@@ -3,9 +3,17 @@
 Stdlib only -- must run before any packaged dependency is guaranteed installed.
 
 Usage:
-    uv run python mcpb/verify_pack.py import <mcpb_src_dir> <entry_module>
+    uv run python mcpb/verify_pack.py import <mcpb_src_dir> <entry_module_or_file> <package_name>
     uv run python mcpb/verify_pack.py ast <entry_point_file>
     uv run python mcpb/verify_pack.py pollution <mcpb_dir>
+
+The import check accepts either a dotted module path resolvable under
+mcpb_src_dir (e.g. "pkg.server", the style in MCPB_PACKAGING_STANDARDS.md
+section 2.2's example manifest) or a standalone bootstrap script path (e.g.
+"mcpb/run_server.py") that itself does sys.path setup and imports the real
+package - the latter is the more common pattern fleet-wide per section 2.5's
+own "entry_point: run_server.py" discussion, and needs runpy execution
+instead of importlib, since it generally isn't itself an importable module.
 
 Exits 0 and prints "OK ..." on pass; exits 1 and prints "FAIL ..." on failure.
 """
@@ -15,21 +23,34 @@ from __future__ import annotations
 import ast
 import builtins
 import importlib
+import runpy
 import sys
 from pathlib import Path
 
 
-def check_import(stage_dir: str, entry_module: str) -> None:
-    """Resolve entry_module with stage_dir inserted at the front of sys.path;
-    assert it actually loaded from there and not from some other installed
-    copy (site-packages, an editable install, a stale twin)."""
+def check_import(stage_dir: str, entry_module_or_file: str, package_name: str) -> None:
+    """Load the entry point with stage_dir inserted at the front of sys.path;
+    assert the target package actually resolved from there and not from some
+    other installed copy (site-packages, an editable install, a stale twin)."""
     stage = Path(stage_dir).resolve()
     sys.path.insert(0, str(stage))
-    mod = importlib.import_module(entry_module)
+
+    entry_path = Path(entry_module_or_file)
+    if entry_path.suffix == ".py" and entry_path.exists():
+        # Standalone wrapper script (e.g. run_server.py) - run its top-level
+        # code (imports, sys.path setup) without triggering `if __name__ ==
+        # "__main__":`, by giving it a run_name that isn't "__main__".
+        runpy.run_path(str(entry_path), run_name="__mcpb_verify__")
+        mod = sys.modules.get(package_name)
+        if mod is None:
+            raise SystemExit(f"FAIL import: running {entry_path} never imported {package_name!r}")
+    else:
+        mod = importlib.import_module(entry_module_or_file)
+
     origin = Path(mod.__file__).resolve()
     if stage not in origin.parents:
-        raise SystemExit(f"FAIL import: {entry_module} resolved to {origin}, not under {stage}")
-    print(f"OK import: {entry_module} -> {origin}")
+        raise SystemExit(f"FAIL import: {package_name} resolved to {origin}, not under {stage}")
+    print(f"OK import: {package_name} -> {origin}")
 
 
 def _target_names(node: ast.AST) -> set[str]:
