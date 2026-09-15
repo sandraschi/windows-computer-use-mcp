@@ -6,6 +6,7 @@ The `run` operation decomposes a natural-language goal into steps,
 executes each with retry + verification, and returns pass/fail per step.
 """
 
+import asyncio
 import logging
 import time
 import uuid
@@ -164,7 +165,7 @@ async def _run_steps(steps: list[dict], ctx: Context | None, mission_id: str, la
             if ctx:
                 await ctx.info(f"Window lost - re-launching {app_path}")
             if _relaunch_app(app_path):
-                time.sleep(2)
+                await asyncio.sleep(2)
             else:
                 logger.warning("Could not re-launch %s - skipping step", app_path)
                 consecutive_failures += 1
