@@ -117,16 +117,11 @@ test:
 
 # Execute Ruff SOTA v13.1 linting
 lint:
-    uv run ruff check .
-    Set-Location '{{justfile_directory()}}\web_sota'
-    npx @biomejs/biome ci .
+    uv run ruff check .; Set-Location '{{justfile_directory()}}\web_sota'; npx @biomejs/biome ci .
 
 # Execute Ruff SOTA v13.1 fix and formatting
 fix:
-    uv run ruff check . --fix --unsafe-fixes
-    uv run ruff format .
-    Set-Location '{{justfile_directory()}}\web_sota'
-    npx @biomejs/biome check --write .
+    uv run ruff check . --fix --unsafe-fixes; uv run ruff format .; Set-Location '{{justfile_directory()}}\web_sota'; npx @biomejs/biome check --write .
 
 # Format code with ruff
 format:
