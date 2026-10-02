@@ -4,9 +4,9 @@
 Same idea as cua-smoke.py but WITHOUT the NSIS install/uninstall phases:
 spins up backend + frontend (via the repo's start.ps1), waits for the
 "Connected" badge (webapps show "Connecting..." for a few seconds while the
-backend comes up), then walks the sidebar with title-matching UIA clicks.
+backend comes up), then walks every sidebar page discovered from the live UI.
 
-CUA_WEBAPP_TEST_VERSION = 1
+CUA_WEBAPP_TEST_VERSION = 2 (v2: pages are discovered, not configured; no stale page list)
 
 Phases:
     1. Kill stale processes (backend/frontend ports)
@@ -15,12 +15,14 @@ Phases:
     4. Wait for frontend (config frontend_port) HTTP 200
     5. Open browser to frontend URL
     6. Wait for "Connected" badge (OCR, retry w/ timeout — the wrinkle)
-    7. Nav walk: title-matching sidebar clicks, per-page screenshots
+    7. Nav walk: discover sidebar links from the UI, invoke each, per-page screenshots,
+       fail if a page does not visibly change
     8. Diagnostics check (if backend exposes /api/v1/diagnostics)
     9. Cleanup: kill spawned processes
 """
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -32,7 +34,7 @@ import urllib.request
 from contextlib import suppress
 from pathlib import Path
 
-CUA_WEBAPP_TEST_VERSION = 1
+CUA_WEBAPP_TEST_VERSION = 2
 DEFAULT_CONFIG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cua-nsis-config.json")
 _CONFIG = {}
 
@@ -105,8 +107,8 @@ def kill_stale():
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as f:
             f.write(ps)
-        subprocess.run(  # noqa: S603 - fixed literal command array, local test script
-            ["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", path],  # noqa: S607 - powershell on PATH by fleet standard
+        subprocess.run(
+            ["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", path],
             capture_output=True,
             timeout=15,
         )
@@ -133,12 +135,12 @@ def start_stack():
                 env.pop(v, None)
             env["FLEET_PROBE_RUN"] = "1"
             env["FLEET_PROBE_LOG_DIR"] = str(repo_root / "cua-reports" / "logs")
-            subprocess.Popen(  # noqa: S603 - fixed literal command array, local test script
+            subprocess.Popen(
                 [
                     "powershell.exe",
                     "-NoProfile",
                     "-ExecutionPolicy",
-                    "Bypass",  # noqa: S607 - powershell on PATH by fleet standard
+                    "Bypass",
                     "-File",
                     str(start_ps1),
                     "-Headless",
@@ -158,11 +160,11 @@ def start_stack():
         log("No backend_module in config — cannot direct-spawn backend")
         return False
     log(f"Direct spawn fallback: python -m {module}")
-    subprocess.Popen(  # noqa: S603 - fixed literal command array, local test script
+    subprocess.Popen(
         [
             "powershell.exe",
             "-NoProfile",
-            "-Command",  # noqa: S607 - powershell on PATH by fleet standard
+            "-Command",
             f"Set-Location '{repo_root}'; $env:BACKEND_PORT='{BACKEND_PORT}'; uv run python -m {module}",
         ],
         cwd=str(repo_root),
@@ -178,11 +180,11 @@ def wait_backend():
     deadline = time.time() + int(cfg("backend_timeout", 30))
     while time.time() < deadline:
         try:
-            r = urllib.request.urlopen(url, timeout=3)  # noqa: S310 - localhost health poll from config
+            r = urllib.request.urlopen(url, timeout=3)
             if r.status == 200:
                 log(f"Backend ready ({url})")
                 return True
-        except Exception:  # noqa: S110 - poll loop, backoff handled by time.sleep below
+        except Exception:
             pass
         time.sleep(2)
     log(f"Backend not reachable at {url}")
@@ -202,7 +204,7 @@ def wait_frontend():
             if r.status == 200:
                 log(f"Frontend ready ({url})")
                 return True
-        except Exception:  # noqa: S110 - poll loop, backoff handled by time.sleep below
+        except Exception:
             pass
         time.sleep(2)
     log(f"Frontend not reachable at {url}")
@@ -215,7 +217,7 @@ def open_browser():
         return True
     url = f"http://127.0.0.1:{FRONTEND_PORT}"
     try:
-        subprocess.Popen(["cmd", "/c", "start", "", url])  # noqa: S603, S607 - fixed literal, cmd.exe on PATH by design
+        subprocess.Popen(["cmd", "/c", "start", "", url])
         log(f"Opened browser: {url}")
         return True
     except Exception as e:
@@ -242,7 +244,7 @@ def find_webapp_window():
             try:
                 if w.descendants(control_type="Hyperlink"):
                     return w
-            except Exception:  # noqa: S110 - try each candidate, fall through on failure
+            except Exception:
                 pass
         return candidates[0]
     except Exception:
@@ -279,7 +281,7 @@ def wait_connected_badge(timeout=None):
                 # If we see connecting text, keep waiting (not an error)
                 if any(k in text for k in CONNECTING_KEYWORDS):
                     log("  Still connecting...")
-            except Exception:  # noqa: S110 - OCR/window failures are retried by the poll loop
+            except Exception:
                 pass
         time.sleep(2)
     if win is None:
@@ -289,51 +291,115 @@ def wait_connected_badge(timeout=None):
     return win, text
 
 
-def nav_click_through(output_dir, win):
-    """Title-matching sidebar walk (same strategy as cua-smoke template v3)."""
-    nav_routes = cfg("nav_routes", [])
-    if not isinstance(nav_routes, list) or not nav_routes:
-        log("No nav_routes in config — nav walk skipped")
-        return True
-    os.makedirs(output_dir, exist_ok=True)
+def _sidebar_links(win):
+    """Sidebar links read from the live UI, top to bottom, as [(label, element)].
+
+    The sidebar is the largest group of visible, labelled Hyperlinks sharing one x-extent,
+    so in-page links elsewhere on the page are not mistaken for navigation.
+    """
+    columns = {}
+    for el in win.descendants(control_type="Hyperlink"):
+        try:
+            label = (el.window_text() or "").strip()
+            if not label or not el.is_visible():
+                continue
+            rect = el.rectangle()
+        except Exception:
+            continue
+        columns.setdefault((rect.left, rect.right), []).append((rect.top, label, el))
+    if not columns:
+        return []
+    seen, links = set(), []
+    for _top, label, el in sorted(max(columns.values(), key=len), key=lambda item: item[0]):
+        if label not in seen:
+            seen.add(label)
+            links.append((label, el))
+    return links
+
+
+def _invoke(el):
+    """Navigate without the mouse. UIA Invoke also works for links scrolled out of view
+    (a tall sidebar's last entries sit below the window edge, where a click misses)."""
     try:
+        el.invoke()
+    except Exception:
+        el.click_input()
+
+
+def _log_nav_changes(output_dir, labels):
+    """Say when pages were added or removed since the last run, then remember this run."""
+    path = os.path.join(output_dir, "nav-last.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            before = json.load(f)
+    except (OSError, ValueError):
+        before = None
+    if before is not None:
+        added = [label for label in labels if label not in before]
+        removed = [label for label in before if label not in labels]
+        if added or removed:
+            log(f"Sidebar changed since last run: added {added}, removed {removed}")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(labels, f)
+
+
+def nav_click_through(output_dir, win):
+    """Walk every page the sidebar actually offers. There is no page list to maintain.
+
+    Pages are discovered from the live UI on each run, so adding or deleting a sidebar entry
+    needs no config change. It fails (never passes vacuously) when no sidebar is found or a
+    page does not visibly change after navigation. Optional config `nav_must_include`
+    (labels) guards against discovery regressions; legacy `nav_routes` is ignored.
+    """
+    os.makedirs(output_dir, exist_ok=True)
+    with suppress(Exception):  # maximize is best-effort
         win.maximize()
         time.sleep(1)
-    except Exception:  # noqa: S110 - maximize is best-effort
-        pass
 
-    nav_failures = []
-    for label, _expected in nav_routes:
-        try:
-            link = win.descendants(title=label)
-            if link:
-                link[0].click_input()
-            else:
-                elements = win.descendants(control_type="Hyperlink")
-                el = [e for e in elements if label.lower() in (e.window_text() or "").lower()]
-                if el:
-                    el[0].click_input()
-                else:
-                    nav_failures.append((label, "no link found"))
-                    log(f"Nav '{label}': no link found — skipped")
-                    continue
-            time.sleep(2)
-            path = os.path.join(output_dir, f"webapp-{label.lower().replace(' ', '-')}.png")
-            win.capture_as_image().save(path)
-            log(f"Nav '{label}': clicked + screenshot ({os.path.getsize(path)} bytes)")
-        except Exception as e:
-            nav_failures.append((label, str(e)))
-            log(f"Nav '{label}' failed (non-fatal): {e}")
-    if nav_failures:
-        log(f"Nav failures: {nav_failures}")
+    labels = [label for label, _el in _sidebar_links(win)]
+    if not labels:
+        log("FAIL: no sidebar links discovered (icon-only collapsed sidebar, or nav is not <a> links)")
         return False
-    log(f"All {len(nav_routes)} pages navigated")
+    log(f"Discovered {len(labels)} sidebar pages: {', '.join(labels)}")
+    if cfg("nav_routes"):
+        log("config nav_routes is ignored: pages are discovered from the sidebar (you can remove it)")
+    _log_nav_changes(output_dir, labels)
+
+    failures = [
+        (label, "required by nav_must_include but not in sidebar")
+        for label in cfg("nav_must_include", [])
+        if label not in labels
+    ]
+    previous = None
+    for index, label in enumerate(labels, 1):
+        try:
+            el = dict(_sidebar_links(win)).get(label)
+            if el is None:
+                failures.append((label, "link disappeared during the walk"))
+                continue
+            _invoke(el)
+            time.sleep(2)
+            img = win.capture_as_image()
+            digest = hashlib.md5(img.tobytes(), usedforsecurity=False).hexdigest()
+            slug = re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-")
+            img.save(os.path.join(output_dir, f"webapp-{index:02d}-{slug}.png"))
+            if digest == previous:
+                failures.append((label, "screenshot identical to the previous page: navigation had no visible effect"))
+            previous = digest
+            log(f"Nav {index}/{len(labels)} '{label}': ok")
+        except Exception as e:
+            failures.append((label, str(e)))
+            log(f"Nav '{label}' failed: {e}")
+    if failures:
+        log(f"Nav failures: {failures}")
+        return False
+    log(f"All {len(labels)} discovered pages navigated, each visibly different from the last")
     return True
 
 
 def check_diagnostics():
     try:
-        r = urllib.request.urlopen(f"{BACKEND_URL}/api/v1/diagnostics", timeout=5)  # noqa: S310 - localhost diagnostics check
+        r = urllib.request.urlopen(f"{BACKEND_URL}/api/v1/diagnostics", timeout=5)
         data = json.loads(r.read())
         log(f"Diagnostics: HTTP {r.status}, tools={len(data.get('tools', [])) if isinstance(data, dict) else '?'}")
         return True
