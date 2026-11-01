@@ -4,6 +4,7 @@ const PAGES = [
 	{ route: "/", heading: "Automation Dashboard" },
 	{ route: "/targets", heading: "Automation Targets" },
 	{ route: "/tools", heading: "Tools" },
+	{ route: "/missions", heading: "Missions" },
 	{ route: "/elements", heading: "Element Inspector" },
 	{ route: "/windows", heading: "Window Manager" },
 	{ route: "/crawler", heading: "App Crawler" },

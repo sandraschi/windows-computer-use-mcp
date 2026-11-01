@@ -12,6 +12,7 @@ import { Dashboard } from "@/pages/dashboard";
 import { Elements } from "@/pages/elements";
 import { Help } from "@/pages/help";
 import Logging from "@/pages/Logging";
+import { Missions } from "@/pages/missions";
 import { Settings } from "@/pages/settings";
 import { Targets } from "@/pages/targets";
 import { Tools } from "@/pages/tools";
@@ -29,6 +30,7 @@ function App() {
 					<Route path="/biometrics" element={<Biometrics />} />
 					<Route path="/chat" element={<Chat />} />
 					<Route path="/tools" element={<Tools />} />
+					<Route path="/missions" element={<Missions />} />
 					<Route path="/targets" element={<Targets />} />
 					<Route path="/help" element={<Help />} />
 					<Route path="/settings" element={<Settings />} />

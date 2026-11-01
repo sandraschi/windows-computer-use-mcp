@@ -1,6 +1,7 @@
 import {
 	Activity,
 	BookOpen,
+	Bot,
 	ChevronLeft,
 	ChevronRight,
 	Crosshair,
@@ -30,6 +31,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 		{ href: "/elements", icon: Monitor, label: "UI Elements" },
 		{ href: "/crawler", icon: Search, label: "App Crawler" },
 		{ href: "/tools", label: "Tools Hub", icon: Wrench },
+		{ href: "/missions", label: "Missions", icon: Bot },
 		{ href: "/targets", label: "Targets", icon: Crosshair },
 		{ href: "/chat", label: "Local LLM", icon: MessageSquare },
 		{ href: "/help", label: "Help", icon: BookOpen },

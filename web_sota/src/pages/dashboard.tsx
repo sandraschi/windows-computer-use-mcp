@@ -470,10 +470,10 @@ export function Dashboard() {
 							Event watchers running right now
 						</p>
 						<Link
-							to="/tools"
+							to="/missions"
 							className="mt-1 inline-block text-xs text-amber-400 hover:underline"
 						>
-							Manage in Tools Hub -&gt;
+							Manage in Missions -&gt;
 						</Link>
 					</CardContent>
 				</Card>
