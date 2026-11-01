@@ -225,8 +225,9 @@ export function Dashboard() {
 						</Badge>
 					</div>
 					<p className="mt-1 text-sm font-medium text-slate-300">
-						Computer-use automation for Windows - an agent (or you via Tools
-						Hub) sees windows and elements, then clicks and types like a human.
+						Toolkit for building CUA agents on Windows - primitives an AI (or
+						you via Tools Hub) calls to see UI and click/type like a human, with
+						a built-in mission agent included.
 					</p>
 					<p className="mt-1 text-sm text-slate-400">
 						Find windows, read buttons and fields, click, type, screenshot, OCR.

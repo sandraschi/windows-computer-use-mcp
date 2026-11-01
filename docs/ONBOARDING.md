@@ -2,11 +2,12 @@
 
 ## What this is for
 
-**CUA tool (computer-use automation), and dangerous by nature.** Windows
-desktop automation for AI agents: find windows, click/type, screenshot/OCR,
-and run multi-step missions over native Windows UI. It does **not** replace a
-sandbox, a screen reader, or a test runner - it drives the real desktop you point
-it at, with human-in-the-loop approval for mutating actions.
+**Toolkit for building CUA agents on Windows (plus a built-in mission agent),
+and dangerous by nature.** Primitives an AI calls to find windows, click/type,
+screenshot/OCR, and run multi-step missions over native Windows UI. It does
+**not** replace a sandbox, a screen reader, or a test runner - it drives the
+real desktop you point it at, with human-in-the-loop approval for mutating
+actions.
 
 > Every click and keystroke hits the live session and can change or delete
 > real data. Start with read-only probes, keep HITL on, and use dry-run or a

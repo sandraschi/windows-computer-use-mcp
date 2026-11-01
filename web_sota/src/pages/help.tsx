@@ -139,9 +139,9 @@ export function Help() {
 				</Badge>
 			</div>
 			<p className="text-slate-300 text-sm mt-1">
-				Computer-use automation for Windows - an agent (or you) sees windows and
-				elements, then clicks and types like a human. Not a system monitor, not
-				RDP.
+				Toolkit for building CUA agents on Windows - primitives an AI (or you)
+				calls to see UI and click/type like a human, with a built-in mission
+				agent included. Not a system monitor, not RDP.
 			</p>
 			<p className="text-slate-400 text-sm mb-6">
 				Local reference. Full docs in the repo under{" "}
@@ -170,7 +170,7 @@ export function Help() {
 				<div className="space-y-4 text-sm text-slate-300">
 					<div className="bg-blue-950/20 border border-blue-800/50 rounded-lg p-4">
 						<p className="font-medium text-blue-400 mb-1">
-							CUA: see Windows UI, click and type like a human
+							Toolkit, not just a tool: primitives plus a mission agent
 						</p>
 						<p className="text-slate-400">
 							Find windows, read buttons and fields, click, type, screenshot,

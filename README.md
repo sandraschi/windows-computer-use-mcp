@@ -7,7 +7,7 @@
   <a href="https://fastmcp.com"><img src="https://img.shields.io/badge/FastMCP-3.2-7c5cfc?style=flat-square" alt="FastMCP"></a>
 </p>
 
-Computer-use agent (CUA) for Windows: let an AI see and operate your desktop - click buttons, type text, read windows, run whole missions autonomously. Built on pywinauto.
+Toolkit for building CUA agents on Windows - primitives an AI (or you) calls to see UI and click/type like a human, with a built-in mission agent included. Click buttons, type text, read windows, run whole missions autonomously. Built on pywinauto.
 
 > **Dangerous by nature:** every click and keystroke hits the live desktop and can change or delete real data. Keep HITL approval on; prefer dry-run or a VM sandbox (virtualization-mcp) for anything untrusted. Read **[docs/SAFETY.md](docs/SAFETY.md)** before production use.
 

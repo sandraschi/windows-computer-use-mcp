@@ -1,7 +1,8 @@
 # MCP tools reference
 
-**CUA tool:** computer-use automation - an agent (or you) sees Windows UI and
-clicks/types like a human. 22 portmanteau tools. All use `operation` enum. Responses are `ToolResult {status, message, data, recovery_tip}`.
+**Toolkit for building CUA agents:** primitives an AI (or you) calls to see
+Windows UI and click/type like a human, plus a built-in mission agent that
+composes them. 22 portmanteau tools. All use `operation` enum. Responses are `ToolResult {status, message, data, recovery_tip}`.
 
 > **Dangerous:** missions, clicks, and keystrokes hit the live desktop and can
 > change or delete real data. Keep HITL on; prefer dry-run or a VM sandbox for

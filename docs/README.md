@@ -1,8 +1,9 @@
 # Documentation index
 
-Hub for **windows-computer-use-mcp** - a **dangerous CUA tool**: computer-use
-automation that sees Windows UI and clicks/types like a human on the live
-desktop. Root overview: [README.md](../README.md). Releases: [CHANGELOG.md](../CHANGELOG.md).
+Hub for **windows-computer-use-mcp** - a toolkit for building CUA agents on
+Windows (plus a built-in mission agent): primitives an AI calls to see UI and
+click/type like a human on the live desktop. **Dangerous by nature.**
+Root overview: [README.md](../README.md). Releases: [CHANGELOG.md](../CHANGELOG.md).
 
 ## Core
 
