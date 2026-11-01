@@ -52,11 +52,13 @@ See **[INSTALL.md](INSTALL.md)** for detailed setup. Run `just demo` for example
 
 ## Features
 
-- **Window Management** — find, activate, maximize, minimize, position, close
-- **Mouse & Keyboard** — click, drag, type, hotkeys, app shortcuts
+- **Window Management** — find, activate, maximize, minimize, position, close, tray icons
+- **Mouse & Keyboard** — click, drag, type, hotkeys, app shortcuts, background PostMessage input (no cursor warp)
 - **UI Elements** — inspect, click, read text, verify state via UIA / Win32
 - **Visual Intelligence** — screenshots, OCR, template matching
-- **Autonomous Missions** — give it a goal, it plans and executes with retry + verification
+- **Tables & Virtual Lists** — scroll-and-recrawl crawl, table-to-rows/CSV extraction
+- **Autonomous Missions** — give it a goal, it plans and executes with retry + verification (preflight + UAC pause + app allowlist built in)
+- **Session Safety** — preflight liveness check, UAC detection, per-app allowlist, HITL, kill switch
 - **Macro Recording** — record any UI sequence, replay, verify outcomes
 - **Multi-App Workflows** — chain actions across Notepad, Calc, Paint, or any Windows app
 - **Telemetry** — every action logged to SQLite; query failure patterns by tool

@@ -13,7 +13,7 @@ const TABS = [
 const TOOLS = [
 	{
 		name: "automation_windows",
-		ops: "list, find, focus, maximize, close, position",
+		ops: "list, find, focus, maximize, close, position, tray_list, tray_click",
 		phase: "core",
 	},
 	{
@@ -23,12 +23,12 @@ const TOOLS = [
 	},
 	{
 		name: "automation_mouse",
-		ops: "click, double_click, right_click, scroll, drag, hover",
+		ops: "click, double_click, right_click, scroll, drag, hover, background_click",
 		phase: "core",
 	},
 	{
 		name: "automation_keyboard",
-		ops: "type, hotkey, press, hold",
+		ops: "type, hotkey, press, hold, background_type, background_key",
 		phase: "core",
 	},
 	{
@@ -58,7 +58,7 @@ const TOOLS = [
 	},
 	{
 		name: "automation_system",
-		ops: "status, info, clipboard, processes, telemetry",
+		ops: "status, info, clipboard, processes, telemetry, preflight, detect_uac",
 		phase: "2",
 	},
 	{
@@ -69,7 +69,7 @@ const TOOLS = [
 	{ name: "get_desktop_state", ops: "full desktop UI tree", phase: "core" },
 	{
 		name: "automation_mission",
-		ops: "run (autonomous), plan, workflow, status, cancel",
+		ops: "run (autonomous, preflight + UAC pause + allowlist), plan, workflow, status, cancel",
 		phase: "1,5",
 	},
 	{
@@ -89,7 +89,7 @@ const TOOLS = [
 	},
 	{
 		name: "automation_analyze",
-		ops: "crawl, discover, portfolio (WinApp UI tree)",
+		ops: "crawl, crawl_scroll, extract_table, discover, portfolio (WinApp UI tree)",
 		phase: "core",
 	},
 	{
@@ -474,6 +474,18 @@ export function Help() {
 						<li>
 							<strong className="text-slate-200">Dry-run mode</strong> — count
 							actions without executing them
+						</li>
+						<li>
+							<strong className="text-slate-200">Per-app allowlist</strong> —{" "}
+							<code className="text-slate-300">
+								WINDOWS_COMPUTER_USE_MCP_ALLOWED_APPS=notepad.exe,calc.exe
+							</code>{" "}
+							blocks window-targeted mutations outside the list
+						</li>
+						<li>
+							<strong className="text-slate-200">Session preflight</strong> —{" "}
+							missions refuse to start on a locked session or UAC prompt
+							(`automation_system(preflight)`), and pause for UAC mid-run
 						</li>
 						<li>
 							<strong className="text-slate-200">Retry policy</strong> —
