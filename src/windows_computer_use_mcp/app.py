@@ -51,12 +51,14 @@ try:
 
 except ImportError as e:
     logger.critical(f"Failed to import FastMCP: {e}")
-    logger.critical("Please install FastMCP 3.4+ using: pip install fastmcp>=3.4.0")
-    app = None
+    logger.critical("Repair the venv from uv.lock: uv sync --frozen --inexact")
+    # Re-raise: continuing with app=None only moves the crash to the first
+    # @app.tool decorator and hides the real missing module (pitfall #47).
+    raise
     package_version = _fallback_version
 except Exception as e:
     logger.critical(f"Error creating FastMCP app: {e}", exc_info=True)
-    app = None
+    raise
     package_version = _fallback_version
 
 # Check OCR dependencies
