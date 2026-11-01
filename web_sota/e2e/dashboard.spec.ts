@@ -11,9 +11,9 @@ test.describe("Dashboard", () => {
 		expect(count).toBeGreaterThanOrEqual(4);
 	});
 
-	test("shows host metrics after loading", async ({ page }) => {
+	test("shows automation KPIs after loading", async ({ page }) => {
 		await page.goto("/");
-		await expect(page.getByText(/CPU|Memory|Disk/)).toBeVisible({
+		await expect(page.getByText(/Windows open|Tools ready/)).toBeVisible({
 			timeout: 10000,
 		});
 	});

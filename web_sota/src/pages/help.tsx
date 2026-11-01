@@ -5,9 +5,9 @@ const TABS = [
 	{ id: "start", label: "Quick Start" },
 	{ id: "features", label: "Features" },
 	{ id: "tools", label: "Tools (22)" },
-	{ id: "missions", label: "Autonomous" },
+	{ id: "missions", label: "CUA Missions" },
 	{ id: "safety", label: "Safety" },
-	{ id: "docker", label: "Dogfooding" },
+	{ id: "docker", label: "Self-test" },
 ];
 
 const TOOLS = [
@@ -119,9 +119,30 @@ export function Help() {
 
 	return (
 		<div className="p-6 max-w-5xl">
-			<h1 className="text-2xl font-semibold tracking-tight text-white mb-1">
-				Help
-			</h1>
+			<div className="flex flex-wrap items-center gap-2">
+				<h1 className="text-2xl font-semibold tracking-tight text-white">
+					Help
+				</h1>
+				<Badge
+					variant="outline"
+					className="border-blue-500/40 text-blue-400"
+					title="Computer-use automation: this tool sees Windows UI and clicks/types like a human"
+				>
+					CUA tool
+				</Badge>
+				<Badge
+					variant="outline"
+					className="border-red-500/50 text-red-400"
+					title="Every click and keystroke hits the live Windows session"
+				>
+					Dangerous - live desktop control
+				</Badge>
+			</div>
+			<p className="text-slate-300 text-sm mt-1">
+				Computer-use automation for Windows - an agent (or you) sees windows and
+				elements, then clicks and types like a human. Not a system monitor, not
+				RDP.
+			</p>
 			<p className="text-slate-400 text-sm mb-6">
 				Local reference. Full docs in the repo under{" "}
 				<code className="text-slate-300">docs/</code>.
@@ -147,6 +168,16 @@ export function Help() {
 			{/* Tab content */}
 			{tab === "start" && (
 				<div className="space-y-4 text-sm text-slate-300">
+					<div className="bg-blue-950/20 border border-blue-800/50 rounded-lg p-4">
+						<p className="font-medium text-blue-400 mb-1">
+							CUA: see Windows UI, click and type like a human
+						</p>
+						<p className="text-slate-400">
+							Find windows, read buttons and fields, click, type, screenshot,
+							OCR. Missions plan and execute whole tasks; macros replay
+							sequences; watchers wait for UI events.
+						</p>
+					</div>
 					<div className="bg-slate-950/50 border border-slate-800 rounded-lg p-4">
 						<p className="text-slate-400 text-xs uppercase tracking-wider mb-2">
 							Exhibit A
@@ -334,6 +365,10 @@ export function Help() {
 
 			{tab === "missions" && (
 				<div className="space-y-4 text-sm text-slate-300">
+					<p className="text-slate-400">
+						This is the CUA core: give a goal in words, the tool sees the UI and
+						acts - no hand-written selectors needed.
+					</p>
 					<div className="bg-slate-950/50 border border-slate-800 rounded-lg p-4">
 						<h3 className="text-emerald-400 font-medium mb-2">
 							Automation mission (autonomous)
@@ -404,14 +439,17 @@ export function Help() {
 
 			{tab === "safety" && (
 				<div className="space-y-4 text-sm text-slate-300">
-					<div className="bg-amber-950/20 border border-amber-800/50 rounded-lg p-4">
-						<p className="font-medium text-amber-400 mb-1">
-							This server drives the real Windows session.
+					<div className="bg-red-950/30 border border-red-500/50 rounded-lg p-4">
+						<p className="font-medium text-red-300 mb-1">
+							Dangerous: this server drives the real Windows session.
 						</p>
-						<p className="text-slate-400">
-							It is not browser-sandboxed. Read{" "}
+						<p className="text-red-200/80">
+							Every click, keystroke, and mission step hits live apps and files.
+							It can move windows, overwrite documents, install or uninstall
+							software, and delete data. It is not browser-sandboxed. Read{" "}
 							<code className="text-slate-300">docs/SAFETY.md</code> before
-							production use.
+							production use - prefer dry-run or a VM sandbox
+							(virtualization-mcp) for anything untrusted.
 						</p>
 					</div>
 
@@ -492,6 +530,10 @@ export function Help() {
 
 			{tab === "docker" && (
 				<div className="space-y-4 text-sm text-slate-300">
+					<p className="text-slate-400">
+						CUA proving CUA: the repo uses its own click-and-type tools to
+						install, drive, and verify its own installer.
+					</p>
 					<div className="bg-slate-950/50 border border-slate-800 rounded-lg p-4">
 						<h3 className="text-emerald-400 font-medium mb-2">
 							CUA-NSIS certification
