@@ -35,11 +35,16 @@ actions.
 
 1. Complete [INSTALL.md](../INSTALL.md) (installer or `start.ps1`).
 2. Start the backend: `start.ps1 -BackendOnly`, wait for `/api/v1/health` 200.
-3. Approve automation for your session: `approve_automation(duration_minutes=30)`.
-4. List windows: `automation_windows` with `operation=list` - you should see
+3. Run preflight before anything else: `automation_system` with
+   `operation=preflight` - it fails fast on a locked screen, UAC prompt, or
+   short resources instead of failing at step 7 of 12.
+4. Approve automation for your session: `approve_automation(duration_minutes=30)`.
+5. List windows: `automation_windows` with `operation=list` - you should see
    your real desktop windows.
-5. Try a read-only probe first: `automation_visual` screenshot, or
+6. Try a read-only probe first: `automation_visual` screenshot, or
    `get_desktop_state`, before any click/type.
+7. Drive the webapp: `start.ps1` → Dashboard (automation KPIs + Host health),
+   Missions page (run/plan missions, replay macros, manage watchers).
 
 ## Pitfalls
 

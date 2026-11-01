@@ -2,6 +2,23 @@
 
 Vite + React dashboard for windows-computer-use-mcp. See root [README.md](../README.md) for the full stack.
 
+## Routes
+
+| Route | Page |
+|---|---|
+| `/` | Dashboard — CUA KPIs (windows, tools, safety gate, watchers) + host health |
+| `/missions` | Missions — run/plan missions, replay macros, manage watchers (live bridge) |
+| `/windows` | Window Manager |
+| `/elements` | Element Inspector |
+| `/crawler` | App Crawler (`analyze_winapp`) |
+| `/tools` | Tools Hub — call any MCP tool raw |
+| `/targets` | Per-app automation targets + HITL bar |
+| `/chat` | Local LLM chat |
+| `/biometrics` | Face/keylogger opt-in status |
+| `/logs` | Logs |
+| `/settings` | Settings (LLM, safety, onboarding) |
+| `/help` | Help — CUA guide, 22-tool reference, safety layers |
+
 ## Dev
 
 ```powershell

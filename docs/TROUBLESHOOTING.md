@@ -1,5 +1,34 @@
 # Troubleshooting — windows-computer-use-mcp
 
+## Mission blocked by preflight (locked session / UAC / resources)
+
+`automation_mission(run)` refuses to start, or a workflow returns `blocked`
+with `preflight failed (...)`. Run `automation_system(preflight)` for the
+per-check breakdown:
+- `interactive_session` failed → unlock the session / restore the RDP window.
+  UIA cannot reach a locked or minimized desktop.
+- `uac_prompt` failed → a UAC consent prompt is on the secure desktop.
+  Approve or dismiss it on the physical console, then re-run. Missions pause
+  for UAC mid-run (`paused_uac`) — they do not fail through it.
+- `disk_free` / `memory_available` failed → free resources and retry.
+
+`automation_system(detect_uac)` tells a UAC prompt apart from a lock screen.
+
+## Background input ignored by a control
+
+`background_click` / `background_type` / `background_key` return success but
+nothing happens: the control ignores PostMessage input (common for custom,
+Electron, and IME/composed controls). Confirm with a screenshot, then fall
+back in this order: `automation_elements(set_text)` for text (UIA ValuePattern
+needs no focus either) → `dispatch="background"` element click (tries UIA
+invoke first) → foreground `click`/`type` with the window focused.
+
+## Mission blocked by the app allowlist
+
+`app_blocked` / `Mission stopped by app allowlist`: the target process is
+outside `WINDOWS_COMPUTER_USE_MCP_ALLOWED_APPS`. Either add the app or unset
+the variable. Unresolvable targets fail open (allowed, flagged `app_unknown`).
+
 ## Backend never becomes healthy (`start.ps1 -BackendOnly` times out)
 
 1. Check the port owner: `Get-NetTCPConnection -LocalPort 10789 -State Listen`.

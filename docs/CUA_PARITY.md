@@ -16,7 +16,7 @@
 
 **Intent:** Yes — that is what `dispatch=background` and per-window snapshots are for.
 
-**Reality (Phase 1):** Partial. Office UIA often accepts `invoke` / `click_input` without foreground; some controls still need `dispatch: "foreground"`. Coordinate fallback **moves the real cursor** — not true Cua no-warp yet.
+**Reality (Phase 6):** Element clicks try background first (`invoke` → `click_input` → PostMessage) per control, and coordinate/keyboard input has dedicated no-warp ops (`mouse background_click`, `keyboard background_type` / `background_key`). PostMessage delivery is unverifiable and some controls ignore it — confirm with screenshot/OCR and fall back to foreground. True zero-warp for *every* control type is still per-control work, not a solved default.
 
 Use a **dedicated MCP profile** (not default IDE webapp chain). Read [SAFETY.md](./SAFETY.md).
 
