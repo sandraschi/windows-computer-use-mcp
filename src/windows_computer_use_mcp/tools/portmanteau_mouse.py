@@ -50,6 +50,8 @@ Moves, clicks, drags, and scrolls using **Win32** ``SetCursorPos`` / ``mouse_eve
 WHEN TO USE:
 - Use 'position' to get current screen coordinates before planning a movement.
 - Use 'click' or 'double_click' for rapid UI interaction.
+- Use 'background_click' with a window_handle to click without moving the cursor
+  or stealing focus (PostMessage; some controls ignore it - fall back to 'click').
 - Use 'move_relative' to nudge the cursor from its current spot.
 - Use 'scroll' to browse lists or web pages.
 - Use 'telemetry' to visually debug coordinates on the user's screen.
@@ -137,9 +139,12 @@ A ToolResult object containing standardized outcome, message, and movement data.
                     pass
 
             try:
-                from windows_computer_use_mcp.safety import before_mutation
+                from windows_computer_use_mcp.safety import before_mutation, resolve_process_name
 
-                gate = before_mutation(read_only=(operation in read_only_ops))
+                target = None
+                if operation == "background_click" and request.window_handle is not None:
+                    target = resolve_process_name(request.window_handle)
+                gate = before_mutation(read_only=(operation in read_only_ops), target_process=target)
                 if not gate.get("allow"):
                     return ToolResult(status="blocked", message=gate.get("message", "Action blocked."))
                 if gate.get("dry_run"):
@@ -207,6 +212,31 @@ A ToolResult object containing standardized outcome, message, and movement data.
                     scroll(int(amount), horizontal=request.horizontal)
 
                 return ToolResult(status="success", message=f"Scrolled {amount} units.")
+
+            elif operation == "background_click":
+                if request.window_handle is None:
+                    return ToolResult(
+                        status="error",
+                        message="'window_handle' is required for 'background_click'.",
+                        recovery_tip="Use automation_windows(find) to get the HWND first.",
+                    )
+                if x is None or y is None:
+                    return ToolResult(
+                        status="error",
+                        message="Coordinates x, y are required for 'background_click'.",
+                        recovery_tip="Use automation_elements(info/rect) or a screenshot to pick the point.",
+                    )
+                from windows_computer_use_mcp.win32_window import postmessage_click_at
+
+                meta = postmessage_click_at(int(request.window_handle), int(x), int(y), button=btn)
+                return ToolResult(
+                    status="success",
+                    message=f"Background click at ({x}, {y}) in window {request.window_handle} "
+                    "(no cursor move, no focus change; delivery not verifiable - confirm with screenshot/OCR).",
+                    data={**meta, "window_handle": request.window_handle},
+                    recovery_tip="Some controls ignore PostMessage input - fall back to "
+                    "'click' (foreground) or dispatch='background' element click then.",
+                )
 
             elif operation == "drag":
                 if x is None or y is None or target_x is None or target_y is None:

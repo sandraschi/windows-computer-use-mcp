@@ -391,9 +391,9 @@ A ToolResult object containing standardized outcome, message, and element data.
             }
             if operation in _MUTATING:
                 try:
-                    from windows_computer_use_mcp.safety import before_mutation
+                    from windows_computer_use_mcp.safety import before_mutation, resolve_process_name
 
-                    gate = before_mutation(read_only=False)
+                    gate = before_mutation(read_only=False, target_process=resolve_process_name(window_handle))
                     if not gate.get("allow"):
                         return ToolResult(status="blocked", message=gate.get("message", "Action blocked."))
                     if gate.get("dry_run"):

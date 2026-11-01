@@ -250,6 +250,17 @@ A ToolResult object containing standardized outcome, message, and window metadat
                     recovery_tip="The handle may be stale. Use 'find' to get the current handle.",
                 )
 
+            # Per-app allowlist for mutating window ops (read-only ops skip).
+            if operation not in ("title", "rect", "state"):
+                try:
+                    from windows_computer_use_mcp.safety import check_app_allowed, resolve_process_name
+
+                    verdict = check_app_allowed(resolve_process_name(handle))
+                    if not verdict.get("allow"):
+                        return ToolResult(status="blocked", message=verdict.get("message", "Action blocked."))
+                except ImportError:
+                    pass
+
             # === OPERATION MAPPER ===
             # Many operations correspond to simple method calls on the window object
             # We map them here for reusability

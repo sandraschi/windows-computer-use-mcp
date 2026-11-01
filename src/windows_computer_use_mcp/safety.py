@@ -154,8 +154,13 @@ class MutationGate:
             "allowed_apps": parse_allowed_apps() or [],
         }
 
-    def before_mutation(self, *, read_only: bool) -> dict[str, Any]:
-        """Return whether to execute a mutating pyautogui/pywinauto action."""
+    def before_mutation(self, *, read_only: bool, target_process: str | None = None) -> dict[str, Any]:
+        """Return whether to execute a mutating UI action.
+
+        Order: kill switch -> dry-run -> per-app allowlist -> rate limit.
+        Blocked-by-allowlist actions do not consume rate budget. Unresolvable
+        targets fail open (allowed, code app_unknown) when an allowlist is set.
+        """
         if read_only:
             return {"allow": True, "dry_run": False, "code": "ok"}
 
@@ -175,6 +180,11 @@ class MutationGate:
                 "code": "dry_run",
                 "message": f"{ENV_DRY_RUN}=1: mutation not executed; counted for metrics.",
             }
+
+        if target_process is not None:
+            verdict = check_app_allowed(target_process)
+            if not verdict.get("allow"):
+                return verdict
 
         cap = int(os.getenv(ENV_MAX_PER_MINUTE, "120"))
         now = time.time()
@@ -202,8 +212,8 @@ def get_gate() -> MutationGate:
     return _gate
 
 
-def before_mutation(*, read_only: bool) -> dict[str, Any]:
-    return _gate.before_mutation(read_only=read_only)
+def before_mutation(*, read_only: bool, target_process: str | None = None) -> dict[str, Any]:
+    return _gate.before_mutation(read_only=read_only, target_process=target_process)
 
 
 def gate_invasive_monitoring() -> dict[str, Any]:

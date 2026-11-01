@@ -136,12 +136,19 @@ class MouseOperationRequest(BaseModel):
         "click",
         "double_click",
         "right_click",
+        "background_click",
         "scroll",
         "drag",
         "hover",
         "position",
         "telemetry",
     ] = Field(..., description="The mouse operation to perform.")
+
+    window_handle: int | None = Field(
+        None,
+        description="Target HWND for 'background_click' (PostMessage, no cursor move, "
+        "no focus change). Required for background_click, ignored otherwise.",
+    )
 
     x: int | None = Field(None, description="X coordinate or relative X offset.")
     y: int | None = Field(None, description="Y coordinate or relative Y offset.")
@@ -196,18 +203,24 @@ class KeyloggerOperationRequest(BaseModel):
 class KeyboardOperationRequest(BaseModel):
     """Request model for keyboard input operations."""
 
-    operation: Literal["type", "hotkey", "press", "release", "hold"] = Field(
+    operation: Literal["type", "hotkey", "press", "release", "hold", "background_type", "background_key"] = Field(
         ..., description="The keyboard operation to perform."
     )
 
-    text: str | None = Field(None, description="Text to type for 'type'.")
-    key: str | None = Field(None, description="Single key for 'press'.")
+    text: str | None = Field(None, description="Text to type for 'type' and 'background_type'.")
+    key: str | None = Field(
+        None, description="Single key for 'press' and 'background_key' (enter, tab, escape, arrows, F1-F12, ...)."
+    )
     keys: list[str] | None = Field(None, description="Key list for 'hotkey' or 'hold'.")
 
     presses: int = Field(1, description="Number of times to press the key.")
     interval: float = Field(0.0, description="Pause between characters for 'type'.")
     pause: float = Field(0.0, description="Pause between repeated presses.")
-    window_handle: int | None = Field(None, description="HWND to focus before send (win32 keyboard backend).")
+    window_handle: int | None = Field(
+        None,
+        description="HWND to focus before send (win32 keyboard backend), or the background "
+        "target for 'background_type' / 'background_key' (PostMessage, no focus change).",
+    )
 
 
 class VisualOperationRequest(BaseModel):

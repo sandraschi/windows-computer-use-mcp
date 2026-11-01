@@ -39,6 +39,10 @@ combinations ('hotkey'), and modifier-key holding ('hold').
 
 WHEN TO USE:
 - Use 'type' to enter text into boxes, editors, or command lines.
+- Use 'background_type' with a window_handle to type without focus changes
+  (PostMessage WM_CHAR; rich/IME input may need 'type' or element set_text).
+- Use 'background_key' with a window_handle for enter/tab/escape/arrows/F-keys
+  without focus changes.
 - Use 'press' for navigation keys (tab, enter, arrows, escape).
 - Use 'hotkey' for application shortcuts (ctrl+c, alt+f4, win+r).
 - Use 'hold' when you need to sustain a state (like Shift or Ctrl) while performing
@@ -103,9 +107,12 @@ A ToolResult object containing standardized outcome, message, and focus metadata
 
             # === SAFETY / DRY-RUN CHECK ===
             try:
-                from windows_computer_use_mcp.safety import before_mutation
+                from windows_computer_use_mcp.safety import before_mutation, resolve_process_name
 
-                gate = before_mutation(read_only=False)
+                target = None
+                if operation in ("background_type", "background_key") and request.window_handle is not None:
+                    target = resolve_process_name(request.window_handle)
+                gate = before_mutation(read_only=False, target_process=target)
                 if not gate.get("allow"):
                     return ToolResult(status="blocked", message=gate.get("message", "Action blocked."))
                 if gate.get("dry_run"):
@@ -167,6 +174,64 @@ A ToolResult object containing standardized outcome, message, and focus metadata
                     label="keyboard:hold",
                 )
                 return ToolResult(status="success", message=f"Executed held operation: {modifier} + {target}")
+
+            # === BACKGROUND TYPE OPERATION (PostMessage WM_CHAR, no focus change) ===
+            elif operation == "background_type":
+                if request.window_handle is None:
+                    return ToolResult(
+                        status="error",
+                        message="'window_handle' is required for 'background_type'.",
+                        recovery_tip="Use automation_windows(find) to get the HWND first.",
+                    )
+                if request.text is None:
+                    return ToolResult(status="error", message="Parameter 'text' is required for background_type.")
+                from windows_computer_use_mcp.win32_keyboard import postmessage_type
+
+                try:
+                    meta = postmessage_type(int(request.window_handle), request.text)
+                except Exception as e:
+                    return ToolResult(
+                        status="error",
+                        message=f"Background type failed: {e}",
+                        recovery_tip="Rich/IME input may ignore WM_CHAR - use 'type' (foreground) "
+                        "or automation_elements(set_text) instead.",
+                    )
+                return ToolResult(
+                    status="success",
+                    message=f"Typed {meta.get('characters_sent', 0)} characters into window "
+                    f"{request.window_handle} (background, no focus change; delivery not verifiable - "
+                    "confirm with screenshot/OCR or element get_text).",
+                    data={**meta, "window_handle": request.window_handle},
+                )
+
+            # === BACKGROUND KEY OPERATION (PostMessage WM_KEYDOWN/UP, no focus change) ===
+            elif operation == "background_key":
+                if request.window_handle is None:
+                    return ToolResult(
+                        status="error",
+                        message="'window_handle' is required for 'background_key'.",
+                        recovery_tip="Use automation_windows(find) to get the HWND first.",
+                    )
+                if request.key is None:
+                    return ToolResult(status="error", message="Parameter 'key' is required for background_key.")
+                from windows_computer_use_mcp.win32_keyboard import postmessage_key
+
+                try:
+                    meta = postmessage_key(int(request.window_handle), request.key, presses=request.presses)
+                except ValueError as e:
+                    return ToolResult(status="error", message=str(e))
+                except Exception as e:
+                    return ToolResult(
+                        status="error",
+                        message=f"Background key failed: {e}",
+                        recovery_tip="Fall back to 'press' (foreground) for this control.",
+                    )
+                return ToolResult(
+                    status="success",
+                    message=f"Sent '{request.key}' to window {request.window_handle} "
+                    "(background, no focus change; delivery not verifiable - confirm with screenshot/OCR).",
+                    data={**meta, "window_handle": request.window_handle},
+                )
 
             return ToolResult(status="error", message=f"Unknown operation: {operation}")
 
