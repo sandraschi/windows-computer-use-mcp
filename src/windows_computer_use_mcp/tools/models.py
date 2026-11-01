@@ -309,6 +309,8 @@ class SystemOperationRequest(BaseModel):
         "weekly_report",
         "voice_listen",
         "voice_status",
+        "preflight",
+        "detect_uac",
     ] = Field(..., description="The system operation to perform.")
 
     seconds: float | None = Field(None, description="Seconds to wait.", ge=0)
@@ -319,6 +321,8 @@ class SystemOperationRequest(BaseModel):
     app_path: str | None = Field(None, description="App executable path.")
     work_dir: str | None = Field(None, description="App working directory.")
     filter: str | None = Field(None, description="Process name filter.")
+    min_disk_mb: float | None = Field(None, description="Minimum free disk MB for 'preflight' (default 500).")
+    min_memory_mb: float | None = Field(None, description="Minimum available memory MB for 'preflight' (default 512).")
 
 
 class DesktopStateRequest(BaseModel):

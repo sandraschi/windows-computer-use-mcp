@@ -9,6 +9,7 @@ system operations into a single interface. This design:
 
 SUPPORTED OPERATIONS:
 - status, help, wait, info, wait_for_window, clipboard_get, clipboard_set, processes, start_app
+- preflight (session liveness + UAC + resources before a mission), detect_uac
 """
 
 import logging
@@ -80,6 +81,8 @@ def _build_help_payload() -> dict[str, Any]:
             "clipboard_set",
             "processes",
             "start_app",
+            "preflight",
+            "detect_uac",
         ],
     }
 
@@ -96,6 +99,8 @@ This tool provides low-level system utilities including application launching, p
 WHEN TO USE:
 - Use 'status' for real-time health checks of the MCP server.
 - Use 'info' to collect detailed host telemetry (CPU, RAM, GPU).
+- Use 'preflight' before a mission: session liveness + UAC + disk/RAM in one call.
+- Use 'detect_uac' when steps fail oddly - a UAC prompt or locked session explains it.
 - Use 'wait' or 'wait_for_window' to synchronize automation steps with OS state.
 - Use 'clipboard_get/set' for data transfer between the agent and local applications.
 - Use 'processes' and 'start_app' for lifecycle management of Windows software.
@@ -351,11 +356,59 @@ If 'wait_for_window' times out, verify the 'title' exists or increase 'timeout'.
                         status="error", message=f"Failed to start: {e}", recovery_tip="Check path and permissions."
                     )
 
+            elif operation == "detect_uac":
+                from windows_computer_use_mcp.session_guard import detect_uac
+
+                result = detect_uac()
+                if result.get("uac_prompt"):
+                    return ToolResult(
+                        status="blocked",
+                        message="UAC consent prompt is on the secure desktop - automation cannot reach it.",
+                        data=result,
+                        recovery_tip="Approve or dismiss the UAC prompt on the physical console, "
+                        "then re-run. Missions pause (not fail) for UAC.",
+                    )
+                if result.get("interactive") is False:
+                    return ToolResult(
+                        status="blocked",
+                        message=f"Session is not interactive (desktop: {result.get('desktop_name')}).",
+                        data=result,
+                        recovery_tip="Unlock the session / restore the RDP window, then re-run.",
+                    )
+                return ToolResult(
+                    status="success",
+                    message="Session interactive, no UAC prompt.",
+                    data=result,
+                )
+
+            elif operation == "preflight":
+                from windows_computer_use_mcp.session_guard import session_preflight
+
+                result = session_preflight(
+                    min_disk_mb=request.min_disk_mb or 500.0,
+                    min_memory_mb=request.min_memory_mb or 512.0,
+                )
+                if not result.get("ok"):
+                    failed = [c["name"] for c in result.get("checks", []) if not c.get("passed")]
+                    return ToolResult(
+                        status="blocked",
+                        message=f"Preflight failed: {', '.join(failed)}.",
+                        data=result,
+                        recovery_tip="Fix the failed checks (unlock session, dismiss UAC, free disk/RAM) "
+                        "and run preflight again before starting the mission.",
+                    )
+                return ToolResult(
+                    status="success",
+                    message="Preflight passed - session is interactive and resourced.",
+                    data=result,
+                )
+
             else:
                 return ToolResult(
                     status="error",
                     message=f"Unknown operation: {operation}",
-                    recovery_tip="Use a valid operation: status, help, wait, info, wait_for_window, clipboard_get, clipboard_set, processes, start_app",
+                    recovery_tip="Use a valid operation: status, help, wait, info, wait_for_window, "
+                    "clipboard_get, clipboard_set, processes, start_app, preflight, detect_uac",
                 )
 
         except Exception as e:

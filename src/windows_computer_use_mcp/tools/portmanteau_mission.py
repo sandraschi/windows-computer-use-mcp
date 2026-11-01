@@ -71,6 +71,76 @@ def _generate_id() -> str:
     return f"mission_{uuid.uuid4().hex[:12]}"
 
 
+def _mission_preflight_or_block() -> ToolResult | None:
+    """Session preflight shared by run/workflow. Returns a blocked ToolResult
+    when the session cannot take input, else None (proceed)."""
+    from windows_computer_use_mcp.session_guard import session_preflight
+
+    result = session_preflight()
+    if result.get("ok"):
+        return None
+    uac = result.get("uac", {})
+    if uac.get("uac_prompt"):
+        return ToolResult(
+            status="blocked",
+            message="Mission not started: UAC consent prompt is on the secure desktop.",
+            data=result,
+            recovery_tip="Approve or dismiss the UAC prompt on the physical console, then re-run.",
+        )
+    failed = [c["name"] for c in result.get("checks", []) if not c.get("passed")]
+    return ToolResult(
+        status="blocked",
+        message=f"Mission not started: preflight failed ({', '.join(failed)}).",
+        data=result,
+        recovery_tip="Run automation_system(preflight) for detail, fix the failed checks, then re-run.",
+    )
+
+
+def _uac_pause_or_none() -> ToolResult | None:
+    """Mid-mission UAC check. Returns a blocked ToolResult when a UAC prompt
+    appeared (missions pause, they do not fail through it), else None."""
+    from windows_computer_use_mcp.session_guard import detect_uac
+
+    result = detect_uac()
+    if not result.get("uac_prompt"):
+        return None
+    return ToolResult(
+        status="blocked",
+        message="Mission paused: UAC consent prompt appeared on the secure desktop.",
+        data=result,
+        recovery_tip="Approve or dismiss the UAC prompt on the physical console, then re-run "
+        "the remaining steps (missions pause for UAC, they do not fail).",
+    )
+
+
+def _step_app_block_or_none(step: dict[str, Any]) -> ToolResult | None:
+    """Per-step allowlist enforcement. Resolves the target process from
+    window_handle/handle params (or an explicit app_path) and blocks when it
+    is positively outside WINDOWS_COMPUTER_USE_MCP_ALLOWED_APPS. Unresolvable
+    targets fail open (allowed, flagged) - see safety.check_app_allowed."""
+    from windows_computer_use_mcp.safety import check_app_allowed, resolve_process_name
+
+    params = step.get("params", {}) or {}
+    app_path = step.get("app_path") or params.get("app_path")
+    if isinstance(app_path, str) and app_path:
+        verdict = check_app_allowed(app_path)
+    else:
+        hwnd = step.get("window_handle") or params.get("window_handle") or params.get("handle")
+        try:
+            hwnd_int = int(hwnd) if hwnd is not None else None
+        except (TypeError, ValueError):
+            hwnd_int = None
+        verdict = check_app_allowed(resolve_process_name(hwnd_int))
+    if verdict.get("allow"):
+        return None
+    return ToolResult(
+        status="blocked",
+        message=f"Mission stopped by app allowlist: {verdict.get('message')}",
+        data={"verdict": verdict, "step": step.get("label", step.get("tool", ""))},
+        recovery_tip="Add the app to WINDOWS_COMPUTER_USE_MCP_ALLOWED_APPS or run without the allowlist.",
+    )
+
+
 def _call_tool(tool_name: str, params: dict) -> ToolResult:
     """Call a registered MCP tool by name and return its ToolResult.
 
@@ -139,6 +209,16 @@ def _verify_step_outcome(step: dict[str, Any], tool_result: ToolResult) -> bool:
 @with_mission_slot
 async def _run_steps(steps: list[dict], ctx: Context | None, mission_id: str, label: str = "") -> ToolResult:
     """Execute a list of steps with verify + retry. Shared by run_mission and run_preset."""
+    blocked = _mission_preflight_or_block()
+    if blocked is not None:
+        _MISSIONS[mission_id] = {
+            "status": "blocked",
+            "goal": label,
+            "steps": steps,
+            "started": time.time(),
+            "ended": time.time(),
+        }
+        return blocked
     _MISSIONS[mission_id] = {"status": "running", "goal": label, "steps": steps, "started": time.time()}
     if ctx:
         await ctx.info(f"Running {label or 'workflow'} ({len(steps)} steps)")
@@ -154,6 +234,28 @@ async def _run_steps(steps: list[dict], ctx: Context | None, mission_id: str, la
                 status="blocked",
                 message="Mission cancelled mid-execution.",
                 data={"mission_id": mission_id, "completed": i, "total": total},
+            )
+
+        # UAC pause: stop before the next click, do not fail through the prompt.
+        uac_block = _uac_pause_or_none()
+        if uac_block is not None:
+            mission_state["status"] = "paused_uac"
+            mission_state["ended"] = time.time()
+            data = dict(uac_block.data or {})
+            data.update({"mission_id": mission_id, "completed": i, "total": total})
+            return ToolResult(
+                status="blocked", message=uac_block.message, data=data, recovery_tip=uac_block.recovery_tip
+            )
+
+        # App allowlist: block steps positively outside the list.
+        app_block = _step_app_block_or_none(step)
+        if app_block is not None:
+            mission_state["status"] = "blocked"
+            mission_state["ended"] = time.time()
+            data = dict(app_block.data or {})
+            data.update({"mission_id": mission_id, "completed": i, "total": total})
+            return ToolResult(
+                status="blocked", message=app_block.message, data=data, recovery_tip=app_block.recovery_tip
             )
 
         tool_name = step.get("tool", "")
@@ -488,6 +590,9 @@ WHEN TO USE:
 
 RECOVERY:
 If a step fails, the mission continues with remaining steps (non-fatal).
+Missions run a session preflight first (blocked when the session is locked
+or a UAC prompt is up - approve on the console and re-run), pause for UAC
+mid-run, and honor WINDOWS_COMPUTER_USE_MCP_ALLOWED_APPS when set.
 Use 'status' with the mission_id to review step-level results.
 RETURNS:
 A ToolResult object with mission progress, step results, and next steps.
@@ -575,7 +680,20 @@ A ToolResult object with mission progress, step results, and next steps.
                 actions = request.actions
                 if not actions:
                     return ToolResult(status="error", message="'actions' list required for workflow operation.")
+                gate_block = _mission_preflight_or_block()
+                if gate_block is not None:
+                    return gate_block
                 if app_name:
+                    from windows_computer_use_mcp.safety import check_app_allowed
+
+                    verdict = check_app_allowed(app_name)
+                    if not verdict.get("allow"):
+                        return ToolResult(
+                            status="blocked",
+                            message=f"Workflow stopped by app allowlist: {verdict.get('message')}",
+                            recovery_tip="Add the app to WINDOWS_COMPUTER_USE_MCP_ALLOWED_APPS "
+                            "or run without the allowlist.",
+                        )
                     try:
                         from pywinauto import Application
 
@@ -592,6 +710,18 @@ A ToolResult object with mission progress, step results, and next steps.
                     if time.time() > deadline:
                         results.append(
                             {"step": i + 1, "label": action.get("label"), "success": False, "error": "timeout"}
+                        )
+                        break
+                    uac_block = _uac_pause_or_none()
+                    if uac_block is not None:
+                        results.append(
+                            {
+                                "step": i + 1,
+                                "label": action.get("label"),
+                                "success": False,
+                                "error": "paused_uac",
+                                "message": uac_block.message,
+                            }
                         )
                         break
                     tool_name = action.get("tool", "")

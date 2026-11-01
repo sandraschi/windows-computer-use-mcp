@@ -19,6 +19,11 @@ ENV_DRY_RUN = "windows_computer_use_mcp_DRY_RUN"
 ENV_ENABLE_FACE = "windows_computer_use_mcp_ENABLE_FACE"
 # When set (e.g. 1), server registers `global_keylogger` (session-wide keyboard capture).
 ENV_ENABLE_KEYLOGGER = "windows_computer_use_mcp_ENABLE_KEYLOGGER"
+# Optional allowlist: comma/semicolon-separated process names (e.g. "notepad.exe,calc.exe").
+# When set, window-targeted mutations outside the list are blocked. Unset = no restriction.
+# Unresolvable targets fail OPEN (allowed, flagged app_unknown) - the gate blocks
+# what it can positively identify as outside the list, never what it cannot see.
+ENV_ALLOWED_APPS = "windows_computer_use_mcp_ALLOWED_APPS"
 # Resource hardening (BUG-071): bounds for background watchers, concurrent
 # missions, and host-health reporting. All overridable, all fail-open.
 ENV_MAX_WATCHERS = "windows_computer_use_mcp_MAX_WATCHERS"
@@ -48,6 +53,83 @@ def is_keylogger_tool_enabled() -> bool:
     return _truthy(os.getenv(ENV_ENABLE_KEYLOGGER))
 
 
+def parse_allowed_apps() -> list[str] | None:
+    """Parse the per-app allowlist. None = no restriction configured."""
+    raw = os.getenv(ENV_ALLOWED_APPS, "")
+    if not raw or not raw.strip():
+        return None
+    names: list[str] = []
+    for chunk in raw.replace(";", ",").split(","):
+        name = chunk.strip().lower()
+        if name:
+            names.append(name)
+    return names or None
+
+
+def normalize_app_name(name: str) -> str:
+    """Lowercase basename for allowlist comparison."""
+    base = os.path.basename(name.strip().lower())
+    return base
+
+
+def _app_matches(process_name: str, allowed: list[str]) -> bool:
+    proc = normalize_app_name(process_name)
+    proc_no_ext = proc[:-4] if proc.endswith(".exe") else proc
+    for entry in allowed:
+        entry_norm = normalize_app_name(entry)
+        entry_no_ext = entry_norm[:-4] if entry_norm.endswith(".exe") else entry_norm
+        if proc == entry_norm or proc_no_ext == entry_no_ext:
+            return True
+    return False
+
+
+def resolve_process_name(hwnd: int | None) -> str | None:
+    """Process image name owning an HWND, or None when unresolvable (fail-soft)."""
+    if hwnd is None:
+        return None
+    try:
+        import ctypes
+        from ctypes import wintypes
+
+        user32 = ctypes.WinDLL("user32", use_last_error=True)
+        pid = wintypes.DWORD()
+        user32.GetWindowThreadProcessId(wintypes.HWND(int(hwnd)), ctypes.byref(pid))
+        if not pid.value:
+            return None
+        import psutil
+
+        return psutil.Process(int(pid.value)).name()
+    except Exception:
+        return None
+
+
+def check_app_allowed(process_name: str | None) -> dict[str, Any]:
+    """Enforce the per-app allowlist for one window-targeted mutation.
+
+    - No allowlist configured -> {"allow": True, "code": "unrestricted"}.
+    - Unresolvable target (None/empty) -> allow with code "app_unknown"
+      (fail-open, flagged - see module docstring for ENV_ALLOWED_APPS).
+    - Listed process -> allow ("ok"). Anything else -> block ("app_blocked").
+    """
+    allowed = parse_allowed_apps()
+    if allowed is None:
+        return {"allow": True, "code": "unrestricted"}
+    if not process_name:
+        return {
+            "allow": True,
+            "code": "app_unknown",
+            "message": "Target process unresolvable - allowed but flagged (fail-open).",
+        }
+    if _app_matches(process_name, allowed):
+        return {"allow": True, "code": "ok", "process": normalize_app_name(process_name)}
+    return {
+        "allow": False,
+        "code": "app_blocked",
+        "message": f"{process_name} is outside the allowlist ({', '.join(allowed)}). "
+        f"Add it via {ENV_ALLOWED_APPS} or run without the allowlist.",
+    }
+
+
 class MutationGate:
     """Sliding window: mutating UI actions per rolling 60s + lifetime counter."""
 
@@ -69,6 +151,7 @@ class MutationGate:
             "total_mutations_session": self._total,
             "kill_switch": _truthy(os.getenv(ENV_KILL_SWITCH)),
             "dry_run": _truthy(os.getenv(ENV_DRY_RUN)),
+            "allowed_apps": parse_allowed_apps() or [],
         }
 
     def before_mutation(self, *, read_only: bool) -> dict[str, Any]:
