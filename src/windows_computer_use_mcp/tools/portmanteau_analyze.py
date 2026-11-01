@@ -8,6 +8,8 @@ produce a structured markdown report + image portfolio.
 
 OPERATIONS:
 - crawl: Walk UI tree, screenshot, return element map + report
+- crawl_scroll: Crawl, scroll pages, re-crawl, merge - for virtualized lists/grids
+- extract_table: Read a visible table/grid into rows (list of lists) + CSV
 - portfolio: Capture multiple app states (main, dialogs, menus) via shortcuts
 - discover: Probe common keyboard shortcuts and capture results
 
@@ -94,6 +96,74 @@ def _screenshot_to_path(window_handle: int, output_dir: Path, label: str) -> str
         return None
 
 
+def _element_key(elem: dict[str, Any]) -> tuple:
+    """Scroll-invariant identity for dedup across crawl pages.
+
+    Bounds move when the list scrolls, so the key is (type, name, id) - items
+    reappearing on the next page merge instead of duplicating. Nameless
+    elements fall back to bounds (may duplicate across pages - documented).
+    """
+    name = (elem.get("name") or "").strip()
+    if name:
+        return ("named", elem.get("type", ""), name, elem.get("id", ""))
+    b = elem.get("bounds") or {}
+    return ("bounds", elem.get("type", ""), b.get("x"), b.get("y"), b.get("width"), b.get("height"))
+
+
+def _element_map_entry(elem: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "id": elem.get("id"),
+        "type": elem.get("type"),
+        "name": elem.get("name", ""),
+        "bounds": elem.get("bounds"),
+        "enabled": elem.get("enabled", True),
+        "visible": elem.get("visible", True),
+    }
+
+
+def _rows_from_cells(cells: list[dict[str, Any]], *, row_tolerance_px: int = 8, min_cols: int = 1) -> list[list[str]]:
+    """Group named elements with bounds into text rows.
+
+    Pure function (no Windows calls) - sorts by vertical center, bands rows
+    within row_tolerance_px, orders cells left-to-right. Rows with fewer than
+    min_cols cells are dropped (window titles, lone labels).
+    """
+    positioned = []
+    for cell in cells:
+        text = (cell.get("name") or "").strip()
+        b = cell.get("bounds") or {}
+        try:
+            x, y, w, h = (
+                float(b.get("x", 0)),
+                float(b.get("y", 0)),
+                float(b.get("width", 0)),
+                float(b.get("height", 0)),
+            )
+        except (TypeError, ValueError):
+            continue
+        if not text or w <= 0 or h <= 0:
+            continue
+        positioned.append({"text": text, "yc": y + h / 2, "x": x})
+    positioned.sort(key=lambda c: c["yc"])
+    bands: list[list[dict[str, Any]]] = []
+    for cell in positioned:
+        placed = False
+        for band in bands:
+            if abs(cell["yc"] - sum(c["yc"] for c in band) / len(band)) <= row_tolerance_px:
+                band.append(cell)
+                placed = True
+                break
+        if not placed:
+            bands.append([cell])
+    rows = []
+    for band in bands:
+        band.sort(key=lambda c: c["x"])
+        texts = [c["text"] for c in band]
+        if len(texts) >= min_cols:
+            rows.append(texts)
+    return rows
+
+
 def _crawl_operation(hwnd: int, hud) -> dict[str, Any]:
     """Crawl UI tree and produce element map + screenshots."""
     from windows_computer_use_mcp.desktop_state.capture import DesktopStateCapture
@@ -124,18 +194,7 @@ def _crawl_operation(hwnd: int, hud) -> dict[str, Any]:
     raw_path = _screenshot_to_path(hwnd, out, "screenshot_raw")
 
     # Generate element map
-    element_map = []
-    for elem in elements:
-        element_map.append(
-            {
-                "id": elem.get("id"),
-                "type": elem.get("type"),
-                "name": elem.get("name", ""),
-                "bounds": elem.get("bounds"),
-                "enabled": elem.get("enabled", True),
-                "visible": elem.get("visible", True),
-            }
-        )
+    element_map = [_element_map_entry(elem) for elem in elements]
 
     # Markdown report
     window_rect = None
@@ -180,6 +239,124 @@ def _crawl_operation(hwnd: int, hud) -> dict[str, Any]:
         "report_path": str(report_path),
         "report_text": report_text,
         "output_dir": str(out),
+    }
+
+
+def _crawl_scroll_operation(hwnd: int, hud, *, scroll_pages: int = 3, scroll_amount: int = -10) -> dict[str, Any]:
+    """Crawl, scroll, re-crawl, merge - for virtualized lists/grids whose items
+    only exist in the UIA tree while scrolled into view.
+
+    Stops early when a page adds no new elements. Scrolls with the real cursor
+    at the window center (foreground op) - prefer a maximized window.
+    """
+    import time as _time
+
+    from windows_computer_use_mcp.desktop_state.capture import DesktopStateCapture
+    from windows_computer_use_mcp.win32_mouse import scroll_at
+    from windows_computer_use_mcp.win32_window import get_window_bbox
+
+    out = Path.cwd() / "winapp_analysis"
+    out.mkdir(exist_ok=True)
+
+    if hud.estopped():
+        return {"success": False, "error": "Crawl cancelled by user"}
+
+    merged: dict[tuple, dict[str, Any]] = {}
+    pages_crawled = 0
+    stable = False
+    capture = DesktopStateCapture(max_depth=5)
+
+    for page in range(max(1, int(scroll_pages)) + 1):
+        if hud.estopped():
+            return {"success": False, "error": "Crawl cancelled by user"}
+        _ensure_focus(hwnd)
+        ax_result = capture.capture(capture_mode="ax", window_handle=hwnd)
+        fresh = [_element_map_entry(e) for e in ax_result.get("elements", [])]
+        new_count = 0
+        for entry in fresh:
+            key = _element_key({**entry, "id": entry.get("id")})
+            if key not in merged:
+                merged[key] = entry
+                new_count += 1
+        pages_crawled += 1
+        if page > 0 and new_count == 0:
+            stable = True
+            break
+        if page >= max(1, int(scroll_pages)):
+            break
+        try:
+            left, top, right, bottom = get_window_bbox(hwnd)
+            scroll_at((left + right) // 2, (top + bottom) // 2, int(scroll_amount))
+        except Exception as exc:
+            logger.warning("crawl_scroll page %d scroll failed: %s", page, exc)
+            break
+        _time.sleep(0.4)
+
+    element_map = list(merged.values())
+    return {
+        "success": True,
+        "window_handle": hwnd,
+        "element_count": len(element_map),
+        "elements": element_map[:1000],
+        "pages_crawled": pages_crawled,
+        "stable": stable,
+        "output_dir": str(out),
+    }
+
+
+def _extract_table_operation(
+    hwnd: int,
+    hud,
+    *,
+    header_row: bool = False,
+    row_tolerance_px: int = 8,
+    min_cols: int = 1,
+) -> dict[str, Any]:
+    """Read the visible table/grid in a window into rows + CSV.
+
+    Groups named elements by vertical bands (no OCR - UIA text only). For
+    image-only grids use automation_visual(extract_text) instead. Only the
+    currently visible rows are captured - scroll first for the rest.
+    """
+    import csv
+    import io
+
+    from windows_computer_use_mcp.desktop_state.capture import DesktopStateCapture
+
+    if hud.estopped():
+        return {"success": False, "error": "Extract cancelled by user"}
+    _ensure_focus(hwnd)
+    capture = DesktopStateCapture(max_depth=6)
+    ax_result = capture.capture(capture_mode="ax", window_handle=hwnd)
+    elements = ax_result.get("elements", [])
+
+    rows = _rows_from_cells(elements, row_tolerance_px=int(row_tolerance_px), min_cols=int(min_cols))
+    records: list[dict[str, str]] = []
+    if header_row and len(rows) >= 2:
+        header = [h if h else f"col_{i}" for i, h in enumerate(rows[0])]
+        seen: dict[str, int] = {}
+        unique_header = []
+        for h in header:
+            if h in seen:
+                seen[h] += 1
+                unique_header.append(f"{h}_{seen[h]}")
+            else:
+                seen[h] = 0
+                unique_header.append(h)
+        for row in rows[1:]:
+            records.append({unique_header[i]: (row[i] if i < len(row) else "") for i in range(len(unique_header))})
+
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerows(rows)
+    return {
+        "success": True,
+        "window_handle": hwnd,
+        "row_count": len(rows),
+        "col_count": max((len(r) for r in rows), default=0),
+        "rows": rows,
+        "records": records,
+        "csv_text": buf.getvalue(),
     }
 
 
@@ -286,12 +463,17 @@ def _portfolio_operation(hwnd: int, hud) -> dict[str, Any]:
 
 @app.tool(annotations=_READONLY_LOCAL)
 def analyze_winapp(
-    operation: Literal["crawl", "discover", "portfolio"] = "crawl",
+    operation: Literal["crawl", "crawl_scroll", "extract_table", "discover", "portfolio"] = "crawl",
     window_handle: int | None = None,
     window_title: str | None = None,
     output_dir: str | None = None,
     max_depth: int = 5,
     states: list[str] | None = None,
+    scroll_pages: int = 3,
+    scroll_amount: int = -10,
+    header_row: bool = False,
+    row_tolerance_px: int = 8,
+    min_cols: int = 1,
 ) -> dict[str, Any]:
     """Crawl a Windows app and produce UI element map + screenshot portfolio.
 
@@ -302,6 +484,12 @@ def analyze_winapp(
 
     Operations:
     - crawl: Walk the full UI tree, take SOM screenshot, generate element map + report.
+    - crawl_scroll: Crawl, scroll pages, re-crawl, merge - for virtualized
+      lists/grids whose items only exist while scrolled into view. Stops early
+      when a page adds nothing new.
+    - extract_table: Read the visible table/grid into rows (list of lists),
+      records (when header_row=True), and CSV text. UIA text only, visible
+      rows only - scroll first for the rest.
     - discover: Probe common keyboard shortcuts (F1, F5, Ctrl+O, etc.) and
       capture the window state before/after each.
     - portfolio: Capture named states (e.g. ["main","dialog","settings"]).
@@ -314,6 +502,11 @@ def analyze_winapp(
                     Defaults to ./winapp_analysis/
         max_depth: Max UI tree depth for crawl (default 5).
         states: State names for portfolio mode.
+        scroll_pages: Max extra scroll pages for crawl_scroll (default 3).
+        scroll_amount: Wheel units per crawl_scroll page, negative = down (default -10).
+        header_row: extract_table treats the first row as headers -> records.
+        row_tolerance_px: extract_table vertical banding tolerance (default 8).
+        min_cols: extract_table drops rows with fewer cells (default 1).
 
     Returns:
         {"success": bool, "element_count": int, "screenshot_path": str,
@@ -324,6 +517,8 @@ def analyze_winapp(
 
     ## Examples
     - analyze_winapp(operation="crawl", window_title="Notepad") -> {"success": True, "element_count": 42, ...}
+    - analyze_winapp(operation="crawl_scroll", window_title="Inbox", scroll_pages=5) -> {"success": True, ...}
+    - analyze_winapp(operation="extract_table", window_handle=123, header_row=True) -> {"success": True, "rows": [...]}
     - analyze_winapp(operation="portfolio", window_title="Notepad", states=["main", "settings"]) -> {"success": True, ...}
     """
     from windows_computer_use_mcp.cua_hud import CuaHUD
@@ -352,6 +547,16 @@ def analyze_winapp(
 
         if operation == "crawl":
             return _crawl_operation(hwnd, hud)
+        elif operation == "crawl_scroll":
+            return _crawl_scroll_operation(hwnd, hud, scroll_pages=scroll_pages, scroll_amount=scroll_amount)
+        elif operation == "extract_table":
+            return _extract_table_operation(
+                hwnd,
+                hud,
+                header_row=header_row,
+                row_tolerance_px=row_tolerance_px,
+                min_cols=min_cols,
+            )
         elif operation == "discover":
             return _discover_operation(hwnd, hud)
         elif operation == "portfolio":

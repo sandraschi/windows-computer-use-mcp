@@ -121,6 +121,9 @@ WHEN TO USE:
 - Use 'focus' or 'activate' to bring a window to the foreground before sending input.
 - Use 'manage' with actions (maximize, close, etc.) to control window lifecycle.
 - Use 'position' to precisely align windows for multi-window automation scenarios.
+- Use 'tray_list' to enumerate system-tray icons (tooltip text per icon), then
+  'tray_click' by index or tooltip substring. Overflow icons need tray_overflow=True
+  with the chevron flyout open.
 
 RECOVERY AND TROUBLESHOOTING:
 - If a 'WindowNotFoundError' occurs, the handle (HWND) may have become stale.
@@ -232,6 +235,45 @@ A ToolResult object containing standardized outcome, message, and window metadat
                     return ToolResult(status="success", message="No active window found.", data={"window": None})
                 except Exception as e:
                     return ToolResult(status="error", message=f"Failed to get active window: {e}")
+
+            # === TRAY OPERATIONS (no HWND required) ===
+            elif operation == "tray_list":
+                from windows_computer_use_mcp.tray_icons import list_tray_icons
+
+                result = list_tray_icons(overflow=bool(request.tray_overflow))
+                if not result.get("success"):
+                    return ToolResult(
+                        status="error",
+                        message=f"Tray list failed: {result.get('error')}",
+                        recovery_tip=result.get("recovery_tip"),
+                        data=result,
+                    )
+                return ToolResult(
+                    status="success",
+                    message=f"Found {result.get('count', 0)} tray icons.",
+                    data=result,
+                )
+
+            elif operation == "tray_click":
+                from windows_computer_use_mcp.tray_icons import click_tray_icon
+
+                result = click_tray_icon(
+                    index=request.tray_index,
+                    text=request.tray_text,
+                    overflow=bool(request.tray_overflow),
+                )
+                if not result.get("success"):
+                    return ToolResult(
+                        status="error",
+                        message=f"Tray click failed: {result.get('error')}",
+                        recovery_tip=result.get("recovery_tip", "Call tray_list first and use an exact index."),
+                        data=result,
+                    )
+                return ToolResult(
+                    status="success",
+                    message=f"Clicked tray icon '{(result.get('icon') or {}).get('text', '')}'.",
+                    data=result,
+                )
 
             # === OPERATIONS REQUIRING HANDLE ===
             if handle is None:

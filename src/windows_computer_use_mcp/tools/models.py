@@ -26,6 +26,8 @@ class WindowOperationRequest(BaseModel):
         "rect",
         "title",
         "state",
+        "tray_list",
+        "tray_click",
     ] = Field(..., description="The window operation to perform.")
 
     handle: int | None = Field(
@@ -56,6 +58,17 @@ class WindowOperationRequest(BaseModel):
         description="0-based monitor index for coordinate translation. "
         "When set, x/y are treated as relative to this monitor's origin. "
         "Use with 'position' to place a window on a specific monitor.",
+    )
+
+    tray_text: str | None = Field(
+        None,
+        description="Tooltip substring for 'tray_click' (case-insensitive). Use 'tray_list' first.",
+    )
+    tray_index: int | None = Field(None, description="Button index for 'tray_click' (from 'tray_list').")
+    tray_overflow: bool = Field(
+        False,
+        description="Target the overflow ('Show hidden icons') flyout for 'tray_list'/'tray_click'. "
+        "The flyout must be open - click the taskbar chevron first.",
     )
 
 
