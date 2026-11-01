@@ -1,6 +1,8 @@
 # Documentation index
 
-Hub for **windows-computer-use-mcp**. Root overview: [README.md](../README.md). Releases: [CHANGELOG.md](../CHANGELOG.md).
+Hub for **windows-computer-use-mcp** - a **dangerous CUA tool**: computer-use
+automation that sees Windows UI and clicks/types like a human on the live
+desktop. Root overview: [README.md](../README.md). Releases: [CHANGELOG.md](../CHANGELOG.md).
 
 ## Core
 

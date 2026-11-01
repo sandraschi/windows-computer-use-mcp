@@ -1,6 +1,12 @@
 # windows-computer-use-mcp — Safety & isolation
 
-**Read this before enabling this server in an IDE.** Desktop automation is **host-powerful**; “sandbox safety” for **untrusted UI** requires a **second fleet server**, not pywinauto alone.
+> **DANGEROUS CUA tool.** Computer-use automation: this server sees your
+> Windows UI and clicks/types like a human. Every mission step, click, and
+> keystroke hits the **live desktop** and can move windows, overwrite
+> documents, install/uninstall software, or delete data. It is not sandboxed
+> and not a monitor. Prefer dry-run or a VM sandbox for anything untrusted.
+
+**Read this before enabling this server in an IDE.** Desktop automation is **host-powerful**; "sandbox safety" for **untrusted UI** requires a **second fleet server**, not pywinauto alone.
 
 **Foreground / focus:** If you automate “start app X and test it,” read **[OPERATOR_PROTOCOL.md](OPERATOR_PROTOCOL.md)** — the user should **step back from the terminal/IDE** so automation does not fight for focus.
 

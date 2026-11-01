@@ -2,10 +2,16 @@
 
 ## What this is for
 
-Windows desktop automation for AI agents: find windows, click/type, screenshot/OCR,
+**CUA tool (computer-use automation), and dangerous by nature.** Windows
+desktop automation for AI agents: find windows, click/type, screenshot/OCR,
 and run multi-step missions over native Windows UI. It does **not** replace a
 sandbox, a screen reader, or a test runner - it drives the real desktop you point
 it at, with human-in-the-loop approval for mutating actions.
+
+> Every click and keystroke hits the live session and can change or delete
+> real data. Start with read-only probes, keep HITL on, and use dry-run or a
+> VM sandbox (virtualization-mcp) for anything untrusted. Read
+> [SAFETY.md](SAFETY.md) before production use.
 
 ## Cost and accounts (money / CC)
 

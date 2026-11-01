@@ -1,6 +1,11 @@
 # MCP tools reference
 
-22 portmanteau tools. All use `operation` enum. Responses are `ToolResult {status, message, data, recovery_tip}`.
+**CUA tool:** computer-use automation - an agent (or you) sees Windows UI and
+clicks/types like a human. 22 portmanteau tools. All use `operation` enum. Responses are `ToolResult {status, message, data, recovery_tip}`.
+
+> **Dangerous:** missions, clicks, and keystrokes hit the live desktop and can
+> change or delete real data. Keep HITL on; prefer dry-run or a VM sandbox for
+> anything untrusted. See [SAFETY.md](SAFETY.md).
 
 ## Core automation
 
