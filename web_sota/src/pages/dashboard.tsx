@@ -92,6 +92,7 @@ export function Dashboard() {
 	const [hostError, setHostError] = useState<string>("");
 	const [toolCount, setToolCount] = useState<number | null>(null);
 	const [safety, setSafety] = useState<SafetyResponse | null>(null);
+	const [tesseract, setTesseract] = useState<boolean | null>(null);
 	const [restarting, setRestarting] = useState(false);
 	const retryRef = useRef(0);
 	const retryTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -157,6 +158,17 @@ export function Dashboard() {
 				const j = (await r.json().catch(() => ({}))) as SafetyResponse;
 				if (!r.ok) return;
 				setSafety(j);
+			})
+			.catch(() => {});
+
+		fetch(apiPath("/api/v1/diagnostics"))
+			.then(async (r) => {
+				const j = (await r.json().catch(() => ({}))) as {
+					data?: { cua_status?: { tesseract_available?: boolean } };
+				};
+				if (!r.ok) return;
+				const t = j.data?.cua_status?.tesseract_available;
+				if (typeof t === "boolean") setTesseract(t);
 			})
 			.catch(() => {});
 	}, []);
@@ -535,15 +547,24 @@ export function Dashboard() {
 				<Card className="border-slate-800 bg-slate-950/50">
 					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
 						<CardTitle className="text-sm font-medium text-slate-200">
-							OCR / Vision
+							Screenshot + OCR
 						</CardTitle>
 						<Box className="h-4 w-4 text-purple-500" />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold text-white">On host</div>
+						<div
+							className="text-2xl font-bold text-white"
+							data-testid="ocr-value"
+						>
+							{tesseract === null
+								? "Checking..."
+								: tesseract
+									? "Ready"
+									: "No OCR engine"}
+						</div>
 						<p className="text-xs text-slate-400">
-							Tesseract reads text off screenshots when installed - a clicking
-							aid, not a metric
+							Screenshots always work. Text readout needs Tesseract or Windows
+							Media OCR - core, not opt-in.
 						</p>
 					</CardContent>
 				</Card>
@@ -557,10 +578,11 @@ export function Dashboard() {
 					</CardHeader>
 					<CardContent>
 						<div className="text-2xl font-bold text-white">
-							{safety?.face_tool_opt_in ? "Opted in" : "Opt-in"}
+							{safety?.face_tool_opt_in ? "Opted in" : "Off - opt-in"}
 						</div>
 						<p className="text-xs text-slate-400">
-							Off by default - enable via PYWINAUTO_MCP_ENABLE_FACE (Help)
+							Face recognition is fenced off by default - enable via
+							PYWINAUTO_MCP_ENABLE_FACE + face extra (Help - Safety)
 						</p>
 					</CardContent>
 				</Card>
