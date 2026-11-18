@@ -14,8 +14,8 @@ class Settings(BaseSettings):
     """Application settings."""
 
     # Server Configuration
-    HOST: str = "0.0.0.0"
-    PORT: int = 8000
+    HOST: str = "127.0.0.1"
+    PORT: int = 10789
     LOG_LEVEL: str = "INFO"
     DEBUG: bool = False
     RELOAD: bool = False

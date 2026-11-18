@@ -47,7 +47,7 @@ class ActivityLog:
             try:
                 at = float(after_id.split(".")[0])
                 entries = [e for e in entries if float(e["id"].split(".")[0]) > at]
-            except:
+            except (ValueError, KeyError, IndexError):
                 pass
         if level:
             lo = {"DEBUG": 0, "INFO": 1, "WARNING": 2, "ERROR": 3}
@@ -106,7 +106,19 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="PyWinAuto MCP", lifespan=lifespan)
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://127.0.0.1:10788",
+        "http://localhost:10788",
+        "tauri://localhost",
+        "http://tauri.localhost",
+        "https://tauri.localhost",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/health")
