@@ -158,6 +158,30 @@ def click(
             time.sleep(interval)
 
 
+_DEFAULT_DOUBLE_CLICK_MS = 500  # Windows default system double-click threshold
+
+
+def _double_click_time_ms() -> int:
+    """System double-click threshold in milliseconds, read from user32.
+
+    ``win32api`` does not export ``GetDoubleClickTime`` in any released pywin32
+    (verified against 311 and 312), so calling it made ``double_click`` raise
+    ``AttributeError`` on every Windows host. Prefer the attribute if a future
+    pywin32 release adds it, otherwise read the value through stdlib ``ctypes``
+    (already used by ``ensure_dpi_awareness``), with a constant fallback if the
+    DLL call is unavailable.
+    """
+    if hasattr(win32api, "GetDoubleClickTime"):
+        try:
+            return int(win32api.GetDoubleClickTime())
+        except Exception:
+            pass
+    try:
+        return int(ctypes.windll.user32.GetDoubleClickTime())
+    except Exception:
+        return _DEFAULT_DOUBLE_CLICK_MS
+
+
 def double_click(
     x: int | None = None,
     y: int | None = None,
@@ -171,7 +195,7 @@ def double_click(
         move_to(int(x), int(y), duration=0, failsafe=failsafe)
     _check_failsafe_if_enabled(failsafe)
     _require_win32()
-    dbl_ms = win32api.GetDoubleClickTime()
+    dbl_ms = _double_click_time_ms()
     interval = max(0.01, (dbl_ms / 1000.0) * 0.5)
     click(None, None, button=button, clicks=2, interval=interval, failsafe=failsafe)
 
